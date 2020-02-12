@@ -1,0 +1,19 @@
+Package: param6
+Title: Paradox v2
+Description: Paradox v2
+Version: 0.0.0-9000
+Authors@R:
+  c(person(given = "A",
+           family = "B",
+           role = c("cre","aut"),
+           email = "a@b.com"))
+License: MIT + file LICENSE
+Encoding: UTF-8
+NeedsCompilation: no
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.2
+Imports:
+  set6,
+  R6,
+  checkmate
+
