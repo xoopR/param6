@@ -13,7 +13,7 @@ NeedsCompilation: no
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
 Imports:
+  data.table,
   set6,
-  R6,
-  checkmate
+  R6
 

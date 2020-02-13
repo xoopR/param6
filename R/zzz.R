@@ -1,4 +1,4 @@
 #' @import set6
-#' @import checkmate
 #' @import R6
+#' @import data.table
 "_PACKAGE"

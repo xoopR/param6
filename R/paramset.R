@@ -1,4 +1,4 @@
-paramset <- R6::R6Class("paramset",
+ParamSet <- R6::R6Class("ParamSet",
   public = list(
     initialize = function(...){
 
@@ -7,32 +7,20 @@ paramset <- R6::R6Class("paramset",
       }
 
       params = list(...)
-      assertList(params)
 
-      val_lst <- rep(list(bquote()), length(params))
-      names(val_lst) <- names(params)
-
-      par_lst <- val_lst
-
-      for (i in 1:length(params)) {
-        name = names(params)[[i]]
-
-        if(class(params[[i]])[[1]] == "formula"){
-          set = assertSet(eval(params[[i]][[2]]))
-          val = params[[i]][[3]]
-          if (assert(set$contains(val)))
-            val_lst[[name]] = val
+      par_tab = sapply(params, function(x){
+        if(class(x)[1] != "formula") {
+          assertSet(x)
+          return(list(set = x, val = NA))
         } else {
-          set = assertSet(params[[i]])
-          val_lst[[name]] = NA
+          set = eval(x[[2]])
+          assertContains(set, x[[3]])
+          return(list(set = set, val = x[[3]]))
         }
+      })
 
-        par_lst[[name]] = set
-
-      }
-
-      private$.params <- par_lst
-      private$.values <- val_lst
+      private$.params = par_tab[1,]
+      private$.values = par_tab[2,]
     },
 
     print = function(){
@@ -52,16 +40,27 @@ paramset <- R6::R6Class("paramset",
       if(missing(vals)) {
         return(private$.values)
       } else {
-        vals = vals[names(vals) %in% self$params$Name]
-        for(i in 1:length(vals)){
-          ind = match(names(vals)[[i]], self$params$Name)
-          if(is.na(vals[[i]]))
-            private$.values[names(vals)[[i]]] = NA
-          else if (self$params$Support[[ind]]$contains(vals[[i]]))
-            private$.values[names(vals)[[i]]] = vals[[i]]
-          else
-            stop(sprintf("%s doesn't lie in support of %s (%s).", vals[[i]], names(vals)[[i]], self$params$Support[[ind]]$strprint()))
-        }
+
+        ind = match(self$params$Name, names(vals), nomatch = 0)
+        tab = cbind(self$params[ind != 0, ], data.table(newval = vals[ind]))
+
+        newvals = lapply(split(tab, seq(nrow(tab))), function(x) {
+          set = x[[2]][[1]]
+          oldval = x[[3]][[1]]
+          newval = x[[4]][[1]]
+
+          if(!is.na(newval)){
+            if(is.na(oldval)) {
+              assertContains(set, newval, x[[1]][[1]])
+            } else if(oldval != newval) {
+              assertContains(set, newval, x[[1]][[1]])
+            }
+          }
+
+          newval
+        })
+
+        private$.values[ind] = newvals
       }
     }
   ),
