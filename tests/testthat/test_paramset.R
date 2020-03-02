@@ -33,3 +33,10 @@ test_that("params",{
   expect_equal(class(p$params)[1], "data.table")
   expect_error({p$params = "a"})
 })
+
+test_that("rbind",{
+  p1 = ParamSet$new(a = LogicalSet$new() ~ TRUE)
+  p2 = ParamSet$new(b = LogicalSet$new() ~ FALSE)
+  expect_equal(rbind(p1,p2), ParamSet$new(a = LogicalSet$new() ~ TRUE,
+                                          b = LogicalSet$new() ~ FALSE))
+})
