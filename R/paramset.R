@@ -3,8 +3,18 @@ ParamSet <- R6::R6Class("ParamSet",
     initialize = function(..., support, value){
 
       if (!missing(support)) {
+        if (class(support)[1] != "list") {
+          support = as.list(support)
+        }
         private$.support = support
+
         if (!missing(value)) {
+          if (class(value)[1] != "list") {
+            value = as.list(value)
+          }
+
+          mapply(function(x, y) if(!is.na(y)) assertContains(x, y), support, value)
+          value[is.na(value)] = NA
           private$.value = value
         }
       } else {
@@ -46,18 +56,23 @@ ParamSet <- R6::R6Class("ParamSet",
       ids = unlist(sapply(sets, function(x) x$ids))
       d = duplicated(ids)
       if(any(d)){
-        stop("ids must be unique, duplicated ids: %s", paste0("{",paste0(ids[d], collapse = ", "),"}"))
+        stop(sprintf("ids must be unique, duplicated ids: %s", paste0("{",paste0(ids[d], collapse = ", "),"}")))
       }
 
       # messy needs fixing
-      self$.__enclos_env__$private$.support = unlist(sapply(sets, function(x) x$.__enclos_env__$private$.support), recursive = FALSE)
-      self$.__enclos_env__$private$.value = unlist(sapply(sets, function(x) x$.__enclos_env__$private$.value), recursive = FALSE)
+      self$.__enclos_env__$private$.support = unlist(lapply(sets, function(x) x$.__enclos_env__$private$.support), recursive = FALSE)
+      self$.__enclos_env__$private$.value = unlist(lapply(sets, function(x) x$.__enclos_env__$private$.value), recursive = FALSE)
+
+      invisible(self)
     },
 
-    remove = function(params){
+    remove = function(...){
+      params = unlist(list(...))
       ind <- names(private$.support) %in% params
       private$.support <- private$.support[!ind]
       private$.value <- private$.value[!ind]
+
+      invisible(self)
     }
   ),
 
