@@ -1,20 +1,23 @@
 ParamSet <- R6::R6Class("ParamSet",
   public = list(
-    initialize = function(..., support, value){
+    initialize = function(..., support = NULL, value = NULL, tag = NULL){
 
-      if (!missing(support)) {
-        if (class(support)[1] != "list") {
-          support = as.list(support)
-        }
+      if (!is.null(support)) {
+        assertSetList(support)
         private$.support = support
 
-        if (!missing(value)) {
-          if (class(value)[1] != "list") {
-            value = as.list(value)
-          }
+        if(!is.null(tag)){
+          assertList(tag)
+          private$.tag = tag
+        } else {
+          tag = vector("list", length(support))
+          names(tag) = names(support)
+          private$.tag = tag
+        }
 
-          mapply(function(x, y) if(!is.na(y)) assertContains(x, y), support, value)
-          value[is.na(value)] = NA
+        if (!is.null(value)) {
+          assertList(value)
+          mapply(function(x, y) if(!is.null(y)) assertContains(x, y), support, value)
           private$.value = value
         }
       } else {
@@ -22,31 +25,28 @@ ParamSet <- R6::R6Class("ParamSet",
           stop("Need Parameters")
         }
 
-        params = list(...)
+        params = sapply(list(...), makeParam)
 
-        par_tab = sapply(params, function(x){
-          if(class(x)[1] != "formula") {
-            assertSet(x)
-            return(list(set = x, val = NA))
-          } else {
-            set = eval(x[[2]])
-            assertContains(set, x[[3]])
-            return(list(set = set, val = x[[3]]))
-          }
-        })
-
-        private$.support = par_tab[1,]
-        names(private$.support) = names(params)
-        private$.value = par_tab[2,]
-        names(private$.value) = names(params)
+        private$.support = params[1,]
+        names(private$.support) = colnames(params)
+        private$.value = params[2,]
+        names(private$.value) = colnames(params)
+        private$.tag = params[3,]
+        names(private$.tag) = colnames(params)
       }
 
+      private$.value = private$.value[!sapply(private$.value, is.null)]
       invisible(self)
     },
 
     print = function(){
       dt = self$params
       dt$Support = sapply(dt$Support, function(x) x$strprint())
+      ftag = sapply(dt$Tag, function(x) if(!is.null(x)) paste0("{", paste0(x[[1]], collapse = ", "), "}"))
+      if(length(ftag) != 1 | !is.null(ftag[[1]])){
+        dt$Tag = ftag
+      }
+
       print(dt)
     },
 
@@ -62,24 +62,37 @@ ParamSet <- R6::R6Class("ParamSet",
       # messy needs fixing
       self$.__enclos_env__$private$.support = unlist(lapply(sets, function(x) x$.__enclos_env__$private$.support), recursive = FALSE)
       self$.__enclos_env__$private$.value = unlist(lapply(sets, function(x) x$.__enclos_env__$private$.value), recursive = FALSE)
+      self$.__enclos_env__$private$.tag = unlist(lapply(sets, function(x) x$.__enclos_env__$private$.tag), recursive = FALSE)
 
       invisible(self)
     },
 
     remove = function(...){
       params = unlist(list(...))
-      ind <- names(private$.support) %in% params
-      private$.support <- private$.support[!ind]
-      private$.value <- private$.value[!ind]
+      private$.support[params] <- NULL
+      private$.value[params] <- NULL
+      private$.tag[params] <- NULL
 
       invisible(self)
+    },
+
+    get_values = function(tag){
+      values = private$.value
+      vals = vector("list", length(self$ids))
+      names(vals) = self$ids
+      vals[match(names(values), self$ids, 0)] = values
+      if (!missing(tag)) {
+        vals[grepl(tag, private$.tag)]
+      }
+
+      vals
     }
   ),
 
   active = list(
     params = function(){
-      data.table::data.table(Id = names(private$.support), Support = private$.support,
-                             Value = private$.value)
+      data.table::data.table(Id = self$ids, Support = private$.support,
+                             Value = self$get_values(), Tag = private$.tag)
     },
 
     supports = function(){
@@ -87,61 +100,53 @@ ParamSet <- R6::R6Class("ParamSet",
     },
 
     values = function(vals){
-      if(missing(vals)) {
+      if (missing(vals)) {
         return(private$.value)
       } else {
-
-        ind = match(self$params$Id, names(vals), nomatch = 0)
-        tab = cbind(self$params[ind != 0, ], data.table(newval = vals[ind]))
-
-        newvals = lapply(split(tab, seq(nrow(tab))), function(x) {
-          set = x[[2]][[1]]
-          oldval = x[[3]][[1]]
-          newval = x[[4]][[1]]
-
-          if(!is.na(newval)){
-            if(is.na(oldval)) {
-              assertContains(set, newval, x[[1]][[1]])
-            } else if(oldval != newval) {
-              assertContains(set, newval, x[[1]][[1]])
-            }
-          }
-
-          newval
-        })
-
-        private$.value[ind] = newvals
+        vals = vals[names(vals) %in% self$ids]
+        mapply(function(x,y) if(!is.null(y)) assertContains(x,y), self$supports[names(vals)], vals)
+        private$.value = vals
       }
     },
 
     ids = function(){
-      self$params$Id
+      names(private$.support)
     }
   ),
 
   private = list(
     .support = list(),
-    .value = list()
+    .value = list(),
+    .tag = list()
   ))
 
+#' @export
 as.data.table.ParamSet <- function(x, ...){
   x$params
 }
 
+#' @export
 as.ParamSet <- function(x,...){
   UseMethod("as.ParamSet")
 }
+#' @export
 as.ParamSet.data.table <- function(x, ...){
-  assert(all(colnames(x) == c("Id", "Support", "Value")))
+  checkmate::assertSubset(colnames(x), c("Id", "Support", "Value","Tag"))
   assertSetList(x$Support)
   assertNames(x$Id, type = "strict")
-  s = x$Support
-  v = x$Value
-  names(s) = names(v) = x$Id
-  ParamSet$new(support = s, value = v)
+  support = x$Support
+
+  value = x$Value
+  if(!is.null(value)) names(value) = x$Id
+  tag = x$Tag
+  if(!is.null(tag)) names(tag) = x$Id
+
+  names(support) = x$Id
+  ParamSet$new(support = support, value = value, tag = tag)
 }
 
 # less efficient than $add, needs work
+#' @export
 rbind.ParamSet <- function(...){
   ps = list(...)
   as.ParamSet(rbindlist(lapply(ps, as.data.table)))
