@@ -139,6 +139,10 @@ ParamSet <- R6::R6Class("ParamSet",
     # change to public and add filters?
     ids = function(){
       names(private$.support)
+    },
+
+    length = function() {
+      nrow(self$params)
     }
   ),
 

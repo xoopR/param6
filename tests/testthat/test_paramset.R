@@ -122,4 +122,9 @@ test_that("subset",{
   expect_equal_ParamSet(p1$subset("ntrees"), p3)
 })
 
+test_that("length",{
+  expect_equal(p1$length, 1)
+  expect_equal(p2$length, 3)
+})
+
 
