@@ -1,5 +1,15 @@
 context("ParamSet")
 
+#----
+p1 = ParamSet$new(ntrees = PosIntegers$new(),
+                 splitrule = Set$new("logrank","extratrees","C","maxstat") ~ tags("train","predict") + "logrank",
+                 sample.fraction = Interval$new(0, 1) ~ 0.5)
+p2 = ParamSet$new(splitrule = Set$new("logrank","extratrees","C","maxstat") ~ tags("train","predict") + "logrank",
+                  sample.fraction = Interval$new(0, 1) ~ 0.5)
+p3 = ParamSet$new(ntrees = PosIntegers$new() ~ 2)
+#----
+
+
 test_that("constructor",{
   expect_error(ParamSet$new(), "must be constructed")
   expect_error(ParamSet$new(a))
@@ -16,81 +26,67 @@ test_that("constructor",{
   expect_silent(ParamSet$new(a = Set$new(1) ~ tags(train) + 1, b = Set$new(2) ~ 2))
 })
 
-p = ParamSet$new(ntrees = PosIntegers$new(),
-                 splitrule = Set$new("logrank","extratrees","C","maxstat") ~ tags("train","predict") + "logrank",
-                 sample.fraction = Interval$new(0, 1) ~ 0.5)
-
 test_that("values",{
-  expect_silent({p$values$asas = 1})
-  expect_silent({p$values$ntrees = 1})
-  expect_silent({p$values$ntrees = NULL})
-  expect_equal(p$values$ntrees, NULL)
-  expect_equal(p$values$sample.fraction, 0.5)
-  expect_silent({p$values$ntrees = 1})
-  expect_equal(p$values$ntrees, 1)
-  expect_silent({p$values = list(splitrule = "C", sample.fraction = 0.1, ntrees = 2)})
-  expect_error({p$values$ntrees = -5}, "does not lie in")
+  expect_silent({p1$values$asas = 1})
+  expect_silent({p1$values$ntrees = 1})
+  expect_silent({p1$values$ntrees = NULL})
+  expect_equal(p1$values$ntrees, NULL)
+  expect_equal(p1$values$sample.fraction, 0.5)
+  expect_silent({p1$values$ntrees = 1})
+  expect_equal(p1$values$ntrees, 1)
+  expect_silent({p1$values = list(splitrule = "C", sample.fraction = 0.1, ntrees = 2)})
+  expect_error({p1$values$ntrees = -5}, "does not lie in")
 })
 
 test_that("params",{
-  expect_equal(class(p$params)[1], "data.table")
-  expect_error({p$params = "a"})
+  expect_equal(class(p1$params)[1], "data.table")
+  expect_error({p1$params = "a"})
 })
 
 test_that("supports",{
-  expect_equal(p$supports, list(ntrees = PosIntegers$new(),
+  expect_equal(p1$supports, list(ntrees = PosIntegers$new(),
                                 splitrule = Set$new("logrank","extratrees","C","maxstat"),
                                 sample.fraction = Interval$new(0, 1)))
 })
 
 test_that("ids",{
-  expect_equal(p$ids, c("ntrees","splitrule","sample.fraction"))
+  expect_equal(p1$ids, c("ntrees","splitrule","sample.fraction"))
 })
 
-p3 = ParamSet$new(a = LogicalSet$new() ~ tags(train) + TRUE,
-                  b = LogicalSet$new() ~ FALSE)
-
 test_that("rbind",{
-  p1 = ParamSet$new(a = LogicalSet$new() ~ tags(train) + TRUE)
-  p2 = ParamSet$new(b = LogicalSet$new() ~ FALSE)
-  expect_equal(rbind(p1,p2), p3)
-  expect_error(rbind(p1, ParamSet$new(a = LogicalSet$new())),"Must have unique")
+  p2$values = list(splitrule = "C", sample.fraction = 0.1)
+  expect_equal(as.data.table(rbind(p3,p2)), as.data.table(p1))
+  expect_error(rbind(p3, ParamSet$new(ntrees = LogicalSet$new())),"Must have unique")
 })
 
 test_that("add",{
-  p1 = ParamSet$new(a = LogicalSet$new() ~ TRUE + tags(train))
-  expect_error(p1$add(a = Set$new(1)), "ids must be")
-  expect_equal(p1$add(b = LogicalSet$new() ~ FALSE), p3)
-
-  p = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b")
-  expect_equal(p$add(c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"),
-               ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
-                            c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"))
+  expect_error(p2$add(splitrule = Set$new(1)), "ids must be")
+  expect_equal_ParamSet(p2$add(ntrees = PosIntegers$new() ~ 2), p1)
 })
 
 test_that("remove",{
-  p = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
+  p4 = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
                    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  expect_equal(p$remove("a","b"),
+  expect_equal(p4$remove("a","b"),
                ParamSet$new(c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"))
 
-  p = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
+  p4 = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
                    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  expect_equal(p$remove(c("a","b")),
+  expect_equal(p4$remove(c("a","b")),
                ParamSet$new(c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"))
 
-  p = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
+  p4 = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
                    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  expect_equal(p$remove(list("a","g")),
+  expect_equal(p4$remove(list("a","g")),
                ParamSet$new(b = Set$new("b") ~ "b", c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"))
 
-  p = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
+  p4 = ParamSet$new(a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
                    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  expect_equal(p$remove("e"), p)
+  expect_equal(p4$remove("e"), p4)
 })
 
 test_that("as.data.table",{
-  expect_equal(as.data.table(p), p$params)
+  expect_equal(as.data.table(p1), p1$params)
 })
 
 test_that("as.ParamSet",{
@@ -115,11 +111,15 @@ test_that("alt constructor",{
   expect_silent(ParamSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train")))
   expect_error(ParamSet$new(support = list(a = Set$new(1)), value = list(2), tag = list("train")), "does not lie")
   expect_error(ParamSet$new(support = list(a = Set$new(1)), value = list(2,0), tag = list("train")), "length")
-  p = ParamSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train"))
-  expect_equal(p$ids, "a")
-  expect_equal(p$supports, list(a = Set$new(1)))
-  expect_equal(p$values, list(a = 1))
-  expect_equal(p$tags, list(a = "train"))
+  p5 = ParamSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train"))
+  expect_equal(p5$ids, "a")
+  expect_equal(p5$supports, list(a = Set$new(1)))
+  expect_equal(p5$values, list(a = 1))
+  expect_equal(p5$tags, list(a = "train"))
+})
+
+test_that("subset",{
+  expect_equal_ParamSet(p1$subset("ntrees"), p3)
 })
 
 

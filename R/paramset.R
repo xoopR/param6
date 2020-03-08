@@ -98,10 +98,21 @@ ParamSet <- R6::R6Class("ParamSet",
       }
 
       vals
+    },
+
+    subset = function(ids){
+      assert_subset(ids, self$ids)
+      ids = intersect(self$ids, ids)
+      private$.support = self$supports[names(self$supports) %in% ids]
+      private$.value = self$values[names(self$values) %in% ids]
+      private$.tag = self$tags[names(self$tags) %in% ids]
+
+      invisible(self)
     }
   ),
 
   active = list(
+    # change to public and add filters?
     params = function(){
       data.table::data.table(Id = self$ids, Support = private$.support,
                              Value = self$get_values(), Tag = private$.tag)
@@ -125,6 +136,7 @@ ParamSet <- R6::R6Class("ParamSet",
       }
     },
 
+    # change to public and add filters?
     ids = function(){
       names(private$.support)
     }
