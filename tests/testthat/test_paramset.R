@@ -1,7 +1,7 @@
 context("ParamSet")
 
 test_that("constructor",{
-  expect_error(ParamSet$new(), "Need")
+  expect_error(ParamSet$new(), "must be constructed")
   expect_error(ParamSet$new(a))
   expect_error(ParamSet$new(a = 2), "This is not")
   expect_error(ParamSet$new(a = "1"), "This is not")
@@ -108,3 +108,18 @@ test_that("as.ParamSet",{
                ParamSet$new("a" = Set$new(),
                             "b" = Set$new(2)~2))
 })
+
+test_that("alt constructor",{
+  expect_error(ParamSet$new(support = Set$new(1), value = 2, tag = "train"), "list")
+  expect_error(ParamSet$new(support = list(Set$new(1)), value = list(2), tag = list("train")), "Must have names")
+  expect_silent(ParamSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train")))
+  expect_error(ParamSet$new(support = list(a = Set$new(1)), value = list(2), tag = list("train")), "does not lie")
+  expect_error(ParamSet$new(support = list(a = Set$new(1)), value = list(2,0), tag = list("train")), "length")
+  p = ParamSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train"))
+  expect_equal(p$ids, "a")
+  expect_equal(p$supports, list(a = Set$new(1)))
+  expect_equal(p$values, list(a = 1))
+  expect_equal(p$tags, list(a = "train"))
+})
+
+

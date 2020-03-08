@@ -3,11 +3,19 @@ ParamSet <- R6::R6Class("ParamSet",
     initialize = function(..., support = NULL, value = NULL, tag = NULL){
 
       if (!is.null(support)) {
+
+        if(length(support) == 0) {
+          stop("ParamSet must be constructed with at least one parameter.")
+        }
+
         assertSetList(support)
+        assertNames(names(support), type = "unique")
         private$.support = support
 
         if(!is.null(tag)){
+          assert(length(tag) == length(support))
           assertList(tag)
+          names(tag) = names(support)
           private$.tag = tag
         } else {
           tag = vector("list", length(support))
@@ -16,13 +24,17 @@ ParamSet <- R6::R6Class("ParamSet",
         }
 
         if (!is.null(value)) {
+          assert(length(value) == length(support))
           assertList(value)
+          names(value) = names(support)
           mapply(function(x, y) if(!is.null(y)) assertContains(x, y), support, value)
           private$.value = value
         }
+
       } else {
+
         if(...length() == 0) {
-          stop("Need Parameters")
+          stop("ParamSet must be constructed with at least one parameter.")
         }
 
         params = sapply(list(...), makeParam)
@@ -97,6 +109,10 @@ ParamSet <- R6::R6Class("ParamSet",
 
     supports = function(){
       private$.support
+    },
+
+    tags = function(){
+      private$.tag
     },
 
     values = function(vals){
