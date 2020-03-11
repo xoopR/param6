@@ -108,6 +108,23 @@ ParamSet <- R6::R6Class("ParamSet",
       private$.tag = self$tags[names(self$tags) %in% ids]
 
       invisible(self)
+    },
+
+    add_dep = function(id, on, type = c("Equal", "NotEqual", "AnyOf", "NotAnyOf"), cond){
+      assert_choice(id, self$ids)
+      assert_choice(on, self$ids)
+      if (id == on) {
+        stopf("A param cannot depend on itself!")
+      }
+      type = match.arg(type)
+
+      assert_condition(on, self$supports[on][[1]], type, cond)
+
+      newDT = rbind(private$.deps, data.table(id = id, on = on, type = type, cond = cond))
+      assert_no_cycles(newDT)
+      private$.deps = newDT
+
+      invisible(self)
     }
   ),
 
@@ -141,16 +158,26 @@ ParamSet <- R6::R6Class("ParamSet",
       names(private$.support)
     },
 
-    length = function() {
+    length = function(){
       nrow(self$params)
+    },
+
+    deps = function(){
+      private$.deps
+    },
+
+    has_deps = function() {
+      nrow(private$.deps) > 0L
     }
   ),
 
   private = list(
     .support = list(),
     .value = list(),
-    .tag = list()
-  ))
+    .tag = list(),
+    .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list())
+  )
+  )
 
 #' @export
 as.data.table.ParamSet <- function(x, ...){
