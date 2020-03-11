@@ -18,10 +18,3 @@ r_packages:
 after_success:
   - Rscript -e 'devtools::install()'
   - Rscript -e 'library(covr); codecov()'
-      
-deploy:
-  skip_cleanup: true
-  keep_history: false
-  local_dir: docs
-  on:
-    branch: master
