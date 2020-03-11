@@ -184,11 +184,9 @@ as.data.table.ParamSet <- function(x, ...){
   x$params
 }
 
-#' @export
 as.ParamSet <- function(x,...){
   UseMethod("as.ParamSet")
 }
-#' @export
 as.ParamSet.data.table <- function(x, ...){
   checkmate::assertSubset(colnames(x), c("Id", "Support", "Value","Tag"))
   assertSetList(x$Support)

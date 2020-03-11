@@ -6,7 +6,7 @@
 \alias{param6-package}
 \title{param6: Paradox v2}
 \description{
-Paradox v2
+Paradox v2 description.
 }
 \author{
 \strong{Maintainer}: A B \email{a@b.com}
