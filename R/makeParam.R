@@ -7,14 +7,14 @@ makeParam <- function(param){
     set = assertSet(eval(param[[2]]))
     param = param[[3]]
     if(class(param)[1] != "call"){
-      value = assertContains(set, param)
+      value = assert_contains(set, param)
     } else {
       tags = grepl("^tags\\(.*\\)$", param)
       if(any(tags)){
-        tag = list(as.character(param[tags][[1]])[-1])
-        value = assertContains(set, param[!tags][-1][[1]])
+        tag = as.character(param[tags][[1]])[-1]
+        value = assert_contains(set, param[!tags][-1][[1]])
       } else {
-        tag = list(as.character(param[-1]))
+        tag = as.character(param[-1])
       }
     }
   }

@@ -26,6 +26,10 @@ test_that("constructor",{
   expect_silent(ParamSet$new(a = Set$new(1) ~ tags(train) + 1, b = Set$new(2) ~ 2))
 })
 
+test_that("print",{
+  expect_output(p1$print())
+})
+
 test_that("values",{
   expect_silent({p1$values$asas = 1})
   expect_silent({p1$values$ntrees = 1})
@@ -36,6 +40,18 @@ test_that("values",{
   expect_equal(p1$values$ntrees, 1)
   expect_silent({p1$values = list(splitrule = "C", sample.fraction = 0.1, ntrees = 2)})
   expect_error({p1$values$ntrees = -5}, "does not lie in")
+})
+
+test_that("get_values",{
+  support = rep(list(PosIntegers$new()), 5)
+  names(support) = letters[1:5]
+  p = ParamSet$new(support = support,
+                   value = list(1,2,NULL,4,NULL),
+                   tag = list("train",c("train","predict"),NULL,NULL,"predict"))
+  expect_equal(p$values, list(a = 1, b = 2, d = 4))
+  expect_equal(p$get_values(), list(a = 1, b = 2, c = NULL, d = 4, e = NULL))
+  expect_equal(p$get_values(tag = "predict"), list(b = 2, e = NULL))
+  expect_equal(p$get_values(tag = "train"), list(a = 1, b = 2))
 })
 
 test_that("params",{
@@ -106,6 +122,7 @@ test_that("as.ParamSet",{
 })
 
 test_that("alt constructor",{
+  expect_error(ParamSet$new(support = list()), "must be constructed")
   expect_error(ParamSet$new(support = Set$new(1), value = 2, tag = "train"), "list")
   expect_error(ParamSet$new(support = list(Set$new(1)), value = list(2), tag = list("train")), "Must have names")
   expect_silent(ParamSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train")))
@@ -127,4 +144,15 @@ test_that("length",{
   expect_equal(p2$length, 3)
 })
 
-
+test_that("deps",{
+  expect_false(p2$has_deps)
+  expect_equal(p2$deps, data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()))
+  expect_silent(p2$add_dep("splitrule","sample.fraction","Equal",0.2))
+  expect_error(p2$add_dep("splitrule","sample.fraction","Equal",0.2),"already depends")
+  expect_equal(p2$deps, data.table(id="splitrule",on="sample.fraction",type="Equal",cond=list(0.2)))
+  expect_silent(p2$add_dep("ntrees","sample.fraction","Equal",0.2))
+  expect_true(p2$has_deps)
+  expect_error(p2$add_dep("splitrule","splitrule","Equal",0.1),"param cannot depend")
+  expect_error(p2$add_dep("splitrule","sfdsf","Equal",0.1), "Must be element of")
+  expect_error(p2$add_dep("sdsd","sfdsf","splitrule",0.1), "Must be element of")
+})

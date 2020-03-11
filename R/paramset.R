@@ -27,7 +27,7 @@ ParamSet <- R6::R6Class("ParamSet",
           assert(length(value) == length(support))
           assertList(value)
           names(value) = names(support)
-          mapply(function(x, y) if(!is.null(y)) assertContains(x, y), support, value)
+          mapply(function(x, y) if(!is.null(y)) assert_contains(x, y), support, value)
           private$.value = value
         }
 
@@ -54,7 +54,7 @@ ParamSet <- R6::R6Class("ParamSet",
     print = function(){
       dt = self$params
       dt$Support = sapply(dt$Support, function(x) x$strprint())
-      ftag = sapply(dt$Tag, function(x) if(!is.null(x)) paste0("{", paste0(x[[1]], collapse = ", "), "}"))
+      ftag = sapply(dt$Tag, function(x) if(!is.null(x)) paste0("{", paste0(x, collapse = ", "), "}"))
       if(length(ftag) != 1 | !is.null(ftag[[1]])){
         dt$Tag = ftag
       }
@@ -94,10 +94,10 @@ ParamSet <- R6::R6Class("ParamSet",
       names(vals) = self$ids
       vals[match(names(values), self$ids, 0)] = values
       if (!missing(tag)) {
-        vals[grepl(tag, private$.tag)]
+        return(vals[grepl(tag, private$.tag)])
+      } else {
+        return(vals)
       }
-
-      vals
     },
 
     subset = function(ids){
@@ -114,9 +114,15 @@ ParamSet <- R6::R6Class("ParamSet",
       assert_choice(id, self$ids)
       assert_choice(on, self$ids)
       if (id == on) {
-        stopf("A param cannot depend on itself!")
+        stop("A param cannot depend on itself!")
       }
       type = match.arg(type)
+
+      # hacky fix
+      aid = id; aon = on
+      if(nrow(subset(private$.deps, id == aid & on == aon)) > 0){
+        stop(sprintf("%s already depends on %s.",id,on))
+      }
 
       assert_condition(on, self$supports[on][[1]], type, cond)
 
@@ -148,7 +154,7 @@ ParamSet <- R6::R6Class("ParamSet",
         return(private$.value)
       } else {
         vals = vals[names(vals) %in% self$ids]
-        mapply(function(x,y) if(!is.null(y)) assertContains(x,y), self$supports[names(vals)], vals)
+        mapply(function(x,y) if(!is.null(y)) assert_contains(x,y), self$supports[names(vals)], vals)
         private$.value = vals
       }
     },
