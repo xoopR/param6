@@ -131,6 +131,14 @@ ParamSet <- R6::R6Class("ParamSet",
       private$.deps = newDT
 
       invisible(self)
+    },
+
+    trafo = function(id, f){
+      if(!(id %in% self$ids)){
+        return(sprintf("Parameter '%s' not available. Must either be <Set> or a valid id."))
+      }
+      assertFunction(f)
+
     }
   ),
 
@@ -176,14 +184,14 @@ ParamSet <- R6::R6Class("ParamSet",
       nrow(private$.deps) > 0L
     },
 
-    trafo = function(f){
-      if (missing(f)) {
-        private$.trafo
-      } else {
-        assert_function(f, args = c("x", "param_set"), null.ok = TRUE)
-        private$.trafo = f
-      }
-    },
+    # trafo = function(f){
+    #   if (missing(f)) {
+    #     private$.trafo
+    #   } else {
+    #     assert_function(f, args = c("x", "param_set"), null.ok = TRUE)
+    #     private$.trafo = f
+    #   }
+    # },
 
     has_trafo = function() {
       !is.null(private$.trafo)

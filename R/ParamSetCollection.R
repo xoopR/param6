@@ -41,7 +41,7 @@ ParamSetCollection = R6::R6Class("ParamSetCollection",
       } else {
         return(vals)
       }
-    },
+    }
   ),
 
   active = list(
