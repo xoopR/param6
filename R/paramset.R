@@ -133,12 +133,20 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
-    trafo = function(id, f){
-      if(!(id %in% self$ids)){
-        return(sprintf("Parameter '%s' not available. Must either be <Set> or a valid id."))
+    add_trafo = function(id, fun){
+      if(test_names(id, identical.to = "<Set>")){
+        assert_function(fun, args = c("x", "param_set"), null.ok = TRUE)
+        private$.trafo = rbind(private$.trafo, data.table(id = "<Set>", fun = fun))
+      } else {
+        nin = !(id %in% c(self$ids))
+        if(any(nin)){
+          stop(sprintf("Parameter(s) %s not available. Must be a valid id or <Set>.",
+                       string_as_set(id[nin])))
+        } else {
+          assert_function(fun)
+          private$.trafo = rbind(private$.trafo, data.table(id = list(id), fun = fun))
+        }
       }
-      assertFunction(f)
-
     }
   ),
 
@@ -184,17 +192,12 @@ ParamSet <- R6::R6Class("ParamSet",
       nrow(private$.deps) > 0L
     },
 
-    # trafo = function(f){
-    #   if (missing(f)) {
-    #     private$.trafo
-    #   } else {
-    #     assert_function(f, args = c("x", "param_set"), null.ok = TRUE)
-    #     private$.trafo = f
-    #   }
-    # },
+    trafos = function(){
+      private$.trafo
+    },
 
-    has_trafo = function() {
-      !is.null(private$.trafo)
+    has_trafos = function() {
+      nrow(private$.trafo) > 0L
     }
   ),
 
@@ -202,7 +205,7 @@ ParamSet <- R6::R6Class("ParamSet",
     .support = list(),
     .value = list(),
     .tag = list(),
-    .trafo = NULL,
+    .trafo = data.table(id = character(0L), fun = list()),
     .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
     deep_clone = function(name, value) {
       switch(name,
