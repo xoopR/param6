@@ -174,6 +174,19 @@ ParamSet <- R6::R6Class("ParamSet",
 
     has_deps = function() {
       nrow(private$.deps) > 0L
+    },
+
+    trafo = function(f){
+      if (missing(f)) {
+        private$.trafo
+      } else {
+        assert_function(f, args = c("x", "param_set"), null.ok = TRUE)
+        private$.trafo = f
+      }
+    },
+
+    has_trafo = function() {
+      !is.null(private$.trafo)
     }
   ),
 
@@ -181,9 +194,17 @@ ParamSet <- R6::R6Class("ParamSet",
     .support = list(),
     .value = list(),
     .tag = list(),
-    .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list())
+    .trafo = NULL,
+    .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
+    deep_clone = function(name, value) {
+      switch(name,
+             ".support" = map(value, function(x) x$clone(deep = TRUE)),
+             ".deps" = copy(value),
+             value
+      )
+    }
   )
-  )
+)
 
 #' @export
 as.data.table.ParamSet <- function(x, ...){
