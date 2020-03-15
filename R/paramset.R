@@ -1,5 +1,8 @@
 ParamSet <- R6::R6Class("ParamSet",
   public = list(
+    # provides two constructor methods, one as formulas, the other as lists. if lists are chosen
+    # only the support needs to have names, value and tag are copied.
+    # makeParams 'constructs' parameters, see makeParam.R
     initialize = function(..., support = NULL, value = NULL, tag = NULL){
 
       if (!is.null(support)) {
@@ -51,6 +54,7 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
+    # similar to paradox. calls params, merges trafos and dependencies. prints requested columns
     print = function(hide_cols = c("Parent","Trafo")){
       checkmate::assert_subset(hide_cols, c("Id","Support","Value","Tag","Parent","Trafo"))
 
@@ -75,6 +79,8 @@ ParamSet <- R6::R6Class("ParamSet",
       print(dt[, setdiff(colnames(dt), hide_cols), with = FALSE])
     },
 
+    # adds new parameters to the set. provides formula construction only
+    # code is not great here
     add = function(...){
       psnew = ParamSet$new(...)
       sets = list(self, psnew)
@@ -92,6 +98,8 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
+    # takes character arguments specifying parameter ids and removes associated values.
+    # needs more work as currently ignores deps and trafos
     remove = function(...){
       params = unlist(list(...))
       private$.support[params] <- NULL
@@ -101,6 +109,8 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
+    # different from $values as $values returns a list of set values whereas this returns a list
+    # of all parameters with either the set value or NULL. in construction defaults are set as values.
     get_values = function(tag){
       values = private$.value
       vals = vector("list", length(self$ids))
@@ -113,6 +123,7 @@ ParamSet <- R6::R6Class("ParamSet",
       }
     },
 
+    # similar to paradox, subsets the ParamSet. needs further work as trafos and deps ignored
     subset = function(ids){
       checkmate::assert_subset(ids, self$ids)
       ids = intersect(self$ids, ids)
@@ -123,6 +134,11 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
+    # adds dependencies to ParamSet. instead of creating a new Condition object, just allows a
+    # small number of possible conditions and each has identical RHS formulation.
+    # assert_no_cycles prevents a cycle of dependencies, see helpers.R
+    # assert_condition ensures that the condition is either possible (if 'Equal' or 'AnyOf') or
+    # just not redundant (if 'NotEqual' or 'NotAnyOf'), see helpers.R
     add_dep = function(id, on, type = c("Equal", "NotEqual", "AnyOf", "NotAnyOf"), cond){
       checkmate::assert_choice(id, self$ids)
       checkmate::assert_choice(on, self$ids)
@@ -146,6 +162,8 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
+    # adds trafo either to given parameter ids or to the whole ParamSet "<Set>".
+    # currently no feasibility checks, e.g. if LogicalSet has trafo 'exp'
     add_trafo = function(id, fun){
       if(checkmate::test_names(id, identical.to = "<Set>")){
         checkmate::assert_function(fun, args = c("x", "param_set"), null.ok = TRUE)
