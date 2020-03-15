@@ -28,6 +28,13 @@ test_that("constructor",{
 
 test_that("print",{
   expect_output(p1$print())
+  expect_output(p1$print(NULL))
+  expect_output(p1$print(hide_cols = "Id"))
+  expect_error(p1$print(hide_cols = "sdsd"))
+  p = ParamSet$new(a = LogicalSet$new(), b = LogicalSet$new())
+  p$add_trafo("a", exp)
+  p$add_dep("a","b","Equal",FALSE)
+  expect_output(p$print(hide_cols = NULL))
 })
 
 test_that("values",{
@@ -174,3 +181,18 @@ test_that("trafo",{
   expect_silent(p$add_trafo("<Set>", fun = function(param_set, x) exp))
   expect_equal(nrow(p$trafos), 4)
 })
+
+test_that("deep_clone",{
+  a = ParamSet$new(lgl = LogicalSet$new() ~ TRUE)
+  b = a
+  b$values$lgl = FALSE
+  expect_false(a$values$lgl)
+
+  a = ParamSet$new(lgl = LogicalSet$new() ~ TRUE)
+  b = a$clone(deep = TRUE)
+  b$values$lgl = FALSE
+  expect_true(a$values$lgl)
+  b$values$lgl = TRUE
+  expect_equal(a, b)
+})
+

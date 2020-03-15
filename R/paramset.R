@@ -222,7 +222,7 @@ ParamSet <- R6::R6Class("ParamSet",
     .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
     deep_clone = function(name, value) {
       switch(name,
-             ".support" = map(value, function(x) x$clone(deep = TRUE)),
+             ".support" = sapply(value, function(x) x$clone(deep = TRUE)),
              ".deps" = copy(value),
              value
       )
