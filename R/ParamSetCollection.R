@@ -7,8 +7,8 @@ ParamSetCollection = R6::R6Class("ParamSetCollection",
     },
 
     print = function(){
-      dt = rbindlist(mlr3misc::map(private$.sets, function(x) x$params))
-      nr = mlr3misc::map(private$.sets, function(x) nrow(x$params))
+      dt = rbindlist(lapply(private$.sets, function(x) x$params))
+      nr = lapply(private$.sets, function(x) nrow(x$params))
       dt$Id = paste(rep(names(private$.sets), nr), dt$Id, sep = "_")
       dt$Support = sapply(dt$Support, function(x) x$strprint())
       ftag = sapply(dt$Tag, function(x) if(!is.null(x)) paste0("{", paste0(x, collapse = ", "), "}"))
@@ -48,20 +48,20 @@ ParamSetCollection = R6::R6Class("ParamSetCollection",
 
   active = list(
     params = function(){
-      dt = rbindlist(mlr3misc::map(private$.sets, function(x) x$params))
-      nr = mlr3misc::map(private$.sets, function(x) nrow(x$params))
+      dt = rbindlist(lapply(private$.sets, function(x) x$params))
+      nr = lapply(private$.sets, function(x) nrow(x$params))
       dt$Id = paste(rep(names(private$.sets), nr), dt$Id, sep = "_")
       dt
     },
 
     supports = function(){
-      s = unlist(mlr3misc::map(private$.sets, function(x) x$supports), recursive = FALSE)
+      s = unlist(lapply(private$.sets, function(x) x$supports), recursive = FALSE)
       names(s) = sub(".","_",names(s),fixed=T)
       return(s)
     },
 
     tags = function(){
-      s = unlist(mlr3misc::map(private$.sets, function(x) x$tags), recursive = FALSE)
+      s = unlist(lapply(private$.sets, function(x) x$tags), recursive = FALSE)
       names(s) = sub(".","_",names(s),fixed=T)
       return(s)
     },
@@ -76,7 +76,7 @@ ParamSetCollection = R6::R6Class("ParamSetCollection",
 
     values = function(vals){
       if (missing(vals)) {
-        v = unlist(mlr3misc::map(private$.sets, function(x) x$values), recursive = FALSE)
+        v = unlist(lapply(private$.sets, function(x) x$values), recursive = FALSE)
         names(v) = sub(".","_",names(v),fixed=T)
         return(v)
       } else {
