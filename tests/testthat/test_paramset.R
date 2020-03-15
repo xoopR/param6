@@ -156,3 +156,21 @@ test_that("deps",{
   expect_error(p2$add_dep("splitrule","sfdsf","Equal",0.1), "Must be element of")
   expect_error(p2$add_dep("sdsd","sfdsf","splitrule",0.1), "Must be element of")
 })
+
+test_that("trafo",{
+  p = ParamSet$new(a = Reals$new() ~ 0.5,
+                   b = Integers$new() ~ 2,
+                   c = LogicalSet$new() ~ FALSE)
+  expect_false(p$has_trafos)
+  expect_equal(p$trafos, data.table(id = character(0), fun = list()))
+  expect_silent({p$add_trafo("a", round)})
+  expect_true(p$has_trafos)
+  expect_equal(p$trafos, data.table(id = "a", fun = list(round)))
+  expect_silent({p$add_trafo("a", exp)})
+  expect_error(p$add_trafo("d", exp), "not available")
+  expect_silent({p$add_trafo("c", function(x) x^2)})
+  expect_error(p$add_trafo("<Set>", fun = exp), "formal arguments")
+  expect_error(p$add_trafo("<Set>", fun = function(param_set) exp), "formal arguments")
+  expect_silent(p$add_trafo("<Set>", fun = function(param_set, x) exp))
+  expect_equal(nrow(p$trafos), 4)
+})

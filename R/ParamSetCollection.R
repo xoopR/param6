@@ -1,8 +1,8 @@
 ParamSetCollection = R6::R6Class("ParamSetCollection",
   public = list(
     initialize = function(sets){
-      assert_list(sets, types = "ParamSet")
-      assert_names(names(sets), type = "unique")
+      checkmate::assert_list(sets, types = "ParamSet")
+      checkmate::assert_names(names(sets), type = "unique")
       private$.sets = sets
     },
 
@@ -20,15 +20,17 @@ ParamSetCollection = R6::R6Class("ParamSetCollection",
     },
 
     add = function(sets){
-      assert_list(sets, types = "ParamSet")
+      checkmate::assert_list(sets, types = "ParamSet")
       sets = c(private$.sets, sets)
-      assert_names(names(sets), type = "unique")
+      checkmate::assert_names(names(sets), type = "unique")
       private$.sets = sets
+      invisible(self)
     },
 
     remove = function(sets){
-      assertCharacter(sets)
+      checkmate::assert_character(sets)
       private$.sets = private$.sets[!(names(private$.sets) %in% sets)]
+      invisible(self)
     },
 
     get_values = function(tag){

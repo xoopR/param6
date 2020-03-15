@@ -24,3 +24,9 @@ test_that("assert_condition",{
   expect_error(assert_condition("a",Set$new(1),"NotEqual",2),"Condition is redundant")
   expect_error(assert_condition("a",Set$new(1,2,3),"NotAnyOf",c(1,4)),"Condition is redundant")
 })
+
+test_that("string_as_set",{
+  expect_null(string_as_set(NULL))
+  expect_equal(string_as_set("a"), "{a}")
+  expect_equal(string_as_set(c("a","b")), "{a, b}")
+})

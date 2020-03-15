@@ -9,12 +9,12 @@ ParamSet <- R6::R6Class("ParamSet",
         }
 
         assertSetList(support)
-        assertNames(names(support), type = "unique")
+        checkmate::assert_names(names(support), type = "unique")
         private$.support = support
 
         if(!is.null(tag)){
-          assert(length(tag) == length(support))
-          assertList(tag)
+          checkmate::assert(length(tag) == length(support))
+          checkmate::assertList(tag)
           names(tag) = names(support)
           private$.tag = tag
         } else {
@@ -24,8 +24,8 @@ ParamSet <- R6::R6Class("ParamSet",
         }
 
         if (!is.null(value)) {
-          assert(length(value) == length(support))
-          assertList(value)
+          checkmate::assert(length(value) == length(support))
+          checkmate::assertList(value)
           names(value) = names(support)
           mapply(function(x, y) if(!is.null(y)) assert_contains(x, y), support, value)
           private$.value = value
@@ -51,7 +51,9 @@ ParamSet <- R6::R6Class("ParamSet",
       invisible(self)
     },
 
-    print = function(){
+    print = function(hide_cols = c("Parent","Trafo")){
+      checkmate::assert_subset(hide_cols, c("Id","Support","Value","Tag","Parent","Trafo"))
+
       dt = self$params
       dt$Support = sapply(dt$Support, function(x) x$strprint())
       ftag = sapply(dt$Tag, function(x) if(!is.null(x)) paste0("{", paste0(x, collapse = ", "), "}"))
@@ -59,7 +61,18 @@ ParamSet <- R6::R6Class("ParamSet",
         dt$Tag = ftag
       }
 
-      print(dt)
+      if(!("Parent" %in% hide_cols) & self$has_deps){
+        deps = aggregate(on ~ id, data = self$deps, FUN = string_as_set)
+        colnames(deps) = c("Id","Parent")
+        dt = merge(dt, deps)
+      }
+
+      if(!("Trafo" %in% hide_cols) & self$has_trafos){
+        dt$Trafo = ""
+        dt[Id %in% self$trafos$id, "Trafo"] = TRUE
+      }
+
+      print(dt[, setdiff(colnames(dt), hide_cols), with = FALSE])
     },
 
     add = function(...){
@@ -101,7 +114,7 @@ ParamSet <- R6::R6Class("ParamSet",
     },
 
     subset = function(ids){
-      assert_subset(ids, self$ids)
+      checkmate::assert_subset(ids, self$ids)
       ids = intersect(self$ids, ids)
       private$.support = self$supports[names(self$supports) %in% ids]
       private$.value = self$values[names(self$values) %in% ids]
@@ -111,8 +124,8 @@ ParamSet <- R6::R6Class("ParamSet",
     },
 
     add_dep = function(id, on, type = c("Equal", "NotEqual", "AnyOf", "NotAnyOf"), cond){
-      assert_choice(id, self$ids)
-      assert_choice(on, self$ids)
+      checkmate::assert_choice(id, self$ids)
+      checkmate::assert_choice(on, self$ids)
       if (id == on) {
         stop("A param cannot depend on itself!")
       }
@@ -134,8 +147,8 @@ ParamSet <- R6::R6Class("ParamSet",
     },
 
     add_trafo = function(id, fun){
-      if(test_names(id, identical.to = "<Set>")){
-        assert_function(fun, args = c("x", "param_set"), null.ok = TRUE)
+      if(checkmate::test_names(id, identical.to = "<Set>")){
+        checkmate::assert_function(fun, args = c("x", "param_set"), null.ok = TRUE)
         private$.trafo = rbind(private$.trafo, data.table(id = "<Set>", fun = fun))
       } else {
         nin = !(id %in% c(self$ids))
@@ -143,8 +156,8 @@ ParamSet <- R6::R6Class("ParamSet",
           stop(sprintf("Parameter(s) %s not available. Must be a valid id or <Set>.",
                        string_as_set(id[nin])))
         } else {
-          assert_function(fun)
-          private$.trafo = rbind(private$.trafo, data.table(id = list(id), fun = fun))
+          checkmate::assert_function(fun)
+          private$.trafo = rbind(private$.trafo, data.table(id = id, fun = fun))
         }
       }
     }
@@ -228,7 +241,7 @@ as.ParamSet <- function(x,...){
 as.ParamSet.data.table <- function(x, ...){
   checkmate::assertSubset(colnames(x), c("Id", "Support", "Value","Tag"))
   assertSetList(x$Support)
-  assertNames(x$Id, type = "strict")
+  checkmate::assert_names(x$Id, type = "strict")
   support = x$Support
 
   value = x$Value

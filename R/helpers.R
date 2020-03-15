@@ -42,5 +42,6 @@ assert_condition = function(id, support, type, cond){
 }
 
 string_as_set = function(str){
-  paste0("{",paste0(str,collapse=", "),"}")
+  if(!is.null(str))
+    paste0("{",paste0(str,collapse=", "),"}")
 }
