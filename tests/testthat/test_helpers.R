@@ -20,9 +20,11 @@ test_that("assert_condition", {
   expect_silent(assert_condition("a", Set$new(1, 2, 3), "AnyOf", c(1, 2)))
 
   expect_error(assert_condition("a", Set$new(1), "Equal", 2), "Condition is not possible")
-  expect_error(assert_condition("a", Set$new(1, 2, 3), "AnyOf", c(1, 4)), "Condition is not possible")
+  expect_error(assert_condition("a", Set$new(1, 2, 3), "AnyOf", c(1, 4)),
+               "Condition is not possible")
   expect_error(assert_condition("a", Set$new(1), "NotEqual", 2), "Condition is redundant")
-  expect_error(assert_condition("a", Set$new(1, 2, 3), "NotAnyOf", c(1, 4)), "Condition is redundant")
+  expect_error(assert_condition("a", Set$new(1, 2, 3), "NotAnyOf", c(1, 4)),
+               "Condition is redundant")
 })
 
 test_that("string_as_set", {

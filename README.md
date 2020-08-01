@@ -78,9 +78,9 @@ microbenchmark(
 ```
 
     ## Unit: microseconds
-    ##                  expr     min       lq      mean   median      uq        max
-    ##  class_lst$new(1:100)  70.605  92.1885  115.4059 105.5525 119.650    280.376
-    ##   class_dt$new(1:100) 249.527 290.2715 1926.9178 311.9535 375.539 150252.755
+    ##                  expr     min       lq     mean   median       uq       max
+    ##  class_lst$new(1:100)  65.350  87.1975 1789.712 106.4980 156.7575 154577.53
+    ##   class_dt$new(1:100) 245.743 323.9840  632.891 391.8425 523.1960  10280.97
     ##  neval cld
     ##    100   a
     ##    100   a
@@ -99,9 +99,9 @@ microbenchmark(
 ```
 
     ## Unit: microseconds
-    ##            expr   min    lq    mean median    uq    max neval cld
-    ##  obj_lst$values 1.745 1.775 1.91648 1.8335 1.931  6.533   100   a
-    ##   obj_dt$values 1.740 1.774 2.21580 1.8255 1.995 30.998   100   a
+    ##            expr   min    lq    mean median     uq    max neval cld
+    ##  obj_lst$values 1.749 1.765 2.06841 1.7815 1.8315 28.467   100   a
+    ##   obj_dt$values 1.726 1.763 1.84403 1.7795 1.8140  6.580   100   a
 
 Finally setting values:
 
@@ -113,9 +113,9 @@ microbenchmark(
 ```
 
     ## Unit: microseconds
-    ##                           expr    min     lq     mean  median      uq      max
-    ##  {     obj_lst$values = 1:10 }  9.195 10.475 24.11598 12.0505 12.8315  435.799
-    ##   {     obj_dt$values = 1:10 } 37.623 40.118 64.37647 41.8365 49.5910 1364.087
+    ##                           expr    min      lq     mean  median      uq     max
+    ##  {     obj_lst$values = 1:10 }  9.277 11.2920 17.45571 14.1300 21.1910  64.259
+    ##   {     obj_dt$values = 1:10 } 36.699 40.5135 73.67498 44.0915 86.1435 441.320
     ##  neval cld
     ##    100  a 
     ##    100   b
@@ -182,19 +182,20 @@ microbenchmark(
 )
 ```
 
-    ## Registered S3 method overwritten by 'distr6':
-    ##   method                     from  
-    ##   as.data.table.ParameterSet param6
+    ## Registered S3 methods overwritten by 'distr6':
+    ##   method                               from  
+    ##   as.data.table.ParameterSet           param6
+    ##   as.data.table.ParameterSetCollection param6
 
     ## Unit: milliseconds
     ##                                                                                                                                                                                                                             expr
     ##                                                                                     {     ParamSet$new(list(ParamDbl$new("a"), ParamFct$new("b", levels = letters),          ParamLgl$new("c"), ParamInt$new("d", lower = 0))) }
     ##  {     distr6::ParameterSet$new(id = list("a", "b", "c", "d"), support = list(Reals$new(),          Set$new(elements = letters), LogicalSet$new(), PosIntegers$new()),          value = list(a = 1, b = "a", c = TRUE, d = 1)) }
     ##                                                                                                             {     param6::ParameterSet$new(a = reals, b = Set$new(elements = letters),          c = logical, d = pos_integers) }
-    ##       min       lq     mean   median       uq       max neval cld
-    ##  5.257324 5.731020 8.067463 6.122838 8.082752  90.41462   100   b
-    ##  5.351287 5.804845 8.762145 6.533771 8.585447 104.30130   100   b
-    ##  1.003414 1.159612 2.016185 1.273620 1.800692  36.75729   100  a
+    ##       min       lq      mean   median        uq       max neval cld
+    ##  5.267048 6.195205 11.750514 7.479071 11.614162 115.57197   100   b
+    ##  5.433093 6.904050 12.421713 9.056404 13.509445  94.59755   100   b
+    ##  1.075794 1.301413  2.564688 1.538518  2.505325  36.65623   100  a
 
 Comparing with setting values.
 
@@ -240,10 +241,10 @@ microbenchmark(
     ##                         {     paradox <- ParamSet$new(list(ParamDbl$new("a"), ParamFct$new("b",          levels = letters), ParamLgl$new("c"), ParamInt$new("d",          lower = 0)))     paradox$values = list(a = 1, b = "a", c = TRUE, d = 1) }
     ##  {     distr6 <- distr6::ParameterSet$new(id = list("a", "b", "c",          "d"), support = list(Reals$new(), Set$new(elements = letters),          LogicalSet$new(), PosIntegers$new()), value = list(a = 1,          b = "a", c = TRUE, d = 1)) }
     ##                                                                                                 {     param6 <- param6::ParameterSet$new(a = reals ~ 1, b = Set$new(elements = letters) ~          "a", c = logical ~ TRUE, d = pos_integers ~ 1) }
-    ##       min       lq     mean   median       uq      max neval cld
-    ##  5.476341 5.922344 7.791594 6.573791 9.143246 27.85085   100   b
-    ##  5.324970 5.792965 7.255303 6.355505 8.053247 14.88148   100   b
-    ##  1.344963 1.518876 2.131033 1.638418 2.125412 10.65108   100  a
+    ##       min       lq      mean   median        uq       max neval cld
+    ##  5.562362 6.516697 11.163608 8.600394 11.574094  60.48960   100   b
+    ##  5.354928 6.210357 12.516330 7.423178 10.076752 148.17964   100   b
+    ##  1.405570 1.564940  4.084472 1.736196  3.395454  70.68572   100  a
 
 Comparing getting:
 
@@ -256,14 +257,14 @@ microbenchmark(
 ```
 
     ## Unit: microseconds
-    ##                           expr     min       lq      mean   median       uq
-    ##               paradox$values$c   2.202   2.5010   7.07980   3.7580   7.7050
-    ##  distr6$getParameterValue("c") 427.338 432.9650 687.60384 458.9865 557.7095
-    ##                param6$values$c   2.304   2.5155   6.12115   2.9420   7.1595
+    ##                           expr     min       lq      mean  median       uq
+    ##               paradox$values$c   2.224   2.8035   6.36992   5.023   8.2060
+    ##  distr6$getParameterValue("c") 427.091 447.7830 759.02892 505.582 624.8225
+    ##                param6$values$c   2.277   2.6615   6.67919   5.829   8.4600
     ##        max neval cld
-    ##    154.950   100  a 
-    ##  10589.256   100   b
-    ##     65.977   100  a
+    ##     45.050   100  a 
+    ##  13008.899   100   b
+    ##     29.812   100  a
 
 And setting:
 
@@ -277,14 +278,14 @@ microbenchmark(
 ```
 
     ## Unit: microseconds
-    ##                                  expr      min       lq      mean    median
-    ##         {     paradox$values = vals }  243.962  293.426  911.4730  369.8255
-    ##  distr6$setParameterValue(lst = vals) 4379.804 5134.441 8151.4545 5882.1870
-    ##          {     param6$values = vals }  310.344  368.215  525.6492  416.9055
-    ##        uq       max neval cld
-    ##   485.313 49556.183   100  a 
-    ##  9804.657 45075.253   100   b
-    ##   518.811  4190.226   100  a
+    ##                                  expr      min        lq      mean    median
+    ##         {     paradox$values = vals }  249.999  346.2740  2475.891  402.4500
+    ##  distr6$setParameterValue(lst = vals) 4949.253 6281.8420 14989.545 8933.0670
+    ##          {     param6$values = vals }  350.875  450.5635  1411.362  563.9035
+    ##          uq       max neval cld
+    ##    690.4195 120944.55   100  a 
+    ##  14669.8155 168123.95   100   b
+    ##    981.5985  31612.51   100  a
 
 ## Going Forward
 

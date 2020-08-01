@@ -1,4 +1,4 @@
 #' @import set6
 #' @import R6
-#' @import data.table data.table subset
+#' @importFrom data.table data.table as.data.table rbindlist
 "_PACKAGE"

@@ -14,7 +14,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
             assertSetList(support)
           }
           checkmate::assert_names(names(support), type = "strict")
-          private$.support <- support
+          private$.support <- support[order(names(support))]
+
           lng <- length(support)
 
           if (!is.null(tag)) {
@@ -31,8 +32,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
           }
 
         } else {
-          params <- sapply(list(...), makeParam)
-
+          params <- sapply(list(...), make_param)
+          if (ncol(params) > 1) {
+            params = params[, order(colnames(params))]
+          }
           private$.support <- params[1, ]
           names(private$.support) <- colnames(params)
           private$.value <- params[2, ]
@@ -41,8 +44,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
             private$.tag <- params[3, ]
             names(private$.tag) <- colnames(params)
           }
+
         }
 
+        private$.tag <- private$.tag[!sapply(private$.tag, is.null)]
         private$.value <- private$.value[!sapply(private$.value, is.null)]
       }
 
@@ -53,20 +58,16 @@ ParameterSet <- R6::R6Class("ParameterSet",
     print = function(hide_cols = c("Parent", "Trafo")) {
       checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tag", "Parent", "Trafo"))
 
-      dt <- self$params
+      dt <- as.data.table(self)
       dt$Support <- sapply(dt$Support, function(x) x$strprint())
-      ftag <- sapply(dt$Tag, function(x) if (!is.null(x)) paste0("{", paste0(x, collapse = ", "), "}"))
-      if (length(ftag) != 1 | !is.null(ftag[[1]])) {
-        dt$Tag <- ftag
-      }
 
-      if (!("Parent" %in% hide_cols) & self$has_deps) {
+      if (!("Parent" %in% hide_cols) & nrow(self$deps)) {
         deps <- aggregate(on ~ id, data = self$deps, FUN = string_as_set)
         colnames(deps) <- c("Id", "Parent")
         dt <- merge(dt, deps)
       }
 
-      if (!("Trafo" %in% hide_cols) & self$has_trafos) {
+      if (!("Trafo" %in% hide_cols) & length(self$trafos)) {
         dt$Trafo <- ""
         dt[Id %in% self$trafos$id, "Trafo"] <- TRUE
       }
@@ -81,10 +82,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
       sets <- list(self, psnew)
       checkmate::assert_names(unlist(sapply(sets, function(x) x$ids)), type = "strict")
 
-      # messy needs fixing
-      self$.__enclos_env__$private$.support <- unlist(lapply(sets, function(x) x$.__enclos_env__$private$.support), recursive = FALSE)
-      self$.__enclos_env__$private$.value <- unlist(lapply(sets, function(x) x$.__enclos_env__$private$.value), recursive = FALSE)
-      self$.__enclos_env__$private$.tag <- unlist(lapply(sets, function(x) x$.__enclos_env__$private$.tag), recursive = FALSE)
+      private$.support <- sort_named_list(unlist(lapply(
+        sets, function(.x) .x$supports), recursive = FALSE))
+      private$.value <- sort_named_list(unlist(lapply(
+        sets, function(.x) .x$values), recursive = FALSE))
+      private$.tag <- sort_named_list(unlist(lapply(
+        sets, function(.x) .x$tags), recursive = FALSE))
 
       invisible(self)
     },
@@ -101,26 +104,25 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # different from $values as $values returns a list of set values whereas this returns a list
-    # of all parameters with either the set value or NULL. in construction defaults are set as values.
-    get_values = function(tag) {
-      values <- private$.value
-      vals <- vector("list", length(self$ids))
-      names(vals) <- self$ids
-      vals[match(names(values), self$ids, 0)] <- values
-      if (!missing(tag)) {
-        return(vals[grepl(tag, private$.tag)])
+    # of all parameters with either the set value or NULL. in construction defaults are set as
+    # values.
+    get_values = function(tag = NULL) {
+      if (is.null(tag)) {
+        return(self$values)
       } else {
-        return(vals)
+        return(self$values[names(self$values) %in% names(self$tags)[grepl(tag, self$tags)]])
       }
     },
 
-    # similar to paradox, subsets the ParameterSet. needs further work as trafos and deps ignored
+    # subsets the ParameterSet. needs further work as trafos and deps ignored
     subset = function(ids) {
       checkmate::assert_subset(ids, self$ids)
       ids <- intersect(self$ids, ids)
       private$.support <- self$supports[names(self$supports) %in% ids]
       private$.value <- self$values[names(self$values) %in% ids]
       private$.tag <- self$tags[names(self$tags) %in% ids]
+      private$.deps <- subset(private$.deps, id %in% ids)
+      private$.trafo <- self$trafos[names(self$trafos) %in% ids]
 
       invisible(self)
     },
@@ -131,7 +133,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # assert_condition ensures that the condition is either possible (if 'Equal' or 'AnyOf') or
     # just not redundant (if 'NotEqual' or 'NotAnyOf'), see helpers.R
     add_dep = function(id, on, type = c("Equal", "NotEqual", "AnyOf", "NotAnyOf"), cond) {
-      checkmate::assert_choice(c(id, on), self$ids)
+      checkmate::assert_subset(c(id, on), self$ids)
       if (id == on) {
         stop("Parameters cannot depend on themselves.")
       }
@@ -146,7 +148,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
       assert_condition(on, self$supports[on][[1]], type, cond)
 
-      newDT <- rbind(private$.deps, data.table(id = id, on = on, type = type, cond = cond))
+      newDT <- rbind(private$.deps, data.table(id = id, on = on, type = type, cond = cond)) # nolint
       assert_no_cycles(newDT)
       private$.deps <- newDT
 
@@ -193,14 +195,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
   ),
 
   active = list(
-    # change to public and add filters?
-    params = function() {
-      data.table::data.table(
-        Id = self$ids, Support = private$.support,
-        Value = self$get_values(), Tag = private$.tag
-      )
-    },
-
     supports = function() {
       private$.support
     },
@@ -214,8 +208,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
         return(private$.value)
       } else {
         vals <- vals[names(vals) %in% self$ids]
-        mapply(function(x, y) if (!is.null(y)) assert_contains(x, y), self$supports[names(vals)], vals)
-        private$.value <- vals
+        mapply(function(x, y) if (!is.null(y)) assert_contains(x, y), self$supports[names(vals)],
+               vals)
+        private$.value <- vals[order(names(vals))]
       }
     },
 
@@ -225,7 +220,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     length = function() {
-      nrow(self$params)
+      length(self$ids)
     },
 
     deps = function() {
@@ -251,7 +246,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     deep_clone = function(name, value) {
       switch(name,
         ".support" = sapply(value, function(x) x$clone(deep = TRUE)),
-        ".deps" = copy(value),
+        ".deps" = data.table::copy(value),
         value
       )
     }
@@ -259,14 +254,26 @@ ParameterSet <- R6::R6Class("ParameterSet",
 )
 
 #' @export
-as.data.table.ParameterSet <- function(x, ...) {
-  x$params
+as.data.table.ParameterSet <- function(x, ...) { # nolint
+  Id = x$ids
+  lst = vector("list", length(Id))
+  names(lst) = Id
+  Value = Tag = lst
+  Value[Id %in% names(x$values)] = x$values
+  Tag[Id %in% names(x$tags)] = x$tags
+
+  data.table(
+    Id = Id, Support = x$supports,
+    Value = Value, Tag = Tag
+  )
 }
 
-as.ParameterSet <- function(x, ...) {
+#' @export
+as.ParameterSet <- function(x, ...) { # nolint
   UseMethod("as.ParameterSet")
 }
-as.ParameterSet.data.table <- function(x, ...) {
+#' @export
+as.ParameterSet.data.table <- function(x, ...) { # nolint
   checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tag"))
   assertSetList(x$Support)
   checkmate::assert_names(x$Id, type = "strict")
@@ -285,5 +292,5 @@ as.ParameterSet.data.table <- function(x, ...) {
 #' @export
 rbind.ParameterSet <- function(...) {
   ps <- list(...)
-  as.ParameterSet(rbindlist(lapply(ps, as.data.table)))
+  as.ParameterSet(data.table::rbindlist(lapply(ps, as.data.table)))
 }

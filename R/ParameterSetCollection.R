@@ -1,22 +1,10 @@
 ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
+  inherit = ParameterSet,
   public = list(
     initialize = function(sets) {
       checkmate::assert_list(sets, types = "ParameterSet")
       checkmate::assert_names(names(sets), type = "unique")
       private$.sets <- sets
-    },
-
-    print = function() {
-      dt <- rbindlist(lapply(private$.sets, function(x) x$params))
-      nr <- lapply(private$.sets, function(x) nrow(x$params))
-      dt$Id <- paste(rep(names(private$.sets), nr), dt$Id, sep = "_")
-      dt$Support <- sapply(dt$Support, function(x) x$strprint())
-      ftag <- sapply(dt$Tag, function(x) if (!is.null(x)) paste0("{", paste0(x, collapse = ", "), "}"))
-      if (length(ftag) != 1 | !is.null(ftag[[1]])) {
-        dt$Tag <- ftag
-      }
-
-      print(dt)
     },
 
     add = function(sets) {
@@ -31,18 +19,6 @@ ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
       checkmate::assert_character(sets)
       private$.sets <- private$.sets[!(names(private$.sets) %in% sets)]
       invisible(self)
-    },
-
-    get_values = function(tag) {
-      values <- self$values
-      vals <- vector("list", length(self$ids))
-      names(vals) <- self$ids
-      vals[match(names(values), self$ids, 0)] <- values
-      if (!missing(tag)) {
-        return(vals[grepl(tag, self$tags)])
-      } else {
-        return(vals)
-      }
     }
   ),
 
@@ -52,6 +28,10 @@ ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
       nr <- lapply(private$.sets, function(x) nrow(x$params))
       dt$Id <- paste(rep(names(private$.sets), nr), dt$Id, sep = "_")
       dt
+    },
+
+    ids = function() {
+      names(self$supports)
     },
 
     supports = function() {
@@ -64,14 +44,6 @@ ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
       s <- unlist(lapply(private$.sets, function(x) x$tags), recursive = FALSE)
       names(s) <- sub(".", "_", names(s), fixed = T)
       return(s)
-    },
-
-    length = function() {
-      nrow(self$params)
-    },
-
-    ids = function() {
-      names(self$supports)
     },
 
     values = function(vals) {
@@ -87,6 +59,10 @@ ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
           private$.sets[[aset]]$values <- vals[sets == aset]
         })
       }
+    },
+
+    sets = function() {
+      private$.sets
     }
   ),
 
@@ -94,3 +70,8 @@ ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
     .sets = list()
   )
 )
+
+#' @export
+as.data.table.ParameterSetCollection <- function(x, ...) { # nolint
+  rbindlist(lapply(x$sets, as.data.table))
+}

@@ -21,7 +21,8 @@ assert_no_cycles <- function(lookup) {
 
     checker <- apply(checks, 1, function(x) any(duplicated(x)) & !any(is.na(x)))
     if (any(checker)) {
-      stop(sprintf("Cycles detected starting from id(s): %s", paste0("{", paste0(checks$id[checker], collapse = ","), "}")))
+      stop(sprintf("Cycles detected starting from id(s): %s",
+                   paste0("{", paste0(checks$id[checker], collapse = ","), "}")))
     }
 
 
@@ -30,9 +31,11 @@ assert_no_cycles <- function(lookup) {
 
 assert_condition <- function(id, support, type, cond) {
   if (type %in% c("Equal", "AnyOf")) {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", cond, id, support$strprint())
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", cond, id,
+                   support$strprint())
   } else {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", cond, id, support$strprint())
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", cond, id,
+                   support$strprint())
   }
 
   if (!(testContains(support, cond))) {
@@ -47,7 +50,7 @@ string_as_set <- function(str) {
   }
 }
 
-makeParam <- function(param) {
+make_param <- function(param) {
   tag <- set <- value <- NULL
 
   if (class(param)[1] != "formula") {
@@ -69,4 +72,8 @@ makeParam <- function(param) {
   }
 
   list(set = set, value = value, tag = tag)
+}
+
+sort_named_list <- function(lst, ...) {
+  lst[order(names(lst), ...)]
 }
