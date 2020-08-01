@@ -1,8 +1,6 @@
+#' @export
 ParameterSet <- R6::R6Class("ParameterSet",
   public = list(
-    # provides two constructor methods, one as formulas, the other as lists. if lists are chosen
-    # only the support needs to have names, value and tag are copied.
-    # makeParams 'constructs' parameters, see makeParam.R
     initialize = function(..., support = NULL, value = NULL, tag = NULL) {
 
       if (is.null(support) & !...length()) {
@@ -133,10 +131,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # assert_condition ensures that the condition is either possible (if 'Equal' or 'AnyOf') or
     # just not redundant (if 'NotEqual' or 'NotAnyOf'), see helpers.R
     add_dep = function(id, on, type = c("Equal", "NotEqual", "AnyOf", "NotAnyOf"), cond) {
-      checkmate::assert_choice(id, self$ids)
-      checkmate::assert_choice(on, self$ids)
+      checkmate::assert_choice(c(id, on), self$ids)
       if (id == on) {
-        stop("A param cannot depend on itself!")
+        stop("Parameters cannot depend on themselves.")
       }
       type <- match.arg(type)
 
@@ -161,7 +158,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     add_trafo = function(id, fun) {
       if (checkmate::test_names(id, identical.to = "<Set>")) {
         checkmate::assert_function(fun, args = c("x", "param_set"), null.ok = TRUE)
-        private$.trafo <- rbind(private$.trafo, data.table(id = "<Set>", fun = fun))
+        private$.trafo <- c(private$.trafo, list("<Set>" = fun))
       } else {
         nin <- !(id %in% c(self$ids))
         if (any(nin)) {
@@ -171,9 +168,27 @@ ParameterSet <- R6::R6Class("ParameterSet",
           ))
         } else {
           checkmate::assert_function(fun)
-          private$.trafo <- rbind(private$.trafo, data.table(id = id, fun = fun))
+          lst = list(fun)
+          names(lst) = id
+          private$.trafo <- c(private$.trafo, lst)
         }
       }
+      invisible(self)
+    },
+
+    # Used to compare parameter values between each other. One function calling `self`, boolean
+    # conditions 'added' together to form a single function.
+    add_check = function(fun) {
+      if (is.null(self$checks)) {
+        private$.checks <- checkmate::assertFunction(fun, "self")
+      } else {
+        f1 <- self$checks
+        f2 <- checkmate::assertFunction(fun, "self")
+        body(f1) <- substitute(b1 && b2, list(b1 = body(f1), b2 = body(f2)))
+        private$.checks <- f1
+      }
+
+      invisible(self)
     }
   ),
 
@@ -217,16 +232,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
       private$.deps
     },
 
-    has_deps = function() {
-      nrow(private$.deps) > 0L
-    },
-
     trafos = function() {
       private$.trafo
     },
 
-    has_trafos = function() {
-      nrow(private$.trafo) > 0L
+    checks = function() {
+      private$.checks
     }
   ),
 
@@ -234,8 +245,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .support = list(),
     .value = list(),
     .tag = list(),
-    .trafo = data.table(id = character(0L), fun = list()),
+    .trafo = list(),
     .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
+    .checks = NULL,
     deep_clone = function(name, value) {
       switch(name,
         ".support" = sapply(value, function(x) x$clone(deep = TRUE)),

@@ -1,0 +1,217 @@
+---
+title: "param6"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Why param6?
+
+Multiple bottlenecks in `distr6` all led to the `ParameterSet` object. The original designs
+had been planned so that a quick sets and parameter sets interface could be designed and then
+later abstracted. The former now exists in `set6` but the latter is still causing considerable
+issues. The solution could have been `paradox` however this is as slow as `ParameterSet`.
+`param6` is currently planned to be a very lightweight design with two classes: `ParameterSet`
+and `ParameterSetCollection` which can be built using R6 and Rcpp. A critical difference is that
+`data.table` will no longer be used and instead all information stored in named lists of fields.
+
+### data.table vs. lists
+
+Contrast two classes, one using `data.table` and the other `list`
+
+```{r}
+library(R6)
+library(microbenchmark)
+class_lst <- R6Class("class_lst",
+  public = list(
+    initialize = function(...) {
+      private$.values <- list(...)
+      invisible(self)
+    }
+  ),
+  
+  active = list(
+    values = function(x) {
+      if (missing(x)) {
+        return(private$.values)
+      } else {
+        private$.values <- x
+      }
+    }
+  ),
+  
+  private = list(
+    .values = list()
+  ))
+
+class_dt <- R6Class("class_dt",
+  public = list(
+    initialize = function(...) {
+      private$.values <- data.table::data.table(values = list(...))
+      invisible(self)
+    }
+  ),
+  
+  active = list(
+    values = function(x) {
+      if (missing(x)) {
+        return(private$.values)
+      } else {
+        private$.values$values <- x
+      }
+    }
+  ),
+  
+  private = list(
+    .values = data.table::data.table()
+  ))
+```
+
+First testing construction. `class_lst` should be much faster as `class_dt` has to construct
+the `data.table`. This is an expected overhead that can be ignored if speed gains are made
+once constructed.
+```{r}
+microbenchmark(
+  class_lst$new(1:100),
+  class_dt$new(1:100)
+)
+```
+
+Similarly we expect getting of values to be fairly similar on this small scale
+```{r}
+obj_lst <- class_lst$new(1:100)
+obj_dt <- class_dt$new(1:100)
+
+microbenchmark(
+  obj_lst$values,
+  obj_dt$values
+)
+```
+
+Finally setting values:
+```{r}
+microbenchmark(
+  {obj_lst$values = 1:10},
+  {obj_dt$values = 1:10}
+)
+```
+
+## paradox vs. distr6 vs. param6
+
+Now comparing the preliminary param6 designs that use named lists and set6 to the other two
+packages. Each will be compared with identical parameters with no overheads like dependencies and
+checks. For a fair comparison paradox values will be set at the same time.
+
+First comparing construction without value setting, note that distr6 requires values.
+
+```{r comparison_no_val}
+library(paradox)
+library(set6)
+library(param6)
+microbenchmark(
+  {
+    ParamSet$new(
+      list(
+        # Set of Reals.
+        ParamDbl$new("a"),
+        # Set of letters
+        ParamFct$new("b", levels = letters),
+        # Logical
+        ParamLgl$new("c"),
+        # Set of positive integers
+        ParamInt$new("d", lower = 0)
+      )
+    )
+  },
+  
+  {
+  distr6::ParameterSet$new(
+    id = list("a", "b", "c", "d"),
+    support = list(Reals$new(), Set$new(elements = letters), LogicalSet$new(), PosIntegers$new()),
+    value = list(a = 1, b = "a", c = TRUE, d = 1)
+  )
+  },
+  
+  {
+    param6::ParameterSet$new(
+      a = reals,
+      b = Set$new(elements = letters),
+      c = logical,
+      d = pos_integers
+    )
+  }
+)
+```
+
+Comparing with setting values.
+
+```{r comparison_val}
+microbenchmark(
+  {
+    paradox <- ParamSet$new(
+      list(
+        # Set of Reals.
+        ParamDbl$new("a"),
+        # Set of letters
+        ParamFct$new("b", levels = letters),
+        # Logical
+        ParamLgl$new("c"),
+        # Set of positive integers
+        ParamInt$new("d", lower = 0)
+      )
+    )
+    paradox$values = list(a = 1, b = "a", c = TRUE, d = 1)
+  },
+  
+  {
+  distr6 <- distr6::ParameterSet$new(
+    id = list("a", "b", "c", "d"),
+    support = list(Reals$new(), Set$new(elements = letters), LogicalSet$new(), PosIntegers$new()),
+    value = list(a = 1, b = "a", c = TRUE, d = 1)
+  )
+  },
+  
+  {
+    param6 <- param6::ParameterSet$new(
+      a = reals ~ 1,
+      b = Set$new(elements = letters) ~ "a",
+      c = logical ~ TRUE,
+      d = pos_integers ~ 1
+    )
+  }
+)
+```
+
+Comparing getting:
+
+```{r}
+microbenchmark(
+  paradox$values$c,
+  distr6$getParameterValue("c"),
+  param6$values$c
+)
+```
+And setting:
+
+```{r}
+vals = list(a = 1, b = "a", c = FALSE, d = 1000)
+microbenchmark(
+  {paradox$values = vals},
+  distr6$setParameterValue(lst = vals),
+  {param6$values = vals}
+)
+```
+
+## Going Forward
+
+distr6 parameter sets are clearly problematic and should be removed ASAP. param6 provides a
+promising alternative. Restricting this package to only two classes makes it a good use-case
+for C++ classes and linkage via Rcpp.
+
+### Next Steps:
+
+1. Draw up final designs for param6 using distr6 and paradox
+2. Implement ParameterSet in C++
+3. Interface with Rcpp - identify parts of Rcpp and R6 that may require further development

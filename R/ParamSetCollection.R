@@ -1,7 +1,7 @@
-ParamSetCollection <- R6::R6Class("ParamSetCollection",
+ParameterSetCollection <- R6::R6Class("ParameterSetCollection",
   public = list(
     initialize = function(sets) {
-      checkmate::assert_list(sets, types = "ParamSet")
+      checkmate::assert_list(sets, types = "ParameterSet")
       checkmate::assert_names(names(sets), type = "unique")
       private$.sets <- sets
     },
@@ -20,7 +20,7 @@ ParamSetCollection <- R6::R6Class("ParamSetCollection",
     },
 
     add = function(sets) {
-      checkmate::assert_list(sets, types = "ParamSet")
+      checkmate::assert_list(sets, types = "ParameterSet")
       sets <- c(private$.sets, sets)
       checkmate::assert_names(names(sets), type = "unique")
       private$.sets <- sets
