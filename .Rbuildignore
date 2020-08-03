@@ -13,7 +13,8 @@
 ^docs$
 ^pkgdown$
 inst/trigger-mlr3book.sh
-
+^\.lintr$
+^README\.Rmd$
 
 ^\.ccache$
 ^\.github$

@@ -136,10 +136,10 @@ microbenchmark(
   
   {
     param6::ParameterSet$new(
-      a = reals,
+      a = Reals$new(),
       b = Set$new(elements = letters),
-      c = logical,
-      d = pos_integers
+      c = LogicalSet$new(),
+      d = PosIntegers$new()
     )
   }
 )
@@ -175,10 +175,10 @@ microbenchmark(
   
   {
     param6 <- param6::ParameterSet$new(
-      a = reals ~ 1,
+      a = Reals$new() ~ 1,
       b = Set$new(elements = letters) ~ "a",
-      c = logical ~ TRUE,
-      d = pos_integers ~ 1
+      c = LogicalSet$new() ~ TRUE,
+      d = PosIntegers$new() ~ 1
     )
   }
 )
