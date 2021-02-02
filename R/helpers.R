@@ -50,30 +50,41 @@ string_as_set <- function(str) {
   }
 }
 
-make_param <- function(param) {
-  tag <- set <- value <- NULL
+param_formula_to_list <- function(params) {
 
-  if (class(param)[1] != "formula") {
-    set <- assertSet(param)
-  } else {
-    set <- assertSet(eval(param[[2]]))
-    param <- param[[3]]
-    if (class(param)[1] != "call") {
-      value <- assert_contains(set, param)
-    } else {
-      tags <- grepl("^tags\\(.*\\)$", param)
-      if (any(tags)) {
-        tag <- as.character(param[tags][[1]])[-1]
-        value <- assert_contains(set, param[!tags][-1][[1]])
+  sapply(params, function(param) {
+    tag <- set <- value <- NULL
+
+      if (class(param)[1] != "formula") {
+        set <- param
       } else {
-        tag <- as.character(param[-1])
+        set <- eval(param[[2]])
+        param <- param[[3]]
+        if (class(param)[1] != "call") {
+          value <- param
+        } else {
+          tags <- grepl("^tags\\(.*\\)$", param)
+          if (any(tags)) {
+            tag <- as.character(param[tags][[1]])[-1]
+            value <- param[!tags][-1][[1]]
+          } else {
+            tag <- as.character(param[-1])
+          }
+        }
       }
-    }
-  }
 
-  list(set = set, value = value, tag = tag)
+      list(set = set, value = value, tag = tag)
+  })
+
 }
 
 sort_named_list <- function(lst, ...) {
   lst[order(names(lst), ...)]
+}
+
+partial_list <- function(names, named_list) {
+  lst <- vector("list", length(names))
+  names(lst) <- names
+  lst[names(lst) %in% names(named_list)] <- named_list
+  return(lst)
 }

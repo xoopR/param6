@@ -13,6 +13,17 @@ p2 <- ParameterSet$new(
 p3 <- ParameterSet$new(ntrees = PosIntegers$new() ~ 2)
 #----
 
+test_that("different constructors", {
+  expect_equal(
+    ParameterSet$new(r = Reals$new(), n = Naturals$new() ~ 1, l = Logicals$new() ~ FALSE +
+      tags(log)),
+    ParameterSet$new(
+      id = list("r", "n", "l"),
+      support = list(Reals$new(), Naturals$new(), Logicals$new()),
+      value = list(NULL, 1, FALSE), tag = list(NULL, NULL, "log")
+    )
+  )
+})
 
 test_that("constructor", {
   expect_error(ParameterSet$new(a))
@@ -36,7 +47,7 @@ test_that("print", {
   expect_output(p1$print(NULL))
   expect_output(p1$print(hide_cols = "Id"))
   expect_error(p1$print(hide_cols = "sdsd"))
-  p <- ParameterSet$new(a = LogicalSet$new(), b = LogicalSet$new())
+  p <- ParameterSet$new(a = Logicals$new(), b = Logicals$new())
   p$add_trafo("a", exp)
   p$add_dep("a", "b", "Equal", FALSE)
   expect_output(p$print(hide_cols = NULL))
@@ -80,14 +91,14 @@ test_that("get_values", {
 
 test_that("supports", {
   expect_equal(p1$supports, list(
+    splitrule = Set$new("logrank", "extratrees", "C", "maxstat"),
     ntrees = PosIntegers$new(),
-    sample.fraction = Interval$new(0, 1),
-    splitrule = Set$new("logrank", "extratrees", "C", "maxstat")
+    sample.fraction = Interval$new(0, 1)
   ))
 })
 
 test_that("ids", {
-  expect_equal(p1$ids, c("ntrees", "sample.fraction", "splitrule"))
+  expect_equal(p1$ids, list("splitrule", "ntrees", "sample.fraction"))
 })
 
 test_that("rbind", {
@@ -217,7 +228,7 @@ test_that("trafo", {
   p <- ParameterSet$new(
     a = Reals$new() ~ 0.5,
     b = Integers$new() ~ 2,
-    c = LogicalSet$new() ~ FALSE
+    c = Logicals$new() ~ FALSE
   )
   expect_equal(p$trafos, list())
   expect_silent({
@@ -249,4 +260,22 @@ test_that("deep_clone", {
   expect_true(a$values$lgl)
   b$values$lgl <- TRUE
   expect_equal(a, b)
+})
+
+test_that("checks", {
+  p <- ParameterSet$new(
+    a = Reals$new() ~ 0.5,
+    b = Integers$new() ~ 2,
+    c = Logicals$new() ~ FALSE
+  )
+  expect_equal(p$checks, NULL)
+  expect_error(p$add_check("d", function(self) a == 1), "subset")
+  expect_error(p$add_check("a", function(elf) a == 1), "formal")
+  expect_silent(p$add_check("a", function(self) self$values$a == 0.5))
+  expect_equal(p$checks, data.table(params = list("a"), fun = list(body(function(x) self$values$a == 0.5))))
+  expect_true(p$check())
+  expect_silent(p$add_check(c("a", "b"), function(self) self$values$a + self$values$b == 2.5))
+  expect_true(p$check())
+  expect_silent(p$add_check(c("c"), function(self) self$values$c == TRUE))
+  expect_false(p$check())
 })

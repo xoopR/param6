@@ -1,67 +1,103 @@
+#' @examples
+#' library(set6)
+#'
+#' # Method 1: Construct ParameterSet with formula interface
+#' # One parameter, supported on Reals with value 1
+#' ParameterSet$new(a = Reals$new() ~ 1)
+#'
+#' # One named parameter, supported on Reals with value 1 and two tags
+#' ParameterSet$new(a = Reals$new() ~ 1 + tags(t1, t2))
+#'
+#' # Multiple parameters
+#' ParameterSet$new(
+#'  r = Reals$new(),
+#'  n = Naturals$new() ~ 1,
+#'  l = Logicals$new() ~ FALSE + tags(log)
+#' )
+#'
+#' # Method 2: Construct ParameterSet with other arguments
+#' # One parameter, supported on Reals with no value
+#' ParameterSet$new(id = 'a', support = Reals$new())
+#'
+#' # One parameter, supported on Reals with value 1
+#' ParameterSet$new(id = 'a', support = Reals$new(), value = 1)
+#'
+#' # One named parameter, supported on Reals with value 1 and two tags
+#' ParameterSet$new(id = 'a', support = Reals$new(), value = 1, tag = c("t1", "t2"))
+#'
+#' # Multiple parameters
+#' ParameterSet$new(
+#'  id = list('r', 'n', 'l'),
+#'  support = list(Reals$new(), Naturals$new(), Logicals$new()),
+#'  value = list(NULL, 1, FALSE),
+#'  tag = list(NULL, NULL, 'log')
+#' )
+#'
 #' @export
 ParameterSet <- R6::R6Class("ParameterSet",
   public = list(
-    initialize = function(..., support = NULL, value = NULL, tag = NULL) {
+    initialize = function(..., id = NULL, support = NULL, value = NULL, tag = NULL) {
 
-      if (is.null(support) & !...length()) {
+      if (is.null(is) && !...length()) {
         invisible(self)
-      }
-
-      if (...length() || !is.null(support)) {
-        if (!is.null(support)) {
-
-          if (checkmate::testList(support)) {
-            assertSetList(support)
-          }
-          checkmate::assert_names(names(support), type = "strict")
-          private$.support <- support[order(names(support))]
-
-          lng <- length(support)
-
-          if (!is.null(tag)) {
-            checkmate::assertList(tag, len = lng)
-            names(tag) <- names(support)
-            private$.tag <- tag
-          }
-
-          if (!is.null(value)) {
-            checkmate::assertList(value, len = lng)
-            names(value) <- names(support)
-            mapply(function(x, y) if (!is.null(y)) assert_contains(x, y), support, value)
-            private$.value <- value
-          }
-
+      } else {
+        if (...length()) {
+          params <- param_formula_to_list(list(...))
+          if (is.null(unlist(params[2, ]))) value = NULL else value = params[2, ]
+          if (is.null(unlist(params[3, ]))) tag = NULL else tag = params[3, ]
+          params <- list(
+            id = checkmate::assertNames(names(list(...)), "strict"),
+            support = params[1, ],
+            value = value,
+            tag = tag
+          )
         } else {
-          params <- sapply(list(...), make_param)
-          if (ncol(params) > 1) {
-            params = params[, order(colnames(params))]
-          }
-          private$.support <- params[1, ]
-          names(private$.support) <- colnames(params)
-          private$.value <- params[2, ]
-          names(private$.value) <- colnames(params)
-          if (!all(is.null(unlist(params[3, ])))) {
-            private$.tag <- params[3, ]
-            names(private$.tag) <- colnames(params)
-          }
-
+          lng <- length(id)
+          if (!is.null(value)) value <- checkmate::assertList(value, len = lng)
+          if (!is.null(tag)) tag <- checkmate::assertList(tag, len = lng)
+          params <- list(
+            id = checkmate::assertNames(unlist(id), "strict"),
+            support = checkmate::assertList(support, "Set", len = lng),
+            value = value,
+            tag = tag
+          )
         }
 
-        private$.tag <- private$.tag[!sapply(private$.tag, is.null)]
-        private$.value <- private$.value[!sapply(private$.value, is.null)]
+        private$.id = params$id
+        private$.support = params$support
+        names(private$.support) = private$.id
+
+        # assert value
+        if (!is.null(params$value)) {
+          mapply(
+            function(x, y) if (!is.null(y)) assert_contains(x, y),
+            params$support, params$value
+          )
+          private$.value <- params$value
+          names(private$.value) <- private$.id
+          # remove NULL
+          private$.value[sapply(private$.value, is.null)] <- NULL
+        }
+
+        if (!is.null(params$tag)) {
+          private$.tag <- params$tag
+          names(private$.tag) <- private$.id
+          # remove NULL
+          private$.tag[sapply(private$.tag, is.null)] <- NULL
+        }
       }
 
       invisible(self)
     },
 
     # similar to paradox. calls params, merges trafos and dependencies. prints requested columns
-    print = function(hide_cols = c("Parent", "Trafo")) {
+    print = function(hide_cols = c("Parent", "Trafo"), sort = TRUE) {
       checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tag", "Parent", "Trafo"))
 
-      dt <- as.data.table(self)
+      dt <- as.data.table(self, sort = sort)
       dt$Support <- sapply(dt$Support, function(x) x$strprint())
 
-      if (!("Parent" %in% hide_cols) & nrow(self$deps)) {
+      if (!("Parent" %in% hide_cols) & length(self$deps)) {
         deps <- aggregate(on ~ id, data = self$deps, FUN = string_as_set)
         colnames(deps) <- c("Id", "Parent")
         dt <- merge(dt, deps)
@@ -76,18 +112,48 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # adds new parameters to the set. provides formula construction only
-    # code is not great here
     add = function(...) {
-      psnew <- ParameterSet$new(...)
-      sets <- list(self, psnew)
-      checkmate::assert_names(unlist(sapply(sets, function(x) x$ids)), type = "strict")
 
-      private$.support <- sort_named_list(unlist(lapply(
-        sets, function(.x) .x$supports), recursive = FALSE))
-      private$.value <- sort_named_list(unlist(lapply(
-        sets, function(.x) .x$values), recursive = FALSE))
-      private$.tag <- sort_named_list(unlist(lapply(
-        sets, function(.x) .x$tags), recursive = FALSE))
+      params <- param_formula_to_list(list(...))
+      if (is.null(unlist(params[2, ]))) value = NULL else value = params[2, ]
+      if (is.null(unlist(params[3, ]))) tag = NULL else tag = params[3, ]
+      params <- list(
+        id = checkmate::assertNames(names(list(...)), "strict"),
+        support = params[1, ],
+        value = value,
+        tag = tag
+      )
+
+      # check new names unique
+      checkmate::assert(!any(params$id %in% private$.id))
+      new_ids = params$id
+      new_support = params$support
+
+      # assert value
+      if (!is.null(params$value)) {
+        mapply(
+           function(x, y) if (!is.null(y)) assert_contains(x, y),
+           params$support, params$value
+        )
+        new_values = params$value
+        names(new_values) <- new_ids
+        new_values[sapply(new_values, is.null)] <- NULL
+      } else {
+          new_values <- NULL
+      }
+
+      if (!is.null(params$tag)) {
+        new_tags <- params$tag
+        names(new_tags) <- new_ids
+        new_tags[sapply(new_tags, is.null)] <- NULL
+      } else {
+        new_tags <- NULL
+      }
+
+      private$.id <- c(private$.id, new_ids)
+      private$.support <- c(private$.support, new_support)
+      private$.value <- c(private$.value, new_values)
+      private$.tag <- c(private$.tag, new_tags)
 
       invisible(self)
     },
@@ -95,20 +161,30 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # takes character arguments specifying parameter ids and removes associated values.
     # needs more work as currently ignores deps and trafos
     remove = function(...) {
-      params <- unlist(list(...))
-      private$.support[params] <- NULL
-      private$.value[params] <- NULL
-      private$.tag[params] <- NULL
+      pars <- unlist(list(...))
+      private$.support[pars] <- NULL
+      private$.value[pars] <- NULL
+      private$.tag[pars] <- NULL
+       # fix for vectorised pars
+      private$.deps <- subset(private$.deps, !(grepl(id, pars) | grepl(on, pars)))
+      private$.trafo[pars] <- NULL
+      # hacky concatenation fix
+      if ("c" %in% pars) {
+
+      } else {
+        # fix for vectorised pars
+subset(private$.checks, grepl(pars, params))
+      }
+
 
       invisible(self)
     },
 
-    # different from $values as $values returns a list of set values whereas this returns a list
-    # of all parameters with either the set value or NULL. in construction defaults are set as
-    # values.
+    # different from $values as $values returns a list of values (which may be NULL) whereas
+    # this returns only set values, which can be filtered by tags.
     get_values = function(tag = NULL) {
       if (is.null(tag)) {
-        return(self$values)
+        return(self$values[!sapply(self$values, is.null)])
       } else {
         return(self$values[names(self$values) %in% names(self$tags)[grepl(tag, self$tags)]])
       }
@@ -180,17 +256,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
     # Used to compare parameter values between each other. One function calling `self`, boolean
     # conditions 'added' together to form a single function.
-    add_check = function(fun) {
-      if (is.null(self$checks)) {
-        private$.checks <- checkmate::assertFunction(fun, "self")
-      } else {
-        f1 <- self$checks
-        f2 <- checkmate::assertFunction(fun, "self")
-        body(f1) <- substitute(b1 && b2, list(b1 = body(f1), b2 = body(f2)))
-        private$.checks <- f1
-      }
-
+add_check = function(params, fun) {
+      private$.checks <- rbind(private$.checks,
+                               data.table(params = list(checkmate::assertSubset(params, self$ids)),
+                                        fun = list(body(checkmate::assertFunction(fun, "self")))))
       invisible(self)
+    },
+
+check = function() {
+  if (length(self$checks)) {
+    all(sapply(self$checks$fun, function(x) {
+      as.function(list(self = self, x))()
+    }))
+  } else {
+    TRUE
+  }
     }
   ),
 
@@ -216,7 +296,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
     # change to public and add filters?
     ids = function() {
-      names(private$.support)
+      private$.id
     },
 
     length = function() {
@@ -224,29 +304,46 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     deps = function() {
-      private$.deps
+      .x = private$.deps
+      if (nrow(.x)) {
+        .x
+      } else {
+        NULL
+      }
     },
 
     trafos = function() {
-      private$.trafo
+      .x = private$.trafo
+      if (length(.x)) {
+        .x
+      } else {
+        NULL
+      }
     },
 
     checks = function() {
-      private$.checks
+      .x = private$.checks
+      if (nrow(.x)) {
+        .x
+      } else {
+        NULL
+      }
     }
   ),
 
   private = list(
+    .id = list(),
     .support = list(),
     .value = list(),
     .tag = list(),
     .trafo = list(),
     .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
-    .checks = NULL,
+    .checks = data.table(params = character(0L), fun = list()),
     deep_clone = function(name, value) {
       switch(name,
         ".support" = sapply(value, function(x) x$clone(deep = TRUE)),
         ".deps" = data.table::copy(value),
+        ".checks" = data.table::copy(value),
         value
       )
     }
@@ -254,18 +351,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
 )
 
 #' @export
-as.data.table.ParameterSet <- function(x, ...) { # nolint
-  Id = x$ids
-  lst = vector("list", length(Id))
-  names(lst) = Id
-  Value = Tag = lst
-  Value[Id %in% names(x$values)] = x$values
-  Tag[Id %in% names(x$tags)] = x$tags
-
-  data.table(
-    Id = Id, Support = x$supports,
-    Value = Value, Tag = Tag
+as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
+  if (length(x$deps) || length(x$trafos) || length(x$checks)) {
+    warning("Dependencies, trafos, and checks are lost in coercion.")
+  }
+  dt = data.table(
+    Id = x$ids,
+    Support = x$supports,
+    Value = partial_list(x$ids, x$values),
+    Tag = partial_list(x$ids, x$tags)
   )
+  if (sort) {
+    Id = NULL # visible binding fix
+    data.table::setorder(dt, Id)
+  }
+  dt
 }
 
 #' @export
@@ -275,17 +375,10 @@ as.ParameterSet <- function(x, ...) { # nolint
 #' @export
 as.ParameterSet.data.table <- function(x, ...) { # nolint
   checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tag"))
-  assertSetList(x$Support)
-  checkmate::assert_names(x$Id, type = "strict")
-  support <- x$Support
-
-  value <- x$Value
-  if (!is.null(value)) names(value) <- x$Id
-  tag <- x$Tag
-  if (!is.null(tag)) names(tag) <- x$Id
-
-  names(support) <- x$Id
-  ParameterSet$new(support = support, value = value, tag = tag)
+  ParameterSet$new(id = x$Id,
+                   support = x$Support,
+                   value = x$Value,
+                   tag = x$Tag)
 }
 
 # less efficient than $add, needs work
