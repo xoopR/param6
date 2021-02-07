@@ -117,11 +117,11 @@ as.character.Dictionary = function(x, n = 2, ...) { # nolint
 
     lng = x$length
     if (lng > (2 * n)) {
-        string <- paste0(paste(keys[1:n], values[1:n], sep = " : ", collapse = ", "),
-        ",...,", paste(keys[(lng - n + 1):lng], values[(lng - n + 1):lng],
-        sep = " : ", collapse = ", "))
+        string <- paste0(paste(keys[1:n], values[1:n], sep = ": ", collapse = ", "),
+        ", ..., ", paste(keys[(lng - n + 1):lng], values[(lng - n + 1):lng],
+        sep = ": ", collapse = ", "))
     } else {
-        string <- paste(keys, values, sep = " : ", collapse = ", ")
+        string <- paste(keys, values, sep = ": ", collapse = ", ")
     }
     return(paste0("{", string, "}"))
 }

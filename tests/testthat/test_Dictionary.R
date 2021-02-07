@@ -128,9 +128,9 @@ test_that("print and summary", {
     d_typed = Dictionary$new(list(a = 1, b = 2, c = 3), types = "numeric")
     d_untyped = Dictionary$new(list(a = 1, b = 2, c = 3))
 
-    expect_equal(as.character(d_typed), "{a : 1, b : 2, c : 3}")
-    expect_equal(as.character(d_typed, 1), "{a : 1,...,c : 3}")
-    expect_equal(as.character(d_untyped, 1), "{a : 1,...,c : 3}")
+    expect_equal(as.character(d_typed), "{a: 1, b: 2, c: 3}")
+    expect_equal(as.character(d_typed, 1), "{a: 1, ..., c: 3}")
+    expect_equal(as.character(d_untyped, 1), "{a: 1, ..., c: 3}")
 
     expect_output(print(d_typed))
     expect_output(summary(d_typed))
@@ -138,6 +138,4 @@ test_that("print and summary", {
     expect_output(print(d_untyped))
     expect_output(summary(d_untyped))
     expect_output(summary(d_untyped), "Untyped dictionary with 3 items.")
-
-
 })
