@@ -82,9 +82,32 @@ sort_named_list <- function(lst, ...) {
   lst[order(names(lst), ...)]
 }
 
+named_list <- function(values, names) {
+  x <- list(values)
+  names(x) <- names
+  x
+}
+
+as_named_list <- function(values, names) {
+  x <- as.list(values)
+  names(x) <- names
+  x
+}
+
 partial_list <- function(names, named_list) {
   lst <- vector("list", length(names))
   names(lst) <- names
   lst[names(lst) %in% names(named_list)] <- named_list
   return(lst)
+}
+
+get_private <- function(x) {
+  x$.__enclos_env__$private
+}
+
+invert_list <- function(x) {
+  uvalues <- unique(unlist(x))
+  inv_x <- lapply(uvalues, function(.x) names(x)[x == .x])
+  names(inv_x) <- uvalues
+  inv_x
 }

@@ -68,7 +68,6 @@ test_that("get", {
     d_untyped = Dictionary$new(list(a = 1, b = "a"))
     expect_equal(d_untyped$get("a"), 1)
     expect_equal(d_untyped$get("b"), "a")
-    expect_equal(d_untyped[["a"]], 1)
     expect_error(d_untyped$get("c"), "subset of")
     expect_error(d_untyped$get(letters[1:2]), "length")
 
@@ -76,7 +75,6 @@ test_that("get", {
     expect_equal(d_typed$get("a"), 1)
     expect_equal(d_typed$get("b"), 2)
     expect_equal(d_typed$get(letters[1:2]), c(1, 2))
-    expect_equal(d_typed[[c("a", "b")]], c(1, 2))
     expect_error(d_typed$get("c"), "subset of")
 })
 
@@ -95,6 +93,14 @@ test_that("has", {
     expect_false(d_untyped$has("c"))
     expect_equal(d_untyped$has(c("a", "c", "b")), c(TRUE, FALSE, TRUE))
     expect_equal(d_untyped %has% c("a", "c", "b"), c(TRUE, FALSE, TRUE))
+})
+
+test_that("rekey", {
+    d_untyped = Dictionary$new(list(a = 1, b = 2))
+    expect_silent(d_untyped$rekey("a", "c"))
+    expect_equal(d_untyped$items, list(c = 1, b = 2))
+    expect_error(d_untyped$rekey("a", "d"), "element of set")
+    expect_error(d_untyped$rekey("c", "b"), "duplicated")
 })
 
 test_that("active", {
@@ -134,8 +140,48 @@ test_that("print and summary", {
 
     expect_output(print(d_typed))
     expect_output(summary(d_typed))
-    expect_output(summary(d_typed), "Typed dictionary with types")
+    expect_output(summary(d_typed), "Typed dictionary of")
     expect_output(print(d_untyped))
     expect_output(summary(d_untyped))
-    expect_output(summary(d_untyped), "Untyped dictionary with 3 items.")
+    expect_output(summary(d_untyped), "Untyped dictionary of 3 items.")
+})
+
+test_that("concatenate", {
+    a_typed = Dictionary$new(list(a = 1), types = "numeric")
+    b_typed = Dictionary$new(list(b = 2), types = c("numeric", "integer"))
+    c_typed = Dictionary$new(list(c = 3), types = c("integer", "numeric"))
+    d_typed = Dictionary$new(list(a = 3), types = "numeric")
+
+    a_untyped = Dictionary$new(list(a = 1))
+    b_untyped = Dictionary$new(list(b = 2))
+    c_untyped = Dictionary$new(list(c = 2))
+    d_untyped = Dictionary$new(list(a = 2))
+
+    expect_error(c(a_typed, b_typed), "same type")
+    expect_error(c(a_typed, c_typed), "same type")
+    expect_error(c(a_typed, a_untyped), "typed or all")
+    expect_error(c(a_typed, d_typed), "duplicated")
+    expect_equal(c(b_typed, c_typed),
+        Dictionary$new(list(b = 2, c = 3), types = c("numeric", "integer")))
+
+    expect_error(c(a_untyped, a_typed), "typed or all")
+    expect_error(c(a_typed, d_typed), "duplicated")
+    expect_equal(c(a_untyped, b_untyped, c_untyped),
+        Dictionary$new(list(a = 1, b = 2, c = 2)))
+})
+
+test_that("merge", {
+    a_typed = Dictionary$new(list(a = 1), types = "numeric")
+    c_typed = Dictionary$new(list(c = 3), types = c("integer", "numeric"))
+    d_typed = Dictionary$new(list(a = 3), types = "numeric")
+
+    a_untyped = Dictionary$new(list(a = "b"))
+    b_untyped = Dictionary$new(list(b = 2))
+    c_untyped = Dictionary$new(list(c = 2))
+    d_untyped = Dictionary$new(list(a = 2))
+
+    expect_equal(a_typed$merge(list(b_untyped, c_untyped))$items,
+        list(a = 1, b = 2, c = 2))
+    expect_error(a_typed$merge(a_untyped)$items, "character")
+    expect_error(a_typed$merge("a"), "Dictionary or")
 })

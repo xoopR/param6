@@ -3,6 +3,7 @@
 #' @details See [Dictionary] for full details of how to add other [set6::Set] objects as supports
 #' to this dictionary.
 #' NULL
+# FIXME - IF THIS IS TOO LARGE TO EXPORT MOVE TO .ONLOAD
 support_dictionary <- Dictionary$new(list(
     universal = Universal$new(),
     logicals = Logicals$new(),
