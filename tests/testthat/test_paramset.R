@@ -13,34 +13,100 @@ p2 <- ParameterSet$new(
 p3 <- ParameterSet$new(ntrees = PosIntegers$new() ~ 2)
 #----
 
-test_that("different constructors", {
+test_that("prm", {
   expect_equal(
-    ParameterSet$new(r = Reals$new(), n = Naturals$new() ~ 1, l = Logicals$new() ~ FALSE +
-      tags(log)),
-    ParameterSet$new(
-      id = list("r", "n", "l"),
-      support = list(Reals$new(), Naturals$new(), Logicals$new()),
-      value = list(NULL, 1, FALSE), tag = list(NULL, NULL, "log")
-    )
+    unclass(prm("a", Set$new(1), 1, "a")),
+    list(id = "a", support = "{1}", value = 1, tags = "a")
   )
+  expect_true(support_dictionary$has("{1}"))
+  expect_equal(
+    unclass(prm("a", Set$new(1), 1, "a")),
+    list(id = "a", support = "{1}", value = 1, tags = "a")
+  )
+
+  expect_equal(
+    unclass(prm("a", "reals", 1, "a")),
+    list(id = "a", support = "reals", value = 1, tags = "a")
+  )
+
+  expect_equal(
+    unclass(prm("a", "reals")),
+    list(id = "a", support = "reals", value = NULL, tags = NULL)
+  )
+
+  expect_equal(
+    unclass(prm("a", "reals", tags = letters[1:2])),
+    list(id = "a", support = "reals", value = NULL, tags = letters[1:2])
+  )
+
+  expect_error(prm("a", "Reals", 1, "a"), "does not exist")
+  expect_error(prm("a", 1, 1, "a"), "character scalar")
+
+  expect_equal(class(prm("a", "reals")), "prm6")
 })
 
-test_that("constructor", {
-  expect_error(ParameterSet$new(a))
-  expect_error(ParameterSet$new(a = 2), "This is not")
-  expect_error(ParameterSet$new(a = "1"), "This is not")
-  expect_silent(ParameterSet$new(a = Set$new() ~ tags(train)))
-  expect_silent(ParameterSet$new(a = Set$new()))
-  expect_silent(ParameterSet$new(a = Set$new(1) ~ tags(train) + 1))
-  expect_error(ParameterSet$new(a = Set$new(1) ~ tags(train) + 2), "does not lie in")
-  expect_silent(ParameterSet$new(a = Set$new(1) ~ tags(train), b = Set$new(2) ~ tags("train")))
-  expect_silent(ParameterSet$new(
-    a = Set$new(1) ~ 1,
-    b = Set$new(2) ~ tags(predict),
-    c = Set$new(3) ~ tags(train, predict)
-  ))
-  expect_silent(ParameterSet$new(a = Set$new(1) ~ tags(train) + 1, b = Set$new(2) ~ 2))
+test_that("ParameterSet constructor", {
+  prms <- list(
+    prm("a", Set$new(1), 1, "a"),
+    prm("b", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  expect_silent(ParameterSet$new(prms))
+
+  prms <- list(
+    prm("a", Set$new(1), 1, "a"),
+    prm("a", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  expect_error(ParameterSet$new(prms), "ids are not unique")
+
+  prms <- list(
+    prm("a", Set$new(1), 1),
+    prm("b", "reals"),
+    prm("c", "reals")
+  )
+  expect_silent(ParameterSet$new(prms))
+
+  expect_silent(ParameterSet$new())
 })
+
+test_that("ParamSet actives", {
+  prms <- list(
+    prm("a", Set$new(1, 2), 1, c("a", "b")),
+    prm("b", "reals", NULL, "d"),
+    prm("c", "reals", 2)
+  )
+  p <- ParameterSet$new(prms)
+
+  expect_equal(p$tags, list(a = c("a", "b"), b = "d"))
+  expect_equal(p$ids, letters[1:3])
+  expect_equal(length(p), 3)
+  expect_equal(p$values, list(a = 1, c = 2))
+  expect_silent(p$values$a <- 2)
+  expect_equal(p$values$a, 2)
+  expect_error(p$values$a <- 3, "3 does not")
+  expect_equal(p$values$a, 2)
+  expect_error(p$values <- list(a = 3, b = 1, c = 1), "3 does not")
+  expect_equal(p$values, list(a = 2, c = 2))
+  expect_silent(p$values <- list(a = 1))
+  expect_equal(p$values, list(a = 1))
+  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(), c = Reals$new()))
+})
+
+test_that("as.data.table.ParameterSet", {
+  prms <- list(
+    prm("a", Set$new(1), 1, letters[1:2]),
+    prm("b", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  p <- ParameterSet$new(prms)
+  expect_equal(as.data.table(p),
+    data.table::data.table(Id = letters[1:3],
+      Support = list(Set$new(1), Reals$new(), Reals$new()),
+      Value = list(1, NULL, 2),
+      Tags = list(letters[1:2], NULL, NULL)))
+})
+
 
 test_that("print", {
   expect_output(p1$print())
@@ -81,12 +147,12 @@ test_that("get_values", {
   p <- ParameterSet$new(
     support = support,
     value = list(1, 2, NULL, 4, NULL),
-    tag = list("train", c("train", "predict"), NULL, NULL, "predict")
+    tags = list("train", c("train", "predict"), NULL, NULL, "predict")
   )
   expect_equal(p$values, list(a = 1, b = 2, d = 4))
   expect_equal(p$get_values(), list(a = 1, b = 2, d = 4))
-  expect_equal(p$get_values(tag = "predict"), list(b = 2))
-  expect_equal(p$get_values(tag = "train"), list(a = 1, b = 2))
+  expect_equal(p$get_values(tags = "predict"), list(b = 2))
+  expect_equal(p$get_values(tags = "train"), list(a = 1, b = 2))
 })
 
 test_that("supports", {
@@ -153,23 +219,23 @@ test_that("as.data.table", {
                           Support = list(PosIntegers$new(), Interval$new(0, 1),
                                          Set$new("logrank", "extratrees", "C", "maxstat")),
                           Value = list(2, 0.1, "C"),
-                          Tag = list(NULL, NULL, c("train", "predict"))))
+                          Tags = list(NULL, NULL, c("train", "predict"))))
 })
 
 test_that("as.ParameterSet", {
   expect_error(as.ParameterSet(data.table(Id = "a", Support = Set$new(), Val = 2,
-                                          Tag = list(NULL))),
+                                          Tags = list(NULL))),
                "colnames")
   expect_error(as.ParameterSet(data.table(
     Id = c("a", "a"),
     Support = c(Set$new(), Set$new(2)),
-    Value = c(2, NULL), Tag = c("train", "train")
+    Value = c(2, NULL), Tags = c("train", "train")
   )), "unique names")
   expect_error(as.ParameterSet(data.table(
     Id = c("a", "b"),
     Support = c(Set$new(), Set$new(2)),
     Value = list(2, NULL),
-    Tag = list("train", "predict")
+    Tags = list("train", "predict")
   )), "does not lie")
   expect_equal(
     as.ParameterSet(data.table(
@@ -186,17 +252,17 @@ test_that("as.ParameterSet", {
 
 test_that("alt constructor", {
   expect_error(ParameterSet$new(support = list()), "have names")
-  expect_error(ParameterSet$new(support = Set$new(1), value = 2, tag = "train"), "names")
-  expect_error(ParameterSet$new(support = list(Set$new(1)), value = list(2), tag = list("train")),
+  expect_error(ParameterSet$new(support = Set$new(1), value = 2, tags = "train"), "names")
+  expect_error(ParameterSet$new(support = list(Set$new(1)), value = list(2), tags = list("train")),
                "Must have names")
   expect_silent(ParameterSet$new(support = list(a = Set$new(1)), value = list(1),
-                                 tag = list("train")))
+                                 tags = list("train")))
   expect_error(ParameterSet$new(support = list(a = Set$new(1)), value = list(2),
-                                tag = list("train")),
+                                tags = list("train")),
                "does not lie")
   expect_error(ParameterSet$new(support = list(a = Set$new(1)), value = list(2, 0),
-                            tag = list("train")), "length")
-  p5 <- ParameterSet$new(support = list(a = Set$new(1)), value = list(1), tag = list("train"))
+                            tags = list("train")), "length")
+  p5 <- ParameterSet$new(support = list(a = Set$new(1)), value = list(1), tags = list("train"))
   expect_equal(p5$ids, "a")
   expect_equal(p5$supports, list(a = Set$new(1)))
   expect_equal(p5$values, list(a = 1))

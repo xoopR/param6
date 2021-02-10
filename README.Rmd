@@ -31,7 +31,7 @@ class_lst <- R6Class("class_lst",
       invisible(self)
     }
   ),
-  
+
   active = list(
     values = function(x) {
       if (missing(x)) {
@@ -41,7 +41,7 @@ class_lst <- R6Class("class_lst",
       }
     }
   ),
-  
+
   private = list(
     .values = list()
   ))
@@ -53,7 +53,7 @@ class_dt <- R6Class("class_dt",
       invisible(self)
     }
   ),
-  
+
   active = list(
     values = function(x) {
       if (missing(x)) {
@@ -63,7 +63,7 @@ class_dt <- R6Class("class_dt",
       }
     }
   ),
-  
+
   private = list(
     .values = data.table::data.table()
   ))
@@ -125,7 +125,7 @@ microbenchmark(
       )
     )
   },
-  
+
   {
   distr6::ParameterSet$new(
     id = list("a", "b", "c", "d"),
@@ -133,13 +133,13 @@ microbenchmark(
     value = list(a = 1, b = "a", c = TRUE, d = 1)
   )
   },
-  
+
   {
-    param6::ParameterSet$new(
-      a = Reals$new(),
+    ParameterSet$new(
+      a = reals,
       b = Set$new(elements = letters),
-      c = LogicalSet$new(),
-      d = PosIntegers$new()
+      c = logicals,
+      d = posintegers
     )
   }
 )
@@ -164,7 +164,7 @@ microbenchmark(
     )
     paradox$values = list(a = 1, b = "a", c = TRUE, d = 1)
   },
-  
+
   {
   distr6 <- distr6::ParameterSet$new(
     id = list("a", "b", "c", "d"),
@@ -172,7 +172,7 @@ microbenchmark(
     value = list(a = 1, b = "a", c = TRUE, d = 1)
   )
   },
-  
+
   {
     param6 <- param6::ParameterSet$new(
       a = Reals$new() ~ 1,

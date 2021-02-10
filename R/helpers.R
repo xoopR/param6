@@ -50,34 +50,6 @@ string_as_set <- function(str) {
   }
 }
 
-param_formula_to_list <- function(params) {
-
-  sapply(params, function(param) {
-    tag <- set <- value <- NULL
-
-      if (class(param)[1] != "formula") {
-        set <- param
-      } else {
-        set <- eval(param[[2]])
-        param <- param[[3]]
-        if (class(param)[1] != "call") {
-          value <- param
-        } else {
-          tags <- grepl("^tags\\(.*\\)$", param)
-          if (any(tags)) {
-            tag <- as.character(param[tags][[1]])[-1]
-            value <- param[!tags][-1][[1]]
-          } else {
-            tag <- as.character(param[-1])
-          }
-        }
-      }
-
-      list(set = set, value = value, tag = tag)
-  })
-
-}
-
 sort_named_list <- function(lst, ...) {
   lst[order(names(lst), ...)]
 }
@@ -105,9 +77,18 @@ get_private <- function(x) {
   x$.__enclos_env__$private
 }
 
-invert_list <- function(x) {
-  uvalues <- unique(unlist(x))
+invert_names <- function(x) {
+  uvalues <- unique(x)
   inv_x <- lapply(uvalues, function(.x) names(x)[x == .x])
   names(inv_x) <- uvalues
   inv_x
+}
+
+# if results in empty list and rm.names = TRUE then unnames
+un_null_list <- function(x, rm.names = TRUE) {
+  x[vapply(x, is.null, logical(1))] <- NULL
+  if (!length(x)) {
+    x <- unname(x)
+  }
+  x
 }

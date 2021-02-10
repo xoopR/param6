@@ -4,6 +4,7 @@
 #' to this dictionary.
 #' NULL
 # FIXME - IF THIS IS TOO LARGE TO EXPORT MOVE TO .ONLOAD
+#' @export
 support_dictionary <- Dictionary$new(list(
     universal = Universal$new(),
     logicals = Logicals$new(),

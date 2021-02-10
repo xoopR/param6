@@ -1,3 +1,31 @@
+prm <- function(id, support, value = NULL, tags = NULL) {
+  checkmate::assert_character(id, len = 1)
+  # if character check to see if exists in dictionary otherwise error
+  if (checkmate::test_character(support, len = 1)) {
+    if (!support_dictionary$has(support)) {
+      stop("'suppport' given as character but does not exist in support_dictionary.")
+    }
+  # if Set check to see if exists in dictionary otherwise add and return string
+  } else if (checkmate::test_class(support, "Set")) {
+    str_support <- as.character(support)
+    if (!support_dictionary$has(str_support)) {
+      orig_uni <- set6::useUnicode()
+      set6::useUnicode(FALSE)
+      support_dictionary$add(keys = str_support, values = support)
+      set6::useUnicode(orig_uni)
+    }
+    support <- str_support
+  } else {
+    stop("'support' should be given as a character scalar or Set.")
+  }
+  if (!is.null(tags)) {
+    checkmate::assert_character(tags, null.ok = TRUE)
+  }
+  param <- list(id = id, support = support, value = value, tags = tags)
+  class(param) <- "prm6"
+  param
+}
+
 #' @examples
 #' library(set6)
 #'
@@ -23,110 +51,47 @@
 #' ParameterSet$new(id = 'a', support = Reals$new(), value = 1)
 #'
 #' # One named parameter, supported on Reals with value 1 and two tags
-#' ParameterSet$new(id = 'a', support = Reals$new(), value = 1, tag = c("t1", "t2"))
+#' ParameterSet$new(id = 'a', support = Reals$new(), value = 1, tags = c("t1", "t2"))
 #'
 #' # Multiple parameters
 #' ParameterSet$new(
 #'  id = list('r', 'n', 'l'),
 #'  support = list(Reals$new(), Naturals$new(), Logicals$new()),
 #'  value = list(NULL, 1, FALSE),
-#'  tag = list(NULL, NULL, 'log')
+#'  tags = list(NULL, NULL, 'log')
 #' )
 #'
 #' @export
 ParameterSet <- R6::R6Class("ParameterSet",
   public = list(
-    initialize = function(..., id = NULL, support = NULL, value = NULL, tag = NULL) {
+    initialize = function(prms = list()) {
 
-      if (is.null(id) && !...length()) {
-        invisible(self)
-      } else {
-        if (...length()) {
-          params <- param_formula_to_list(list(...))
-          if (is.null(unlist(params[2, ]))) value = NULL else value = params[2, ]
-          if (is.null(unlist(params[3, ]))) tag = NULL else tag = params[3, ]
-          params <- list(
-            id = checkmate::assertNames(names(list(...)), "unique"),
-            support = params[1, ],
-            value = value,
-            tag = tag
-          )
+      if (length(prms)) {
+        checkmate::assert_list(prms, "prm6", any.missing = FALSE)
+
+        ids <- vapply(prms, "[[", character(1), "id")
+        if (any(duplicated(ids))) {
+          stop("ids are not unique.")
         } else {
-          lng <- length(id)
-          params <- list(
-            id = checkmate::assertNames(unlist(id), "unique"),
-            support = checkmate::assertList(support, len = lng),
-            value = checkmate::assertList(value, len = lng, null.ok = TRUE),
-            tag = checkmate::assertList(tag, len = lng, null.ok = TRUE)
-          )
+          names(prms) <- ids
+          private$.id <- ids
         }
 
-        private$.id <- params$id
+        private$.supports <- vapply(prms, "[[", character(1), "support")
+        private$.isupports <- invert_names(private$.supports)
 
-        # create registry for temporary supports
-        private$.tmpreg <- Dictionary$new(types = "Set")
+        private$.value <- un_null_list(lapply(prms, "[[", "value"))
+        private$.tags <- un_null_list(lapply(prms, "[[", "tags"))
+      }
 
-        orig_uni <- set6::useUnicode()
-set6::useUnicode(FALSE)
-        for (i in seq_along(params$support)) {
-          .x <- params$support[[i]]
-          # if Set then check if already exists, if so return character representation, otherwise
-          #  add to temporary
-          if (testSet(.x)) {
-            char = as.character(.x)
-            if (private$.tmpreg$has(char)) {
-              private$.supports$t <- c(private$.supports$t,
-                named_list(as.character(.x), names(params$support)[[i]]))
-            } else if (support_dictionary$has(char)) {
-              private$.supports$p <- c(private$.supports$p,
-                named_list(as.character(.x), names(params$support)[[i]]))
-            } else {
-              private$.tmpreg$add(named_list(.x, as.character(.x)))
-              private$.supports$t <- c(private$.supports$t,
-                named_list(as.character(.x), names(params$support)[[i]]))
-            }
-          } else if (checkmate::test_character(.x, len = 1)) {
-            if (private$.tmpreg$has(char)) {
-              private$.supports$t <- c(private$.supports$t,
-                named_list(.x, names(params$support)[[i]]))
-            } else if (support_dictionary$has(char)) {
-              private$.supports$p <- c(private$.supports$p,
-                named_list(.x, names(params$support)[[i]]))
-            } else {
-              stop(sprintf("Support given as character (%s) but not found in temporary registry or support_dictionary.", .x)) # nolint
-            }
-          } else {
-            stop(sprintf("Support %s should either inherit from Set or character."))
-          }
-        }
-        # invert the list so names = supports and els = param ids w. supports
-        private$.supports$p <- invert_list(private$.supports$p)
-        private$.supports$t <- invert_list(private$.supports$t)
-        set6::useUnicode(orig_uni)
-
-        if (!is.null(params$value)) {
-          private$.value <- params$value
-          names(private$.value) <- private$.id
-          # remove NULL
-          private$.value[sapply(private$.value, is.null)] <- NULL
-        }
-
-        if (!is.null(params$tag)) {
-          private$.tag <- params$tag
-          names(private$.tag) <- private$.id
-          # remove NULL
-          private$.tag[sapply(private$.tag, is.null)] <- NULL
-        }
-    }
-
-      self$check()
+      self$check(custom = FALSE)
 
       invisible(self)
     },
 
     # similar to paradox. calls params, merges trafos and dependencies. prints requested columns
     print = function(hide_cols = c("Parent", "Trafo"), sort = TRUE) {
-      checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tag", "Parent", "Trafo"))
+      checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tags", "Parent", "Trafo"))
 
       dt <- as.data.table(self, sort = sort)
       dt$Support <- sapply(dt$Support, function(x) x$strprint())
@@ -150,12 +115,12 @@ set6::useUnicode(FALSE)
 
       params <- param_formula_to_list(list(...))
       if (is.null(unlist(params[2, ]))) value = NULL else value = params[2, ]
-      if (is.null(unlist(params[3, ]))) tag = NULL else tag = params[3, ]
+      if (is.null(unlist(params[3, ]))) tags = NULL else tags = params[3, ]
       params <- list(
         id = checkmate::assertNames(names(list(...)), "unique"),
         support = params[1, ],
         value = value,
-        tag = tag
+        tags = tags
       )
 
       # check new names unique
@@ -176,8 +141,8 @@ set6::useUnicode(FALSE)
           new_values <- NULL
       }
 
-      if (!is.null(params$tag)) {
-        new_tags <- params$tag
+      if (!is.null(params$tags)) {
+        new_tags <- params$tags
         names(new_tags) <- new_ids
         new_tags[sapply(new_tags, is.null)] <- NULL
       } else {
@@ -187,7 +152,7 @@ set6::useUnicode(FALSE)
       private$.id <- c(private$.id, new_ids)
       private$.support <- c(private$.support, new_support)
       private$.value <- c(private$.value, new_values)
-      private$.tag <- c(private$.tag, new_tags)
+      private$.tags <- c(private$.tags, new_tags)
 
       invisible(self)
     },
@@ -198,7 +163,7 @@ set6::useUnicode(FALSE)
       pars <- unlist(list(...))
       private$.support[pars] <- NULL
       private$.value[pars] <- NULL
-      private$.tag[pars] <- NULL
+      private$.tags[pars] <- NULL
        # fix for vectorised pars
       private$.deps <- subset(private$.deps, !(grepl(id, pars) | grepl(on, pars)))
       private$.trafo[pars] <- NULL
@@ -216,11 +181,11 @@ subset(private$.checks, grepl(pars, params))
 
     # different from $values as $values returns a list of values (which may be NULL) whereas
     # this returns only set values, which can be filtered by tags.
-    get_values = function(tag = NULL) {
-      if (is.null(tag)) {
+    get_values = function(tags = NULL) {
+      if (is.null(tags)) {
         return(self$values[!sapply(self$values, is.null)])
       } else {
-        return(self$values[names(self$values) %in% names(self$tags)[grepl(tag, self$tags)]])
+        return(self$values[names(self$values) %in% names(self$tags)[grepl(tags, self$tags)]])
       }
     },
 
@@ -230,7 +195,7 @@ subset(private$.checks, grepl(pars, params))
       ids <- intersect(self$ids, ids)
       private$.support <- self$supports[names(self$supports) %in% ids]
       private$.value <- self$values[names(self$values) %in% ids]
-      private$.tag <- self$tags[names(self$tags) %in% ids]
+      private$.tags <- self$tags[names(self$tags) %in% ids]
       private$.deps <- subset(private$.deps, id %in% ids)
       private$.trafo <- self$trafos[names(self$trafos) %in% ids]
 
@@ -295,47 +260,59 @@ subset(private$.checks, grepl(pars, params))
                                   data.table(params = list(checkmate::assertSubset(params, self$ids)),
                                             fun = list(body(checkmate::assertFunction(fun, "self")))))
           invisible(self)
-        },
+    },
 
-check = function() {
-  # 1. Check values and supports
-  for (i in seq_along(private$.supports$t)) {
-    values = unlist(self$values[private$.supports$t[[i]]])
-    assert_contains(private$.tmpreg$get(names(private$.supports$t)[[i]]), values)
-  }
-  # 2. Custom checks
-  if (length(self$checks)) {
-    all(sapply(self$checks$fun, function(x) {
-    as.function(list(self = self, x))()
-    }))
-      } else {
-        TRUE
-      }
+    check = function(supports = TRUE, custom = TRUE) {
+      # 1. Containedness checks
+      if (supports && length(self)) {
+        for (i in seq_along(private$.isupports)) {
+          value <- private$.value[names(private$.value) %in% private$.isupports[[i]]]
+          if (!length(value)) {
+            value <- NULL
+          }
+          assert_contains(
+            set = support_dictionary$get(names(private$.isupports)[[i]]),
+            value = value
+          )
         }
-  ),
+      }
+
+    # 2. Custom checks
+    if (custom && length(self$checks)) {
+      all(sapply(self$checks$fun, function(x) {
+      as.function(list(self = self, x))()
+      }))
+        } else {
+          TRUE
+        }
+          }
+    ),
 
   active = list(
     supports = function() {
-      c(private$.tmpreg$get_list(names(private$.supports$t)),
-        support_dictionary$get_list(names(private$.supports$p)))
+      sups <- support_dictionary$get_list(private$.supports)
+      names(sups) <- self$ids
+      sups
     },
 
     tags = function() {
-      private$.tag
+      private$.tags
     },
 
     values = function(vals) {
       if (missing(vals)) {
         return(private$.value)
       } else {
-        vals <- vals[names(vals) %in% self$ids]
-        mapply(function(x, y) if (!is.null(y)) assert_contains(x, y), self$supports[names(vals)],
-               vals)
-        private$.value <- vals[order(names(vals))]
+        old <- private$.value
+        private$.value <- vals
+        tryCatch(self$check(),
+          error = function(e) {
+            private$.value <- old
+            stop(e)
+        })
       }
     },
 
-    # change to public and add filters?
     ids = function() {
       private$.id
     },
@@ -373,17 +350,16 @@ check = function() {
   ),
 
   private = list(
-    .tmpreg = NULL,
     .id = list(),
-    .supports = list(p = NULL, t = NULL),
+    .isupports = list(),
+    .supports = list(),
     .value = list(),
-    .tag = list(),
+    .tags = list(),
     .trafo = list(),
     .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
     .checks = data.table(params = character(0L), fun = list()),
     deep_clone = function(name, value) {
       switch(name,
-        ".tmpreg" = value$clone(deep = TRUE),
         ".deps" = data.table::copy(value),
         ".checks" = data.table::copy(value),
         value
@@ -397,11 +373,12 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # 
   if (length(x$deps) || length(x$trafos) || length(x$checks)) {
     warning("Dependencies, trafos, and checks are lost in coercion.")
   }
+  sapply(x$ids, function(.x) get_private(x)$.supports[grepl(.x, get_private(x)$.supports)])
   dt = data.table(
     Id = x$ids,
     Support = x$supports,
     Value = partial_list(x$ids, x$values),
-    Tag = partial_list(x$ids, x$tags)
+    Tags = partial_list(x$ids, x$tags)
   )
   if (sort) {
     Id = NULL # visible binding fix
@@ -416,11 +393,11 @@ as.ParameterSet <- function(x, ...) { # nolint
 }
 #' @export
 as.ParameterSet.data.table <- function(x, ...) { # nolint
-  checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tag"))
+  checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tags"))
   ParameterSet$new(id = x$Id,
                    support = x$Support,
                    value = x$Value,
-                   tag = x$Tag)
+                   tags = x$tags)
 }
 
 # less efficient than $add, needs work
@@ -428,4 +405,9 @@ as.ParameterSet.data.table <- function(x, ...) { # nolint
 rbind.ParameterSet <- function(...) {
   ps <- list(...)
   as.ParameterSet(data.table::rbindlist(lapply(ps, as.data.table)))
+}
+
+#' @export
+length.ParameterSet <- function(x) {
+  x$length
 }

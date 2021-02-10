@@ -23,7 +23,13 @@ Dictionary <- R6Class("Dictionary",
             invisible(self)
         },
 
-        add = function(x = list()) {
+        add = function(x = list(), keys = NULL, values = NULL) {
+            if (!length(x)) {
+              if (is.null(keys) || is.null(values)) {
+                stop("Either a named list or 'keys' and 'values' must be provided.")
+              }
+              x <- named_list(values, keys)
+            }
             # signif quicker than first concatenating and then checking
             checkmate::assert_list(x, min.len = 1, types = private$.types)
             private$.items <- checkmate::assert_list(c(private$.items, x), names = "unique")
@@ -51,6 +57,7 @@ Dictionary <- R6Class("Dictionary",
         },
 
         has = function(x) {
+            checkmate::assert_character(x)
             x %in% self$keys
         },
 
