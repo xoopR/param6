@@ -1,18 +1,3 @@
-#----
-p1 <- ParameterSet$new(
-  splitrule = Set$new("logrank", "extratrees", "C", "maxstat") ~ tags("train", "predict") +
-    "logrank",
-  ntrees = PosIntegers$new(),
-  sample.fraction = Interval$new(0, 1) ~ 0.5
-)
-p2 <- ParameterSet$new(
-  splitrule = Set$new("logrank", "extratrees", "C", "maxstat") ~ tags("train", "predict") +
-    "logrank",
-  sample.fraction = Interval$new(0, 1) ~ 0.5
-)
-p3 <- ParameterSet$new(ntrees = PosIntegers$new() ~ 2)
-#----
-
 test_that("prm", {
   expect_equal(
     unclass(prm("a", Set$new(1), 1, "a")),
@@ -45,20 +30,13 @@ test_that("prm", {
   expect_equal(class(prm("a", "reals")), "prm6")
 })
 
-test_that("ParameterSet constructor", {
+test_that("ParameterSet constructor - silent", {
   prms <- list(
     prm("a", Set$new(1), 1, "a"),
     prm("b", "reals", NULL),
     prm("c", "reals", 2)
   )
   expect_silent(ParameterSet$new(prms))
-
-  prms <- list(
-    prm("a", Set$new(1), 1, "a"),
-    prm("a", "reals", NULL),
-    prm("c", "reals", 2)
-  )
-  expect_error(ParameterSet$new(prms), "ids are not unique")
 
   prms <- list(
     prm("a", Set$new(1), 1),
@@ -70,7 +48,24 @@ test_that("ParameterSet constructor", {
   expect_silent(ParameterSet$new())
 })
 
-test_that("ParamSet actives", {
+test_that("ParameterSet constructor - error", {
+
+  prms <- list(
+    prm("a", Set$new(1), 1, "a"),
+    prm("a", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  expect_error(ParameterSet$new(prms), "ids are not unique")
+
+  prms <- list(
+    prm("a", Set$new(1), 1, c("a", "c")),
+    prm("b", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  expect_error(ParameterSet$new(prms), "'c' is a")
+})
+
+test_that("ParamSet actives - not values", {
   prms <- list(
     prm("a", Set$new(1, 2), 1, c("a", "b")),
     prm("b", "reals", NULL, "d"),
@@ -81,6 +76,17 @@ test_that("ParamSet actives", {
   expect_equal(p$tags, list(a = c("a", "b"), b = "d"))
   expect_equal(p$ids, letters[1:3])
   expect_equal(length(p), 3)
+  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(), c = Reals$new()))
+})
+
+test_that("ParamSet actives - values", {
+  prms <- list(
+    prm("a", Set$new(1, 2), 1, c("a", "b")),
+    prm("b", "reals", NULL, "d"),
+    prm("c", "reals", 2)
+  )
+  p <- ParameterSet$new(prms)
+
   expect_equal(p$values, list(a = 1, c = 2))
   expect_silent(p$values$a <- 2)
   expect_equal(p$values$a, 2)
@@ -90,10 +96,9 @@ test_that("ParamSet actives", {
   expect_equal(p$values, list(a = 2, c = 2))
   expect_silent(p$values <- list(a = 1))
   expect_equal(p$values, list(a = 1))
-  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(), c = Reals$new()))
 })
 
-test_that("as.data.table.ParameterSet", {
+test_that("as.data.table.ParameterSet and print", {
   prms <- list(
     prm("a", Set$new(1), 1, letters[1:2]),
     prm("b", "reals", NULL),
@@ -105,54 +110,55 @@ test_that("as.data.table.ParameterSet", {
       Support = list(Set$new(1), Reals$new(), Reals$new()),
       Value = list(1, NULL, 2),
       Tags = list(letters[1:2], NULL, NULL)))
+
+  expect_output(print(p))
 })
 
-
-test_that("print", {
-  expect_output(p1$print())
-  expect_output(p1$print(NULL))
-  expect_output(p1$print(hide_cols = "Id"))
-  expect_error(p1$print(hide_cols = "sdsd"))
-  p <- ParameterSet$new(a = Logicals$new(), b = Logicals$new())
-  p$add_trafo("a", exp)
-  p$add_dep("a", "b", "Equal", FALSE)
-  expect_output(p$print(hide_cols = NULL))
+test_that("add - error", {
+  prms <- list(
+    prm("a", Set$new(1), 1, letters[1:2]),
+    prm("b", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  p <- ParameterSet$new(prms)
+  expect_error(p$add(), "At least")
+  expect_error(p$add(list(prm("c", "reals", 2))), "ids are not")
 })
 
-test_that("values", {
-  expect_silent({
-    p1$values$asas <- 1
-  })
-  expect_silent({
-    p1$values$ntrees <- 1
-  })
-  expect_silent({
-    p1$values$ntrees <- NULL
-  })
-  expect_equal(p1$values$ntrees, NULL)
-  expect_equal(p1$values$sample.fraction, 0.5)
-  expect_silent({
-    p1$values$ntrees <- 1
-  })
-  expect_equal(p1$values$ntrees, 1)
-  expect_silent({
-    p1$values <- list(splitrule = "C", sample.fraction = 0.1, ntrees = 2)
-  })
-  expect_error({p1$values$ntrees <- -5}, "does not lie in") # nolint
+test_that("add - silent", {
+  prms <- list(
+    prm("a", Set$new(1), 1, letters[1:2]),
+    prm("b", "reals", NULL),
+    prm("c", "reals", 2)
+  )
+  p <- ParameterSet$new(prms)
+  expect_silent(p$add(list(
+    prm("d", "reals", 2),
+    prm("e", Set$new(3), 3, tags = c("a", "d"))
+  )))
+  expect_equal(as.data.table(p),
+    data.table(Id = letters[1:5],
+               Support = list(Set$new(1), Reals$new(), Reals$new(), Reals$new(), Set$new(3)),
+               Value = list(1, NULL, 2, 2, 3),
+               Tags = list(letters[1:2], NULL, NULL, NULL, c("a", "d"))))
 })
 
 test_that("get_values", {
-  support <- rep(list(PosIntegers$new()), 5)
-  names(support) <- letters[1:5]
-  p <- ParameterSet$new(
-    support = support,
-    value = list(1, 2, NULL, 4, NULL),
-    tags = list("train", c("train", "predict"), NULL, NULL, "predict")
+ prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", tags = "t1"),
+    prm("c", "reals", tags = "t2")
   )
-  expect_equal(p$values, list(a = 1, b = 2, d = 4))
-  expect_equal(p$get_values(), list(a = 1, b = 2, d = 4))
-  expect_equal(p$get_values(tags = "predict"), list(b = 2))
-  expect_equal(p$get_values(tags = "train"), list(a = 1, b = 2))
+  p <- ParameterSet$new(prms)
+  expect_equal(p$get_values(inc.null = TRUE), list(a = 1, b = NULL, c = NULL))
+  expect_equal(p$get_values(inc.null = FALSE), list(a = 1))
+
+  expect_equal(p$get_values(inc.null = TRUE, tags = "t1"), list(a = 1, b = NULL))
+  expect_equal(p$get_values(inc.null = FALSE, tags = "t1"), list(a = 1))
+
+  expect_equal(p$get_values(inc.null = TRUE, tags = "t2"), list(c = NULL))
+  expect_equal(p$get_values(inc.null = FALSE, tags = "t2"), named_list())
+
 })
 
 test_that("supports", {
@@ -173,10 +179,7 @@ test_that("rbind", {
   expect_error(rbind(p3, ParameterSet$new(ntrees = LogicalSet$new())), "Must have unique")
 })
 
-test_that("add", {
-  expect_error(p2$add(splitrule = Set$new(1)), "duplicated")
-  expect_equal_ParameterSet(p2$add(ntrees = PosIntegers$new() ~ 2), p1)
-})
+
 
 test_that("remove", {
   p4 <- ParameterSet$new(

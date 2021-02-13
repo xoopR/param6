@@ -32,3 +32,44 @@ test_that("string_as_set", {
   expect_equal(string_as_set("a"), "{a}")
   expect_equal(string_as_set(c("a", "b")), "{a, b}")
 })
+
+test_that("env_append", {
+  a <- R6Class("a",
+               public = list(b = list(), c = function() private$.c),
+               private = list(.c = list(y = 1)))
+  obj <- a$new()
+  expect_silent(env_append(obj, "b", list(x = 1)))
+  expect_silent(env_append(get_private(obj), ".c", list(z = 2)))
+  expect_equal(obj$b, list(x = 1))
+  expect_equal(obj$c(), list(y = 1, z = 2))
+})
+
+test_that("invert names", {
+  expect_equal(
+    invert_names(list(x = "a", y = "a", z = "b")),
+    list(a = c("x", "y"), b = "z")
+  )
+})
+
+test_that("expand_list", {
+  expect_equal(
+    expand_list(letters[1:3], list(a = 1, c = 2)),
+    list(a = 1, b = NULL, c = 2)
+  )
+})
+
+test_that("named_list", {
+  nl <- list(a = 1)
+  expect_equal(named_list(1, "a"), nl)
+
+  nl[1:2] <- NULL
+  expect_equal(named_list(), nl)
+})
+
+test_that("as_named_list", {
+  nl <- list(a = 1, b = 2)
+  expect_equal(as_named_list(c(1, 2), letters[1:2]), nl)
+
+  nl[1:2] <- NULL
+  expect_equal(as_named_list(), nl)
+})

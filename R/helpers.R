@@ -55,22 +55,37 @@ sort_named_list <- function(lst, ...) {
 }
 
 named_list <- function(values, names) {
-  x <- list(values)
+  if (missing(values) && missing(names)) {
+    x <- list()
+    names <- character()
+  } else {
+    x <- list(values)
+  }
+
   names(x) <- names
   x
 }
 
 as_named_list <- function(values, names) {
-  x <- as.list(values)
+  if (missing(values) && missing(names)) {
+    x <- list()
+    names <- character()
+  } else {
+    x <- as.list(values)
+  }
+
   names(x) <- names
   x
 }
 
-partial_list <- function(names, named_list) {
-  lst <- vector("list", length(names))
-  names(lst) <- names
-  lst[names(lst) %in% names(named_list)] <- named_list
-  return(lst)
+expand_list <- function(names, named_var) {
+  checkmate::assert_character(names, min.len = 1)
+  checkmate::assert_list(named_var, min.len = 1, names = "unique")
+
+  x <- vector("list", length(names))
+  names(x) <- names
+  x[names(x) %in% names(named_var)] <- named_var
+  return(x)
 }
 
 get_private <- function(x) {
@@ -91,4 +106,10 @@ un_null_list <- function(x, rm.names = TRUE) {
     x <- unname(x)
   }
   x
+}
+
+# append and assign a variable in an environment
+env_append <- function(env, var, values) {
+  env[[var]] <- c(env[[var]], values)
+  invisible(NULL)
 }
