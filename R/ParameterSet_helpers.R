@@ -86,33 +86,42 @@
 }
 
 .check_deps <- function(self, values, deps, id, error_on_fail) {
-
-  for (i in nrow(deps)) {
-    id <- deps[i, 1][[1]]
-    on <- deps[i, 2][[1]]
-    cnd <- deps[i, 3][[1]][[1]]
-    fun <- eval(cnd)
-    id_value <- .get_values(self, get_private(self), values, id, inc_null = FALSE)
-    on_value <- .get_values(self, get_private(self), values, on, inc_null = FALSE)
-    if (length(id_value)) {
-      ok <- fun(on_value)
-      if (!ok) {
-        msg <- sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
-                      attr(cnd, "type"), string_as_set(attr(cnd, "value")))
-        if (error_on_fail) {
-          stop(msg)
-        } else {
-          warning(msg)
+  if (!is.null(deps) && nrow(deps)) {
+    for (i in nrow(deps)) {
+      id <- deps[i, 1][[1]]
+      on <- deps[i, 2][[1]]
+      cnd <- deps[i, 3][[1]][[1]]
+      fun <- eval(cnd)
+      id_value <- .get_values(self, get_private(self), values, id, inc_null = FALSE)
+      on_value <- .get_values(self, get_private(self), values, on, inc_null = FALSE)
+      if (length(id_value)) {
+        ok <- fun(on_value)
+        if (!ok) {
+          msg <- sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
+                        attr(cnd, "type"), string_as_set(attr(cnd, "value")))
+          if (error_on_fail) {
+            stop(msg)
+          } else {
+            warning(msg)
+          }
         }
       }
     }
+  } else {
+    TRUE
   }
 }
 
-.check_custom <- function(self, values, supports, id, error_on_fail) {
-  if (custom && length(self$checks)) {
-    all(sapply(self$checks$fun, function(x) {
-      as.function(list(self = self, x))()
-    }))
+.check_custom <- function(self, values, checks, id, error_on_fail) {
+  if (!is.null(checks) && nrow(checks)) {
+    if (!is.null(id)) {
+      checks <- subset(checks, grepl(paste0(id, collapse = "|"), params))
+    }
+
+    all(vapply(checks$fun, function(.y) {
+      as.function(list(x = values, self = self, .y))()
+    }, logical(1)))
+  } else {
+    TRUE
   }
 }

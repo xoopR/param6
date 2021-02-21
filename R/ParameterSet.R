@@ -29,7 +29,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     print = function(sort = TRUE) { # hide_cols = c("Parent", "Trafo"),
       #checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tags", "Parent", "Trafo"))
 
-      dt <- as.data.table(self, sort = sort)
+      dt <- suppressWarnings(as.data.table(self, sort = sort))
       dt$Support <- sapply(dt$Support, function(x) x$strprint())
 
       # if (!("Parent" %in% hide_cols) & length(self$deps)) {
@@ -71,10 +71,15 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    # TODO
+    # FIXME - ADD DEPS, TRAFOS, CHECKS
     # takes character arguments specifying parameter ids and removes associated values.
     # needs more work as currently ignores deps and trafos
     remove = function(...) {
+
+      if (!is.null(private$.trafo)) {
+        warning("Rransformations are not included in extraction.")
+      }
+
       pars <- unlist(list(...))
       private$.support[pars] <- NULL
       private$.value[pars] <- NULL
@@ -95,25 +100,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .get_values(self, private, private$.value, id, tags, transform, inc_null, simplify)
     },
 
-    # FIXME - subsets the ParameterSet. needs further work as trafos and deps ignored
-    subset = function(ids) {
-      checkmate::assert_subset(ids, self$ids)
-      ids <- intersect(self$ids, ids)
-      private$.support <- self$supports[names(self$supports) %in% ids]
-      private$.value <- self$values[names(self$values) %in% ids]
-      private$.tags <- self$tags[names(self$tags) %in% ids]
-      private$.deps <- subset(private$.deps, id %in% ids)
-      private$.trafo <- self$trafos[names(self$trafos) %in% ids]
-
-      invisible(self)
-    },
-
     # FIXME - DOCUMENT
     add_dep = function(id, on, cnd) {
-
-      if (!requireNamespace("data.table", quietly = TRUE)) {
-        stop("{data.table} required for adding dependencies.")
-      }
 
       checkmate::assert_class(cnd, "cnd")
       if (id == on) {
@@ -124,7 +112,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
       aid <- id
       aon <- on
 
-      if (nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))) {
+      if (!is.null(private$.deps) &&
+          nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))) {
         stop(sprintf("%s already depends on %s.", id, on))
       }
 
@@ -164,25 +153,31 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    # Used to compare parameter values between each other. One function calling `self`, boolean
-    # conditions 'added' together to form a single function.
-    # add_check = function(params, fun) {
-    #   if (is.null(self$checks)) {
-    #     checks <- data.table(params = character(0L), fun = list())
-    #   } else {
-    #     checks <- self$checks
-    #   }
-    #       private$.checks <- rbind(private$.checks,
-    #                               data.table(params = list(checkmate::assertSubset(params, self$ids)),
-    #                                         fun = list(body(checkmate::assertFunction(fun, "self")))))
-    #       invisible(self)
-    # },
+    # FIXME - DOCUMENT
+    add_check = function(params, fun) {
+
+      if (is.null(self$checks)) {
+        checks <- data.table(params = character(0L), fun = list())
+      } else {
+        checks <- self$checks
+      }
+      checkmate::assert_subset(params, self$ids)
+      checkmate::assert_function(fun, c("x", "self"))
+      if (!checkmate::test_logical(fun(self$values, self), len = 1)) {
+        stop("'fun' should evaluate to a scalar logical.")
+      }
+      private$.checks <- rbind(private$.checks,
+                               data.table::data.table(params = list(params),
+                                                      fun = list(body(fun))))
+
+      invisible(self)
+    },
 
     # FIXME - DOCUMENT
     check = function(supports = TRUE, custom = TRUE, deps = TRUE, id = NULL,
                      error_on_fail = TRUE) {
-      .check(self, supports, custom, deps, id, error_on_fail, support_check = private$.isupports,
-             dep_check = self$deps, custom_check = self$checks)
+      .check(self, supports, custom, deps, id, error_on_fail, value_check = self$values,
+             support_check = private$.isupports, dep_check = self$deps, custom_check = self$checks)
     },
 
     # FIXME - DOCUMENT
@@ -216,8 +211,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    # FIXME - DOCUMENT
+    # FIXME - ADD CHECKS TO EXTRACT
     extract = function(id = NULL, rm_prefix = TRUE) {
+
+      if (!is.null(private$.checks) || !is.null(private$.trafo)) {
+        warning("Checks and transformations are not included in extraction.")
+      }
 
       which_ids <- paste0(id, collapse = "|")
       ids <- self$ids[grepl(which_ids, self$ids)]
@@ -236,7 +235,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
           }
         }, character(1))
         if (any(id %in% prefixes)) {
-          ids <- vapply(strsplit(ids, paste0(prefixes, "__")), function(x) {
+          new_ids <- vapply(strsplit(ids, paste0(prefixes, "__")), function(x) {
             tryCatch(x[[2]], error = function(e) x[[1]])
           }, character(1))
         }
@@ -245,17 +244,18 @@ ParameterSet <- R6::R6Class("ParameterSet",
                   any(grepl("__", ids, fixed = TRUE)) &&
                   any(grepl(paste0(rm_prefix, collapse = "|"), ids))) {
 
+        new_ids <- ids
         for (i in seq_along(rm_prefix)) {
           .x <- rm_prefix[[i]]
-           which <- grepl(.x, ids)
+           which <- grepl(.x, new_ids)
           if (any(which)) {
-            ids[which] <- substr(ids[which], nchar(.x) + 3, 1000)
+            new_ids[which] <- substr(new_ids[which], nchar(.x) + 3, 1000)
           }
         }
         rm(.x)
       }
 
-      as.ParameterSet(
+      ps <- as.ParameterSet(
         unname(Map(prm,
           id = ids,
           support = supports,
@@ -264,6 +264,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
           .check = FALSE
         ))
       )
+
+      if (!is.null(private$.deps)) {
+        deps <- subset(private$.deps, id %in% ids & on %in% ids)
+        if (nrow(deps)) {
+          pri <- get_private(ps)
+          if (length(new_ids)) {
+            deps$id <- new_ids[match(deps$id, ids)]
+            deps$on <- new_ids[match(deps$on, ids)]
+          }
+          pri$.deps <- deps
+        }
+      }
+
+      ps
+
     }
     ),
 
@@ -394,42 +409,4 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # 
 #' @export
 pset <- function(prms) {
   ParameterSet$new(prms)
-}
-
-#' @export
-as.ParameterSet <- function(x, ...) { # nolint
-  UseMethod("as.ParameterSet")
-}
-
-#' @export
-as.ParameterSet.data.table <- function(x, ...) { # nolint
-  ParameterSet$new(as.prm(x))
-}
-
-#' @export
-as.ParameterSet.prm <- function(x, ...) { # nolint
-  ParameterSet$new(list(x))
-}
-
-#' @export
-as.ParameterSet.list <- function(x, ...) { # nolint
-  checkmate::assert_list(x, "prm", any.missing = FALSE)
-  ParameterSet$new(x)
-}
-
-#' @export
-length.ParameterSet <- function(x) {
-  x$length
-}
-
-#' @export
-rep.ParameterSet <- function(x, times, prefix, ...) {
-  x <- x$clone(deep = TRUE)
-  x$rep(times, prefix)
-  x
-}
-
-#' @export
-c.ParameterSet <- function(...) {
-  ParameterSet$new(unlist(lapply(list(...), as.prm), FALSE))
 }

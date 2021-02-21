@@ -246,7 +246,7 @@ test_that("add_dep", {
   prms <- list(
     prm("a", Set$new(1), 1, tags = "t1"),
     prm("b", "reals", tags = "t1"),
-    prm("c", "reals", tags = "t2")
+    prm("d", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
   expect_error(p$add_dep("a", "b", cnd(1, "eq")), "failed")
@@ -282,7 +282,7 @@ test_that("c", {
   expect_equal(as.data.table(c(p1, p2, p3)), as.data.table(p))
 })
 
-test_that("extract", {
+test_that("extract - no deps or checks", {
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2"),
@@ -290,16 +290,82 @@ test_that("extract", {
     prm("Pre2__par2", "reals", 3, tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  p$extract("Pre1", rm_prefix = FALSE)
-  p$extract("Pre1", rm_prefix = TRUE)
-  p$extract("Pre1", rm_prefix = "Pre1")
-  p$extract("par1")
-  p$extract("Pre1__par1")
+  expect_equal(p$extract("Pre1", rm_prefix = TRUE),
+               p$extract("Pre1", rm_prefix = "Pre1"))
 
+  prms <- list(
+    prm("par1", Set$new(1), 1, tags = "t1"),
+    prm("par2", "reals", 3, tags = "t2")
+  )
+  p2 <- ParameterSet$new(prms)
+  expect_equal(p$extract("Pre1", rm_prefix = TRUE), p2)
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2")
+  )
+  p2 <- ParameterSet$new(prms)
+  expect_equal(p$extract("Pre1", rm_prefix = FALSE), p2)
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1")
+  )
+  p2 <- ParameterSet$new(prms)
+  expect_equal(p$extract("par1", rm_prefix = FALSE), p2)
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1")
+  )
+  p2 <- ParameterSet$new(prms)
+  expect_equal(p$extract("Pre1__par1", rm_prefix = FALSE), p2)
+})
+
+test_that("extract - deps", {
+  prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", tags = "t1"),
+    prm("d", "reals", 2, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  p$add_dep("b", "a", cnd(1, "eq"))
+  p$add_dep("a", "d", cnd(0, "gt"))
+
+  expect_equal(p$extract("a")$deps, NULL)
+  expect_equal(p$extract(letters[1:2])$deps,
+              data.table::data.table(id = "b", on = "a", cond = list(cnd(1, "eq"))))
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par2", "reals", 3, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  p$add_dep("Pre1__par1", "Pre1__par2", cnd(3, "eq"))
+  expect_equal(p$extract("Pre1")$deps,
+              data.table::data.table(id = "par1", on = "par2", cond = list(cnd(3, "eq"))))
 
 })
 
-
+test_that("checks", {
+  prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", 2, tags = "t1"),
+    prm("d", "reals", tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_equal(p$checks, NULL)
+  expect_error(p$add_check("e", function(x, self) x$a == 1), "subset")
+  expect_error(p$add_check("a", function(x, self) a == 1), "formal")
+  expect_silent(p$add_check("a", function(x, self) x$values$a == 0.5))
+  expect_equal(p$checks, data.table(params = list("a"), fun = list(body(function(x) x$a == 0.5))))
+  expect_true(p$check())
+  expect_silent(p$add_check(c("a", "b"), function(x, self) x$a + x$b == 2.5))
+  expect_true(p$check())
+  expect_silent(p$add_check(c("c"), function(x, self) x$c == TRUE))
+  expect_false(p$check())
+})
 
 
 test_that("remove", {
@@ -335,26 +401,6 @@ test_that("remove", {
     c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"
   )
   expect_equal(p4$remove("e"), p4)
-})
-
-
-test_that("subset", {
-  expect_equal_ParameterSet(p1$subset("ntrees"), p3)
-})
-
-
-test_that("deep_clone", {
-  a <- ParameterSet$new(lgl = LogicalSet$new() ~ TRUE)
-  b <- a
-  b$values$lgl <- FALSE
-  expect_false(a$values$lgl)
-
-  a <- ParameterSet$new(lgl = LogicalSet$new() ~ TRUE)
-  b <- a$clone()
-  b$values$lgl <- FALSE
-  expect_true(a$values$lgl)
-  b$values$lgl <- TRUE
-  expect_equal(a, b)
 })
 
 test_that("checks", {
