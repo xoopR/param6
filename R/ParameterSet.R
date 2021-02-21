@@ -4,7 +4,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     initialize = function(prms = list()) {
 
       if (length(prms)) {
-        checkmate::assert_list(prms, "prm6", any.missing = FALSE)
+        checkmate::assert_list(prms, "prm", any.missing = FALSE)
 
         ids <- vapply(prms, "[[", character(1), "id")
         if (any(duplicated(ids))) {
@@ -157,7 +157,11 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
     # FIXME - DOCUMENT
     transform = function() {
-      private$.trafo(self)
+      if (!is.null(private$.trafo)) {
+        private$.value <- private$.trafo(self$values, self)
+      }
+
+      invisible(self)
     },
 
     # Used to compare parameter values between each other. One function calling `self`, boolean
@@ -209,11 +213,57 @@ ParameterSet <- R6::R6Class("ParameterSet",
       names(tags) <- paste(rep(prefix, each = length(private$.tags)), names(tags), sep = "__")
       private$.tags <- tags
 
-      if (!is.null(self$trafo)) {
-        warning("'trafo' should be replicated manually.")
+      invisible(self)
+    },
+
+    # FIXME - DOCUMENT
+    extract = function(id = NULL, rm_prefix = TRUE) {
+
+      which_ids <- paste0(id, collapse = "|")
+      ids <- self$ids[grepl(which_ids, self$ids)]
+      supports <- private$.supports[grepl(which_ids, names(private$.supports))]
+      values <- expand_list(self$ids, self$values)
+      values <- values[grepl(which_ids, names(values))]
+      tags <- expand_list(self$ids, self$tags)
+      tags <- tags[grepl(which_ids, names(tags))]
+
+      if (isTRUE(rm_prefix) && any(grepl("__", ids, fixed = TRUE))) {
+        prefixes <- vapply(strsplit(ids, "__", fixed = TRUE), function(x) {
+          if (length(x) > 1) {
+            x[[1]]
+          } else {
+            NA_character_
+          }
+        }, character(1))
+        if (any(id %in% prefixes)) {
+          ids <- vapply(strsplit(ids, paste0(prefixes, "__")), function(x) {
+            tryCatch(x[[2]], error = function(e) x[[1]])
+          }, character(1))
+        }
+
+      } else if (checkmate::test_character(rm_prefix) &&
+                  any(grepl("__", ids, fixed = TRUE)) &&
+                  any(grepl(paste0(rm_prefix, collapse = "|"), ids))) {
+
+        for (i in seq_along(rm_prefix)) {
+          .x <- rm_prefix[[i]]
+           which <- grepl(.x, ids)
+          if (any(which)) {
+            ids[which] <- substr(ids[which], nchar(.x) + 3, 1000)
+          }
+        }
+        rm(.x)
       }
 
-      invisible(self)
+      as.ParameterSet(
+        unname(Map(prm,
+          id = ids,
+          support = supports,
+          value = values,
+          tags = tags,
+          .check = FALSE
+        ))
+      )
     }
     ),
 
@@ -257,7 +307,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # FIXME - DOCUMENT
     deps = function() {
       .x = private$.deps
-      if (nrow(.x)) {
+      if (!is.null(.x)) {
         .x
       } else {
         NULL
@@ -269,8 +319,17 @@ ParameterSet <- R6::R6Class("ParameterSet",
       if (missing(x)) {
         private$.trafo
       } else {
-        checkmate::assert_function(x, args = "x")
-        checkmate::assert_list(x(self$values))
+        checkmate::assert_function(x, args = c("x", "self"))
+        vals <- x(self$values, self)
+        checkmate::assert_list(vals)
+
+        tryCatch(.check(self, id = names(vals), value_check = vals,
+                        support_check = private$.isupports, dep_check = self$deps,
+                        custom_check = self$checks),
+                 error = function(e) {
+                   stop("Transformation results in values outside of supports.")
+                 })
+
         private$.trafo <- x
         invisible(self)
       }
@@ -279,7 +338,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # FIXME - DOCUMENT
     checks = function() {
       .x = private$.checks
-      if (nrow(.x)) {
+      if (!is.null(.x)) {
         .x
       } else {
         NULL
@@ -333,25 +392,30 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # 
 }
 
 #' @export
+pset <- function(prms) {
+  ParameterSet$new(prms)
+}
+
+#' @export
 as.ParameterSet <- function(x, ...) { # nolint
   UseMethod("as.ParameterSet")
 }
+
 #' @export
 as.ParameterSet.data.table <- function(x, ...) { # nolint
-  checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tags"))
-  ParameterSet$new(id = x$Id,
-                   support = x$Support,
-                   value = x$Value,
-                   tags = x$tags)
+  ParameterSet$new(as.prm(x))
 }
 
-# FIXME
-# less efficient than $add, needs work
 #' @export
-# rbind.ParameterSet <- function(...) {
-#   ps <- list(...)
-#   as.ParameterSet(data.table::rbindlist(lapply(ps, as.data.table)))
-# }
+as.ParameterSet.prm <- function(x, ...) { # nolint
+  ParameterSet$new(list(x))
+}
+
+#' @export
+as.ParameterSet.list <- function(x, ...) { # nolint
+  checkmate::assert_list(x, "prm", any.missing = FALSE)
+  ParameterSet$new(x)
+}
 
 #' @export
 length.ParameterSet <- function(x) {
@@ -363,4 +427,9 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
   x <- x$clone(deep = TRUE)
   x$rep(times, prefix)
   x
+}
+
+#' @export
+c.ParameterSet <- function(...) {
+  ParameterSet$new(unlist(lapply(list(...), as.prm), FALSE))
 }

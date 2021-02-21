@@ -1,4 +1,4 @@
-prm <- function(id, support, value = NULL, tags = NULL) {
+prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   checkmate::assert_character(id, len = 1)
   if (id == "c") {
     stop("'c' is a reserved id in param6.")
@@ -29,11 +29,40 @@ prm <- function(id, support, value = NULL, tags = NULL) {
     }
   }
 
-  if (!is.null(value)) {
+  if (!is.null(value) && .check) {
     assertContains(support, value)
   }
 
   param <- list(id = id, support = str_support, value = value, tags = tags)
-  class(param) <- "prm6"
+  class(param) <- "prm"
   param
+}
+
+#' @export
+as.prm <- function(x, ...) {
+  UseMethod("as.prm")
+}
+
+#' @rdname as.prm
+#' @export
+as.prm.ParameterSet <- function(x) {
+  unname(Map(prm,
+    id = x$ids,
+    support = get_private(x)$.supports,
+    value = expand_list(x$ids, x$values),
+    tags = expand_list(x$ids, x$tags),
+    .check = FALSE
+  ))
+}
+
+#' @rdname as.prm
+#' @export
+as.prm.data.table <- function(x) {
+  checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tags"))
+  unname(Map(prm,
+    id = x$Id,
+    support = x$Support,
+    value = x$Value,
+    tags = x$Tags
+  ))
 }

@@ -27,7 +27,7 @@
                           inc_null = inc_null)
 
       if (transform && !is.null(private$.trafo)) {
-        values <- private$.trafo(values)
+        values <- private$.trafo(values, self)
       }
 
       if (simplify) {

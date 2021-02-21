@@ -1,35 +1,3 @@
-test_that("prm", {
-  expect_equal(
-    unclass(prm("a", Set$new(1), 1, "a")),
-    list(id = "a", support = "{1}", value = 1, tags = "a")
-  )
-  expect_true(support_dictionary$has("{1}"))
-  expect_equal(
-    unclass(prm("a", Set$new(1), 1, "a")),
-    list(id = "a", support = "{1}", value = 1, tags = "a")
-  )
-
-  expect_equal(
-    unclass(prm("a", "reals", 1, "a")),
-    list(id = "a", support = "reals", value = 1, tags = "a")
-  )
-
-  expect_equal(
-    unclass(prm("a", "reals")),
-    list(id = "a", support = "reals", value = NULL, tags = NULL)
-  )
-
-  expect_equal(
-    unclass(prm("a", "reals", tags = letters[1:2])),
-    list(id = "a", support = "reals", value = NULL, tags = letters[1:2])
-  )
-
-  expect_error(prm("a", "Reals", 1, "a"), "does not exist")
-  expect_error(prm("a", 1, 1, "a"), "character scalar")
-
-  expect_equal(class(prm("a", "reals")), "prm6")
-})
-
 test_that("ParameterSet constructor - silent", {
   prms <- list(
     prm("a", Set$new(1), 1, "a"),
@@ -103,16 +71,40 @@ test_that("as.data.table.ParameterSet and print", {
   prms <- list(
     prm("a", Set$new(1), 1, letters[1:2]),
     prm("b", "reals", NULL),
-    prm("c", "reals", 2)
+    prm("d", "reals", 2)
   )
   p <- ParameterSet$new(prms)
   expect_equal(as.data.table(p),
-    data.table::data.table(Id = letters[1:3],
+    data.table::data.table(Id = letters[c(1,2,4)],
       Support = list(Set$new(1), Reals$new(), Reals$new()),
       Value = list(1, NULL, 2),
       Tags = list(letters[1:2], NULL, NULL)))
 
   expect_output(print(p))
+})
+
+test_that("as.ParameterSet.data.table", {
+  prms <- list(
+    prm("a", Set$new(1), 1, letters[1:2]),
+    prm("b", Reals$new(), NULL),
+    prm("d", Reals$new(), 2)
+  )
+  dt <- data.table::data.table(Id = letters[c(1,2,4)],
+      Support = list(Set$new(1), Reals$new(), Reals$new()),
+      Value = list(1, NULL, 2),
+      Tags = list(letters[1:2], NULL, NULL))
+  expect_equal(as.ParameterSet(dt), ParameterSet$new(prms))
+
+  prms <- list(
+    prm("a", "naturals", 1, letters[1:2]),
+    prm("b", "reals", NULL),
+    prm("d", "reals", 2)
+  )
+  dt <- data.table::data.table(Id = letters[c(1,2,4)],
+      Support = list("naturals", "reals", "reals"),
+      Value = list(1, NULL, 2),
+      Tags = list(letters[1:2], NULL, NULL))
+  expect_equal(as.ParameterSet(dt), ParameterSet$new(prms))
 })
 
 test_that("add - error", {
@@ -176,22 +168,52 @@ test_that("get_values", {
 
 test_that("trafo", {
   prms <- list(
-    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("a", Set$new(1, 2), 1, tags = "t1"),
     prm("b", "reals", tags = "t1"),
-    prm("c", "reals", tags = "t2")
+    prm("d", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
   expect_equal(p$trafo, NULL)
   expect_error({p$trafo <- "a"}, "function")
-  expect_error({p$trafo <- function(x) "a"}, "list")
+  expect_error({p$trafo <- function(x, self) "a"}, "list")
   expect_silent({
-    p$trafo <- function(x) {
+    p$trafo <- function(x, self) {
       x$a = x$a + 1
       x$b = 3
       x
     }
   })
+  expect_error({
+    p$trafo <- function(x, self) {
+      x$a = x$a + 2
+      x$b = 3
+      x
+    }
+  }, "outside")
   expect_equal(p$get_values(inc_null = FALSE), list(a = 2, b = 3))
+
+  prms <- list(
+    prm("a", Set$new(1, exp(1)), 1, tags = "t1"),
+    prm("b", "reals", 2, tags = "t1"),
+    prm("d", "reals", tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_silent({
+    p$trafo <- function(x, self) {
+      x <- lapply(self$get_values(tags = "t1", transform = FALSE), exp)
+      x
+    }
+  })
+  expect_equal(p$get_values(inc_null = FALSE), list(a = exp(1), b = exp(2)))
+
+  prms <- list(
+    prm("a", Set$new(1, exp(1)), exp(1), tags = "t1"),
+    prm("b", "reals", exp(2), tags = "t1"),
+    prm("d", "reals", tags = "t2")
+  )
+  p2 <- ParameterSet$new(prms)
+
+  expect_equal(as.data.table(p$transform()), as.data.table(p2))
 })
 
 test_that("rep", {
@@ -245,13 +267,38 @@ test_that("add_dep", {
   expect_error(p2$add_dep("Pre1", "Pre2", cnd(3, "eq")), "Single dependency")
 })
 
+test_that("c", {
+  prms <- list(
+    prm("a", Set$new(1, 2), 1, c("a", "b")),
+    prm("b", "reals", NULL, "d"),
+    prm("d", "reals", 2),
+    prm("e", "reals", 2)
+  )
+  p <- ParameterSet$new(prms)
 
-
-test_that("rbind", {
-  p2$values <- list(splitrule = "C", sample.fraction = 0.1)
-  expect_equal(as.data.table(rbind(p3, p2)), as.data.table(p1))
-  expect_error(rbind(p3, ParameterSet$new(ntrees = LogicalSet$new())), "Must have unique")
+  p1 <- ParameterSet$new(list(prm("a", Set$new(1, 2), 1, c("a", "b"))))
+  p2 <- ParameterSet$new(list(prm("b", "reals", NULL, "d")))
+  p3 <- ParameterSet$new(list(prm("d", "reals", 2), prm("e", "reals", 2)))
+  expect_equal(as.data.table(c(p1, p2, p3)), as.data.table(p))
 })
+
+test_that("extract", {
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par2", "reals", 3, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  p$extract("Pre1", rm_prefix = FALSE)
+  p$extract("Pre1", rm_prefix = TRUE)
+  p$extract("Pre1", rm_prefix = "Pre1")
+  p$extract("par1")
+  p$extract("Pre1__par1")
+
+
+})
+
 
 
 
@@ -290,34 +337,6 @@ test_that("remove", {
   expect_equal(p4$remove("e"), p4)
 })
 
-
-test_that("as.ParameterSet", {
-  expect_error(as.ParameterSet(data.table(Id = "a", Support = Set$new(), Val = 2,
-                                          Tags = list(NULL))),
-               "colnames")
-  expect_error(as.ParameterSet(data.table(
-    Id = c("a", "a"),
-    Support = c(Set$new(), Set$new(2)),
-    Value = c(2, NULL), Tags = c("train", "train")
-  )), "unique names")
-  expect_error(as.ParameterSet(data.table(
-    Id = c("a", "b"),
-    Support = c(Set$new(), Set$new(2)),
-    Value = list(2, NULL),
-    Tags = list("train", "predict")
-  )), "does not lie")
-  expect_equal(
-    as.ParameterSet(data.table(
-      Id = c("a", "b"),
-      Support = list(Set$new(), Set$new(2)),
-      Value = list(NULL, 2)
-    )),
-    ParameterSet$new(
-      "a" = Set$new(),
-      "b" = Set$new(2) ~ 2
-    )
-  )
-})
 
 test_that("subset", {
   expect_equal_ParameterSet(p1$subset("ntrees"), p3)
