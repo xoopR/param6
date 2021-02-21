@@ -47,20 +47,32 @@
 
   # 1. Containedness checks
   if (supports && length(self)) {
-    .check_supports(self, value_check, support_check, id, error_on_fail)
+    x <- .check_supports(self, value_check, support_check, id, error_on_fail)
+  }
+
+  if (!x) {
+    return(FALSE)
   }
 
   # 2. Dependencies
   if (deps && !is.null(dep_check)) {
-    .check_deps(self, value_check, dep_check, id, error_on_fail)
+    x <- .check_deps(self, value_check, dep_check, id, error_on_fail)
+  }
+
+  if (!x) {
+    return(FALSE)
   }
 
   # 3. Custom checks
   if (custom && !is.null(custom_check)) {
-    .check_custom(self, value_check, custom_check, id, error_on_fail)
+    x <- .check_custom(self, value_check, custom_check, id, error_on_fail)
   }
 
-  invisible(NULL)
+  if (!x) {
+    return(FALSE)
+  }
+
+  invisible(TRUE)
 }
 
 .check_supports <- function(self, values, supports, id, error_on_fail) {
@@ -80,9 +92,11 @@
         stop(msg)
       } else {
         warning(msg)
+        return(FALSE)
       }
     }
   }
+  TRUE
 }
 
 .check_deps <- function(self, values, deps, id, error_on_fail) {
@@ -103,6 +117,7 @@
             stop(msg)
           } else {
             warning(msg)
+            return(FALSE)
           }
         }
       }

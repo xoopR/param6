@@ -35,3 +35,22 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 c.ParameterSet <- function(...) {
   ParameterSet$new(unlist(lapply(list(...), as.prm), FALSE))
 }
+
+# FIXME - CONSIDER ADDING DEPS
+#' @export
+as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # nolint
+  if (length(x$deps) || length(x$trafos) || length(x$checks)) {
+    warning("Dependencies, trafos, and checks are lost in coercion.")
+  }
+  dt = data.table::data.table(
+    Id = x$ids,
+    Support = x$supports,
+    Value = expand_list(x$ids, x$values),
+    Tags = expand_list(x$ids, x$tags)
+  )
+  if (sort) {
+    Id = NULL # visible binding fix
+    data.table::setorder(dt, Id)
+  }
+  dt
+}

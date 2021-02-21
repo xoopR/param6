@@ -24,10 +24,15 @@ test_that("prm", {
     list(id = "a", support = "reals", value = NULL, tags = letters[1:2])
   )
 
+  expect_equal(class(prm("a", "reals")), "prm")
+})
+
+test_that("prm - error", {
+  expect_error(prm("a", Set$new(1), tags =  "c"), "'c' is a")
+  expect_error(prm("c", "reals", 2), "'c' is a")
+
   expect_error(prm("a", "Reals", 1, "a"), "does not exist")
   expect_error(prm("a", 1, 1, "a"), "character scalar")
-
-  expect_equal(class(prm("a", "reals")), "prm")
 })
 
 test_that("as.prm.data.table", {

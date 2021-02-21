@@ -24,8 +24,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    # TODO
-    # similar to paradox. calls params, merges trafos and dependencies. prints requested columns
+    # FIXME - ADD HIDE COLS FOR TRAFOS, DEPS, CHECKS
     print = function(sort = TRUE) { # hide_cols = c("Parent", "Trafo"),
       #checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tags", "Parent", "Trafo"))
 
@@ -72,8 +71,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - ADD DEPS, TRAFOS, CHECKS
-    # takes character arguments specifying parameter ids and removes associated values.
-    # needs more work as currently ignores deps and trafos
     remove = function(...) {
 
       if (!is.null(private$.trafo)) {
@@ -153,7 +150,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    # FIXME - DOCUMENT
+    # FIXME - ADD TESTS & DOCUMENT
     add_check = function(params, fun) {
 
       if (is.null(self$checks)) {
@@ -283,16 +280,30 @@ ParameterSet <- R6::R6Class("ParameterSet",
     ),
 
   active = list(
-    # FIXME - DOCUMENT
+    #' @field supports
+    #' Get supports from the parameter set.
     supports = function() {
       sups <- support_dictionary$get_list(private$.supports)
       names(sups) <- self$ids
       sups
     },
 
-    # FIXME - DOCUMENT
+    #' @field tags
+    #' Get tags from the parameter set.
     tags = function() {
       private$.tags
+    },
+
+    #' @field ids
+    #' Get ids from the parameter set.
+    ids = function() {
+      private$.id
+    },
+
+    #' @field length
+    #' Get the length of the parameter set as the number of parameters.
+    length = function() {
+      length(self$ids)
     },
 
     # FIXME - DOCUMENT
@@ -309,17 +320,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
       }
     },
 
-    # FIXME - DOCUMENT
-    ids = function() {
-      private$.id
-    },
-
-    # FIXME - DOCUMENT
-    length = function() {
-      length(self$ids)
-    },
-
-    # FIXME - DOCUMENT
+    #' @field deps
+    #' Get parameter dependencies, NULL if none.
     deps = function() {
       .x = private$.deps
       if (!is.null(.x)) {
@@ -350,7 +352,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
       }
     },
 
-    # FIXME - DOCUMENT
+    #' @field checks
+    #' Get custom parameter checks, NULL if none.
     checks = function() {
       .x = private$.checks
       if (!is.null(.x)) {
@@ -387,24 +390,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
     }
   )
 )
-
-#' @export
-as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # nolint
-  if (length(x$deps) || length(x$trafos) || length(x$checks)) {
-    warning("Dependencies, trafos, and checks are lost in coercion.")
-  }
-  dt = data.table::data.table(
-    Id = x$ids,
-    Support = x$supports,
-    Value = expand_list(x$ids, x$values),
-    Tags = expand_list(x$ids, x$tags)
-  )
-  if (sort) {
-    Id = NULL # visible binding fix
-    data.table::setorder(dt, Id)
-  }
-  dt
-}
 
 #' @export
 pset <- function(prms) {
