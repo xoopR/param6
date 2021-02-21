@@ -1,31 +1,3 @@
-prm <- function(id, support, value = NULL, tags = NULL) {
-  checkmate::assert_character(id, len = 1)
-  # if character check to see if exists in dictionary otherwise error
-  if (checkmate::test_character(support, len = 1)) {
-    if (!support_dictionary$has(support)) {
-      stop("'suppport' given as character but does not exist in support_dictionary.")
-    }
-  # if Set check to see if exists in dictionary otherwise add and return string
-  } else if (checkmate::test_class(support, "Set")) {
-    str_support <- as.character(support)
-    if (!support_dictionary$has(str_support)) {
-      orig_uni <- set6::useUnicode()
-      set6::useUnicode(FALSE)
-      support_dictionary$add(keys = str_support, values = support)
-      set6::useUnicode(orig_uni)
-    }
-    support <- str_support
-  } else {
-    stop("'support' should be given as a character scalar or Set.")
-  }
-  if (!is.null(tags)) {
-    checkmate::assert_character(tags, null.ok = TRUE)
-  }
-  param <- list(id = id, support = support, value = value, tags = tags)
-  class(param) <- "prm6"
-  param
-}
-
 #' @export
 ParameterSet <- R6::R6Class("ParameterSet",
   public = list(
@@ -52,7 +24,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
         }
       }
 
-      self$check(custom = FALSE)
+      self$check(deps = FALSE, custom = FALSE)
 
       invisible(self)
     },
@@ -115,7 +87,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
        # fix for vectorised pars
       private$.deps <- subset(private$.deps, !(grepl(id, pars) | grepl(on, pars)))
       private$.trafo[pars] <- NULL
-      # hacky concatenation fix
+      # FIXME - hacky concatenation fix
       if ("c" %in% pars) {
 
       } else {
@@ -129,21 +101,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
     # different from $values as $values returns a list of values (which may be NULL) whereas
     # this returns only set values, which can be filtered by tags.
-    get_values = function(tags = NULL, inc.null = TRUE) {
-
-      values <- self$values
-      if (inc.null) {
-        values <- expand_list(self$ids, self$values)
-      }
-      if (!is.null(tags)) {
-        which <- names(self$tags)[(grepl(tags, self$tags))]
-        values <- values[match(which, names(values), 0L)]
-      }
-
-      values
+    get_values = function(id = NULL, tags = NULL, transform = TRUE, inc_null = TRUE,
+                          simplify = TRUE) {
+      .get_values(self, private, private$.value, id, tags, transform, inc_null, simplify)
     },
 
-    # subsets the ParameterSet. needs further work as trafos and deps ignored
+    # FIXME - subsets the ParameterSet. needs further work as trafos and deps ignored
     subset = function(ids) {
       checkmate::assert_subset(ids, self$ids)
       ids <- intersect(self$ids, ids)
@@ -161,51 +124,43 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # assert_no_cycles prevents a cycle of dependencies, see helpers.R
     # assert_condition ensures that the condition is either possible (if 'Equal' or 'AnyOf') or
     # # just not redundant (if 'NotEqual' or 'NotAnyOf'), see helpers.R
-    # add_dep = function(id, on, type = c("Equal", "NotEqual", "AnyOf", "NotAnyOf"), cond) {
-    #   checkmate::assert_subset(c(id, on), self$ids)
-    #   if (id == on) {
-    #     stop("Parameters cannot depend on themselves.")
-    #   }
-    #   type <- match.arg(type)
+    add_dep = function(id, on, cnd) {
+      checkmate::assert_class(cnd, "cnd")
+      if (id == on) {
+        stop("Parameters cannot depend on themselves.")
+      }
 
-    #   # hacky fix
-    #   aid <- id
-    #   aon <- on
-    #   if (nrow(subset(private$.deps, id == aid & on == aon)) > 0) {
-    #     stop(sprintf("%s already depends on %s.", id, on))
-    #   }
+      # hacky fix
+      aid <- id
+      aon <- on
 
-    #   assert_condition(on, self$supports[on][[1]], type, cond)
+      if (nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))) {
+        stop(sprintf("%s already depends on %s.", id, on))
+      }
 
-    #   newDT <- rbind(private$.deps, data.table(id = id, on = on, type = type, cond = cond)) # nolint
-    #   assert_no_cycles(newDT)
-    #   private$.deps <- newDT
+      support <- unique(unlist(private$.supports[grepl(on, names(private$.supports))]))
 
-    #   invisible(self)
-    # },
+      if (length(support) > 1) {
+        stop("Single dependency cannot be added on multiple supports.")
+      }
 
-    # adds trafo either to given parameter ids or to the whole ParameterSet "<Set>".
-    # currently no feasibility checks, e.g. if LogicalSet has trafo 'exp'
-    # add_trafo = function(id, fun) {
-    #   if (checkmate::test_names(id, identical.to = "<Set>")) {
-    #     checkmate::assert_function(fun, args = c("x", "param_set"), null.ok = TRUE)
-    #     private$.trafo <- c(private$.trafo, list("<Set>" = fun))
-    #   } else {
-    #     nin <- !(id %in% c(self$ids))
-    #     if (any(nin)) {
-    #       stop(sprintf(
-    #         "Parameter(s) %s not available. Must be a valid id or <Set>.",
-    #         string_as_set(id[nin])
-    #       ))
-    #     } else {
-    #       checkmate::assert_function(fun)
-    #       lst = list(fun)
-    #       names(lst) = id
-    #       private$.trafo <- c(private$.trafo, lst)
-    #     }
-    #   }
-    #   invisible(self)
-    # },
+      support <- support_dictionary$get(support)
+
+      assert_condition(on, support, cnd)
+
+      newDT <- rbind(private$.deps, data.table::data.table(id = id, on = on, cond = list(cnd))) # nolint
+      assert_no_cycles(newDT)
+
+      .check_deps(self, self$values, newDT, id, TRUE)
+
+      private$.deps <- newDT
+
+      invisible(self)
+    },
+
+    transform = function() {
+      private$.trafo(self)
+    },
 
     # Used to compare parameter values between each other. One function calling `self`, boolean
     # conditions 'added' together to form a single function.
@@ -216,29 +171,48 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #       invisible(self)
     # },
 
-    check = function(supports = TRUE, custom = TRUE) {
-      # 1. Containedness checks
-      if (supports && length(self)) {
-        for (i in seq_along(private$.isupports)) {
-          value <- private$.value[names(private$.value) %in% private$.isupports[[i]]]
-          if (!length(value)) {
-            value <- NULL
-          }
-          assert_contains(
-            set = support_dictionary$get(names(private$.isupports)[[i]]),
-            value = value
-          )
-        }
+    check = function(supports = TRUE, custom = TRUE, deps = TRUE, id = NULL,
+                     error_on_fail = TRUE) {
+      .check(self, supports, custom, deps, id, error_on_fail, support_check = private$.isupports,
+             dep_check = self$deps, custom_check = self$checks)
+    },
+
+    rep = function(times, prefix) {
+      if (length(prefix) == 1) {
+        prefix <- paste0(prefix, seq_len(times))
+      } else if (length(prefix) != times) {
+        stop(sprintf("'prefix' should either be length '1' or same as 'times' (%d)", times))
       }
 
-    # 2. Custom checks
-    if (custom && length(self$checks)) {
-      all(sapply(self$checks$fun, function(x) {
-      as.function(list(self = self, x))()
-      }))
-        } else {
-          TRUE
-        }
+      lng <- length(self)
+
+      private$.id <- paste(rep(prefix, each = lng), rep(private$.id), sep = "__")
+
+      private$.isupports <- lapply(private$.isupports,
+                                  function(x) paste(rep(prefix, each = length(x)),
+                                                    rep(x, times), sep = "__"))
+
+      private$.supports <- rep(private$.supports, times)
+      names(private$.supports) <- paste(rep(prefix, each = lng),
+                                        names(private$.supports), sep = "__")
+
+      values <- rep(private$.value, times)
+      names(values) <- paste(rep(prefix, each = length(private$.value)), names(values), sep = "__")
+      private$.value <- values
+
+      tags <- rep(private$.tags, times)
+      names(tags) <- paste(rep(prefix, each = length(private$.tags)), names(tags), sep = "__")
+      private$.tags <- tags
+
+      if (!is.null(self$trafo)) {
+        warning("'trafo' should be replicated manually.")
+      }
+
+      invisible(self)
+
+        # FIXME - ADD DEPS AND CHECKS
+        # .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
+        # .checks = data.table(params = character(0L), fun = list()),
     }
     ),
 
@@ -257,13 +231,11 @@ ParameterSet <- R6::R6Class("ParameterSet",
       if (missing(vals)) {
         return(private$.value)
       } else {
-        old <- private$.value
+        .check(self, id = names(vals), value_check = vals,
+               support_check = private$.isupports, dep_check = self$deps,
+               custom_check = self$checks)
+
         private$.value <- vals
-        tryCatch(self$check(),
-          error = function(e) {
-            private$.value <- old
-            stop(e)
-        })
       }
     },
 
@@ -284,12 +256,14 @@ ParameterSet <- R6::R6Class("ParameterSet",
       }
     },
 
-    trafos = function() {
-      .x = private$.trafo
-      if (length(.x)) {
-        .x
+    trafo = function(x) {
+      if (missing(x)) {
+        private$.trafo
       } else {
-        NULL
+        checkmate::assert_function(x, args = "x")
+        checkmate::assert_list(x(self$values))
+        private$.trafo <- x
+        invisible(self)
       }
     },
 
@@ -309,8 +283,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .supports = list(),
     .value = list(),
     .tags = list(),
-    .trafo = list(),
-    .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
+    .trafo = NULL,
+    .deps = data.table(id = character(0L), on = character(0L), cond = list()),
     .checks = data.table(params = character(0L), fun = list()),
     deep_clone = function(name, value) {
       switch(name,
@@ -353,14 +327,22 @@ as.ParameterSet.data.table <- function(x, ...) { # nolint
                    tags = x$tags)
 }
 
+# FIXME
 # less efficient than $add, needs work
 #' @export
-rbind.ParameterSet <- function(...) {
-  ps <- list(...)
-  as.ParameterSet(data.table::rbindlist(lapply(ps, as.data.table)))
-}
+# rbind.ParameterSet <- function(...) {
+#   ps <- list(...)
+#   as.ParameterSet(data.table::rbindlist(lapply(ps, as.data.table)))
+# }
 
 #' @export
 length.ParameterSet <- function(x) {
   x$length
+}
+
+#' @export
+rep.ParameterSet <- function(x, times, prefix, ...) {
+  x <- x$clone(deep = TRUE)
+  x$rep(times, prefix)
+  x
 }

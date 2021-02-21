@@ -73,3 +73,8 @@ test_that("as_named_list", {
   nl[1:2] <- NULL
   expect_equal(as_named_list(), nl)
 })
+
+test_that("cnd", {
+  expect_error(cnd(1, "a"), "must be one")
+  expect_s3_class(cnd(1, "eq"), "cnd")
+})

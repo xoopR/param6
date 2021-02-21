@@ -96,6 +96,7 @@ test_that("ParamSet actives - values", {
   expect_equal(p$values, list(a = 2, c = 2))
   expect_silent(p$values <- list(a = 1))
   expect_equal(p$values, list(a = 1))
+  expect_silent(p$values$a <- NULL)
 })
 
 test_that("as.data.table.ParameterSet and print", {
@@ -150,28 +151,101 @@ test_that("get_values", {
     prm("c", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_equal(p$get_values(inc.null = TRUE), list(a = 1, b = NULL, c = NULL))
-  expect_equal(p$get_values(inc.null = FALSE), list(a = 1))
+  expect_equal(p$get_values(inc_null = TRUE), list(a = 1, b = NULL, c = NULL))
+  expect_equal(p$get_values(inc_null = FALSE, simplify = FALSE), list(a = 1))
 
-  expect_equal(p$get_values(inc.null = TRUE, tags = "t1"), list(a = 1, b = NULL))
-  expect_equal(p$get_values(inc.null = FALSE, tags = "t1"), list(a = 1))
+  expect_equal(p$get_values(inc_null = TRUE, tags = "t1"), list(a = 1, b = NULL))
+  expect_equal(p$get_values(inc_null = FALSE, tags = "t1"), 1)
+  expect_equal(p$get_values(inc_null = FALSE, tags = "t1", simplify = FALSE), list(a = 1))
 
-  expect_equal(p$get_values(inc.null = TRUE, tags = "t2"), list(c = NULL))
-  expect_equal(p$get_values(inc.null = FALSE, tags = "t2"), named_list())
+  expect_equal(p$get_values(inc_null = TRUE, tags = "t2"), NULL)
+  expect_equal(p$get_values(inc_null = FALSE, tags = "t2", simplify = FALSE), named_list())
 
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 2, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par2", "reals", tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_equal(p$get_values("Pre1"), list(Pre1__par1 = 1, Pre1__par2 = 2))
+  expect_equal(p$get_values(c("Pre1", "Pre2")),
+    list(Pre1__par1 = 1, Pre1__par2 = 2, Pre2__par1 = 1, Pre2__par2 = NULL))
+  expect_equal(p$get_values("par1"), list(Pre1__par1 = 1, Pre2__par1 = 1))
 })
 
-test_that("supports", {
-  expect_equal(p1$supports, list(
-    splitrule = Set$new("logrank", "extratrees", "C", "maxstat"),
-    ntrees = PosIntegers$new(),
-    sample.fraction = Interval$new(0, 1)
-  ))
+test_that("trafo", {
+  prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", tags = "t1"),
+    prm("c", "reals", tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_equal(p$trafo, NULL)
+  expect_error({p$trafo <- "a"}, "function")
+  expect_error({p$trafo <- function(x) "a"}, "list")
+  expect_silent({
+    p$trafo <- function(x) {
+      x$a = x$a + 1
+      x$b = 3
+      x
+    }
+  })
+  expect_equal(p$get_values(inc_null = FALSE), list(a = 2, b = 3))
 })
 
-test_that("ids", {
-  expect_equal(p1$ids, list("splitrule", "ntrees", "sample.fraction"))
+test_that("rep", {
+  prms <- list(
+    prm("par1", Set$new(1), 1, tags = "t1"),
+    prm("par2", "reals", 3, tags = "t2")
+  )
+  p1 <- ParameterSet$new(prms)
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par2", "reals", 3, tags = "t2")
+  )
+  p2 <- ParameterSet$new(prms)
+
+  expect_equal(p1$rep(2, "Pre"), p2)
+
+  prms <- list(
+    prm("par1", Set$new(1), 1, tags = "t1"),
+    prm("par2", "reals", 3, tags = "t2")
+  )
+  p1 <- ParameterSet$new(prms)
+  expect_equal(rep(p1, 2, "Pre"), p2)
+  expect_equal(length(p1), 2)
 })
+
+test_that("add_dep", {
+  prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", tags = "t1"),
+    prm("c", "reals", tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_error(p$add_dep("a", "b", cnd(1, "eq")), "failed")
+  expect_silent(p$add_dep("b", "a", cnd(1, "eq")))
+  p$values$b <- 3
+  expect_error({ p$values$a <- NULL }, "failed")
+
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par2", "reals", 3, tags = "t2")
+  )
+  p2 <- ParameterSet$new(prms)
+  expect_error(p2$add_dep("par1", "par2", cnd(1:2, "any")), "Dependency of")
+  expect_silent(p2$add_dep("par1", "par2", cnd(3, "eq")))
+  expect_error(p2$add_dep("Pre1", "Pre2", cnd(3, "eq")), "Single dependency")
+})
+
+
 
 test_that("rbind", {
   p2$values <- list(splitrule = "C", sample.fraction = 0.1)
@@ -253,25 +327,6 @@ test_that("as.ParameterSet", {
   )
 })
 
-test_that("alt constructor", {
-  expect_error(ParameterSet$new(support = list()), "have names")
-  expect_error(ParameterSet$new(support = Set$new(1), value = 2, tags = "train"), "names")
-  expect_error(ParameterSet$new(support = list(Set$new(1)), value = list(2), tags = list("train")),
-               "Must have names")
-  expect_silent(ParameterSet$new(support = list(a = Set$new(1)), value = list(1),
-                                 tags = list("train")))
-  expect_error(ParameterSet$new(support = list(a = Set$new(1)), value = list(2),
-                                tags = list("train")),
-               "does not lie")
-  expect_error(ParameterSet$new(support = list(a = Set$new(1)), value = list(2, 0),
-                            tags = list("train")), "length")
-  p5 <- ParameterSet$new(support = list(a = Set$new(1)), value = list(1), tags = list("train"))
-  expect_equal(p5$ids, "a")
-  expect_equal(p5$supports, list(a = Set$new(1)))
-  expect_equal(p5$values, list(a = 1))
-  expect_equal(p5$tags, list(a = "train"))
-})
-
 test_that("subset", {
   expect_equal_ParameterSet(p1$subset("ntrees"), p3)
 })
@@ -291,30 +346,6 @@ test_that("deps", {
   expect_silent(p2$add_dep("ntrees", "sample.fraction", "Equal", 0.2))
   expect_error(p2$add_dep("splitrule", "splitrule", "Equal", 0.1), "Parameters cannot depend")
   expect_error(p2$add_dep("splitrule", "sfdsf", "Equal", 0.1), "Must be a subset")
-})
-
-test_that("trafo", {
-  p <- ParameterSet$new(
-    a = Reals$new() ~ 0.5,
-    b = Integers$new() ~ 2,
-    c = Logicals$new() ~ FALSE
-  )
-  expect_equal(p$trafos, list())
-  expect_silent({
-    p$add_trafo("a", round)
-  })
-  expect_equal(p$trafos, list(a = round))
-  expect_silent({
-    p$add_trafo("a", exp)
-  })
-  expect_error(p$add_trafo("d", exp), "not available")
-  expect_silent({
-    p$add_trafo("c", function(x) x^2)
-  })
-  expect_error(p$add_trafo("<Set>", fun = exp), "formal arguments")
-  expect_error(p$add_trafo("<Set>", fun = function(param_set) exp), "formal arguments")
-  expect_silent(p$add_trafo("<Set>", fun = function(param_set, x) exp))
-  expect_equal(length(p$trafos), 4)
 })
 
 test_that("deep_clone", {

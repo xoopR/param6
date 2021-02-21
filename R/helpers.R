@@ -3,16 +3,16 @@ assert_contains <- function(set, value, name) {
     invisible(value)
   } else {
     if (!missing(name)) {
-      stop(sprintf("%s does not lie in support of %s (%s).", value, name, set$strprint()))
+      stop(sprintf("%s does not lie in support of %s (%s).", value, name, as.character(set)))
     } else {
-      stop(sprintf("%s does not lie in %s.", value, set$strprint()))
+      stop(sprintf("%s does not lie in %s.", value, as.character(set)))
     }
   }
 }
 
 assert_no_cycles <- function(lookup) {
-  check <- data.table(lookup[, 2])
-  checks <- data.table(lookup[, 1])
+  check <- data.table::data.table(lookup[, 2])
+  checks <- data.table::data.table(lookup[, 1])
 
   for (i in seq_len(ncol(lookup))) {
     check <- merge(check, lookup, by.x = "on", by.y = "id", sort = FALSE)[, 2]
@@ -29,19 +29,23 @@ assert_no_cycles <- function(lookup) {
   }
 }
 
-assert_condition <- function(id, support, type, cond) {
-  if (type %in% c("Equal", "AnyOf")) {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", cond, id,
-                   support$strprint())
+assert_condition <- function(id, support, cond) {
+
+  val <- attr(cond, "value")
+
+  if (attr(cond, "type") %in% c("eq", "geq", "leq", "gt", "lt", "any")) {
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.",
+                   val, id, as.character(support))
   } else {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", cond, id,
-                   support$strprint())
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.",
+                   val, id, as.character(support))
   }
 
-  if (!(testContains(support, cond))) {
+  if (!(testContains(support, val))) {
     stop(msg)
+  } else {
+    invisible(val)
   }
-
 }
 
 string_as_set <- function(str) {
@@ -79,8 +83,8 @@ as_named_list <- function(values, names) {
 }
 
 expand_list <- function(names, named_var) {
-  checkmate::assert_character(names, min.len = 1)
-  checkmate::assert_list(named_var, min.len = 1, names = "unique")
+  checkmate::assert_character(names)
+  checkmate::assert_list(named_var)
 
   x <- vector("list", length(names))
   names(x) <- names
@@ -112,4 +116,8 @@ un_null_list <- function(x, rm.names = TRUE) {
 env_append <- function(env, var, values) {
   env[[var]] <- c(env[[var]], values)
   invisible(NULL)
+}
+
+`%nin%` <- function(x, table) {
+  !(x %in% table)
 }
