@@ -290,14 +290,6 @@ test_that("remove", {
   expect_equal(p4$remove("e"), p4)
 })
 
-test_that("as.data.table", {
-  expect_equal(as.data.table(p1),
-               data.table(Id = c("ntrees", "sample.fraction", "splitrule"),
-                          Support = list(PosIntegers$new(), Interval$new(0, 1),
-                                         Set$new("logrank", "extratrees", "C", "maxstat")),
-                          Value = list(2, 0.1, "C"),
-                          Tags = list(NULL, NULL, c("train", "predict"))))
-})
 
 test_that("as.ParameterSet", {
   expect_error(as.ParameterSet(data.table(Id = "a", Support = Set$new(), Val = 2,
@@ -331,22 +323,6 @@ test_that("subset", {
   expect_equal_ParameterSet(p1$subset("ntrees"), p3)
 })
 
-test_that("length", {
-  expect_equal(p1$length, 1)
-  expect_equal(p2$length, 3)
-})
-
-test_that("deps", {
-  expect_equal(p2$deps, data.table(id = character(0L), on = character(0L), type = character(0L),
-                                   cond = list()))
-  expect_silent(p2$add_dep("splitrule", "sample.fraction", "Equal", 0.2))
-  expect_error(p2$add_dep("splitrule", "sample.fraction", "Equal", 0.2), "already depends")
-  expect_equal(p2$deps, data.table(id = "splitrule", on = "sample.fraction", type = "Equal",
-                                   cond = list(0.2)))
-  expect_silent(p2$add_dep("ntrees", "sample.fraction", "Equal", 0.2))
-  expect_error(p2$add_dep("splitrule", "splitrule", "Equal", 0.1), "Parameters cannot depend")
-  expect_error(p2$add_dep("splitrule", "sfdsf", "Equal", 0.1), "Must be a subset")
-})
 
 test_that("deep_clone", {
   a <- ParameterSet$new(lgl = LogicalSet$new() ~ TRUE)

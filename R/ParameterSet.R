@@ -19,16 +19,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
         private$.value <- un_null_list(lapply(prms, "[[", "value"))
         private$.tags <- un_null_list(lapply(prms, "[[", "tags"))
-        if ("c" %in% unlist(private$.tags)) {
-          stop("'c' is a reserved tag in param6.")
-        }
       }
-
-      self$check(deps = FALSE, custom = FALSE)
 
       invisible(self)
     },
 
+    # TODO
     # similar to paradox. calls params, merges trafos and dependencies. prints requested columns
     print = function(sort = TRUE) { # hide_cols = c("Parent", "Trafo"),
       #checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tags", "Parent", "Trafo"))
@@ -51,7 +47,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       print(dt)
     },
 
-    # adds new parameters to the set. provides formula construction only
+    # FIXME - DOCUMENT
     add = function(prms = list()) {
 
       if (length(prms)) {
@@ -72,11 +68,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
         stop("At least one parameter must be added.")
       }
 
-      self$check(custom = FALSE)
-
       invisible(self)
     },
 
+    # TODO
     # takes character arguments specifying parameter ids and removes associated values.
     # needs more work as currently ignores deps and trafos
     remove = function(...) {
@@ -87,20 +82,14 @@ ParameterSet <- R6::R6Class("ParameterSet",
        # fix for vectorised pars
       private$.deps <- subset(private$.deps, !(grepl(id, pars) | grepl(on, pars)))
       private$.trafo[pars] <- NULL
-      # FIXME - hacky concatenation fix
-      if ("c" %in% pars) {
-
-      } else {
-        # fix for vectorised pars
-        subset(private$.checks, grepl(pars, params))
-      }
+      # FIXME - remove checks
+      subset(private$.checks, grepl(pars, params))
 
 
       invisible(self)
     },
 
-    # different from $values as $values returns a list of values (which may be NULL) whereas
-    # this returns only set values, which can be filtered by tags.
+    # FIXME - DOCUMENT
     get_values = function(id = NULL, tags = NULL, transform = TRUE, inc_null = TRUE,
                           simplify = TRUE) {
       .get_values(self, private, private$.value, id, tags, transform, inc_null, simplify)
@@ -119,12 +108,13 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    # adds dependencies to ParameterSet. instead of creating a new Condition object, just allows a
-    # small number of possible conditions and each has identical RHS formulation.
-    # assert_no_cycles prevents a cycle of dependencies, see helpers.R
-    # assert_condition ensures that the condition is either possible (if 'Equal' or 'AnyOf') or
-    # # just not redundant (if 'NotEqual' or 'NotAnyOf'), see helpers.R
+    # FIXME - DOCUMENT
     add_dep = function(id, on, cnd) {
+
+      if (!requireNamespace("data.table", quietly = TRUE)) {
+        stop("{data.table} required for adding dependencies.")
+      }
+
       checkmate::assert_class(cnd, "cnd")
       if (id == on) {
         stop("Parameters cannot depend on themselves.")
@@ -148,16 +138,24 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
       assert_condition(on, support, cnd)
 
-      newDT <- rbind(private$.deps, data.table::data.table(id = id, on = on, cond = list(cnd))) # nolint
-      assert_no_cycles(newDT)
+      if (is.null(self$deps)) {
+        deps <- data.table::data.table(id = character(0L), on = character(0L), cond = list())
+      } else {
+        deps <- self$deps
+      }
 
-      .check_deps(self, self$values, newDT, id, TRUE)
+      new_dt <- rbind(deps, data.table::data.table(id = id, on = on, cond = list(cnd)))
 
-      private$.deps <- newDT
+      assert_no_cycles(new_dt)
+
+      .check_deps(self, self$values, new_dt, id, TRUE)
+
+      private$.deps <- new_dt
 
       invisible(self)
     },
 
+    # FIXME - DOCUMENT
     transform = function() {
       private$.trafo(self)
     },
@@ -165,18 +163,25 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # Used to compare parameter values between each other. One function calling `self`, boolean
     # conditions 'added' together to form a single function.
     # add_check = function(params, fun) {
+    #   if (is.null(self$checks)) {
+    #     checks <- data.table(params = character(0L), fun = list())
+    #   } else {
+    #     checks <- self$checks
+    #   }
     #       private$.checks <- rbind(private$.checks,
     #                               data.table(params = list(checkmate::assertSubset(params, self$ids)),
     #                                         fun = list(body(checkmate::assertFunction(fun, "self")))))
     #       invisible(self)
     # },
 
+    # FIXME - DOCUMENT
     check = function(supports = TRUE, custom = TRUE, deps = TRUE, id = NULL,
                      error_on_fail = TRUE) {
       .check(self, supports, custom, deps, id, error_on_fail, support_check = private$.isupports,
              dep_check = self$deps, custom_check = self$checks)
     },
 
+    # FIXME - DOCUMENT
     rep = function(times, prefix) {
       if (length(prefix) == 1) {
         prefix <- paste0(prefix, seq_len(times))
@@ -209,24 +214,23 @@ ParameterSet <- R6::R6Class("ParameterSet",
       }
 
       invisible(self)
-
-        # FIXME - ADD DEPS AND CHECKS
-        # .deps = data.table(id = character(0L), on = character(0L), type = character(0L), cond = list()),
-        # .checks = data.table(params = character(0L), fun = list()),
     }
     ),
 
   active = list(
+    # FIXME - DOCUMENT
     supports = function() {
       sups <- support_dictionary$get_list(private$.supports)
       names(sups) <- self$ids
       sups
     },
 
+    # FIXME - DOCUMENT
     tags = function() {
       private$.tags
     },
 
+    # FIXME - DOCUMENT
     values = function(vals) {
       if (missing(vals)) {
         return(private$.value)
@@ -236,17 +240,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
                custom_check = self$checks)
 
         private$.value <- vals
+        invisible(self)
       }
     },
 
+    # FIXME - DOCUMENT
     ids = function() {
       private$.id
     },
 
+    # FIXME - DOCUMENT
     length = function() {
       length(self$ids)
     },
 
+    # FIXME - DOCUMENT
     deps = function() {
       .x = private$.deps
       if (nrow(.x)) {
@@ -256,6 +264,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       }
     },
 
+    # FIXME - DOCUMENT
     trafo = function(x) {
       if (missing(x)) {
         private$.trafo
@@ -267,6 +276,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       }
     },
 
+    # FIXME - DOCUMENT
     checks = function() {
       .x = private$.checks
       if (nrow(.x)) {
@@ -284,12 +294,20 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .value = list(),
     .tags = list(),
     .trafo = NULL,
-    .deps = data.table(id = character(0L), on = character(0L), cond = list()),
-    .checks = data.table(params = character(0L), fun = list()),
+    .deps = NULL,
+    .checks = NULL,
     deep_clone = function(name, value) {
       switch(name,
-        ".deps" = data.table::copy(value),
-        ".checks" = data.table::copy(value),
+        ".deps" = {
+          if (!is.null(value)) {
+            data.table::copy(value)
+          }
+        },
+        ".checks" = {
+          if (!is.null(value)) {
+            data.table::copy(value)
+          }
+        },
         value
       )
     }
@@ -301,7 +319,7 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # 
   if (length(x$deps) || length(x$trafos) || length(x$checks)) {
     warning("Dependencies, trafos, and checks are lost in coercion.")
   }
-  dt = data.table(
+  dt = data.table::data.table(
     Id = x$ids,
     Support = x$supports,
     Value = expand_list(x$ids, x$values),
