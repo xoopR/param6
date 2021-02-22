@@ -380,14 +380,25 @@ test_that("checks", {
   )
   p <- ParameterSet$new(prms)
   expect_equal(p$checks, NULL)
-  expect_error(p$add_check("e", function(x, self) x$a == 1), "subset")
-  expect_silent(p$add_check("a", function(x, self) x$a == 0.5))
-  expect_equal(p$checks, data.table(params = list("a"), fun = list(body(function(x) x$a == 0.5))))
+  expect_error(p$add_check(function(x, self) x$a == 1, "e"), "subset")
+  expect_silent(p$add_check(function(x, self) x$a == 0.5, "a"))
+  expect_equal(
+    p$checks,
+    data.table(ids = list("a"), tags = list(), fun = list(body(function(x) x$a == 0.5))))
   expect_false(p$check())
   p$values$a <- 0.5
   expect_true(p$check())
-  expect_silent(p$add_check(c("a", "b"), function(x, self) x$a + x$b == 2.5))
+  expect_silent(p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b")))
   expect_true(p$check())
-  expect_silent(p$add_check("d", function(x, self) x$d == 6))
+  expect_silent(p$add_check(function(x, self) x$d == 6, "d"))
   expect_false(p$check())
+
+
+  p$add_check(function(x, self) all(self$get_values(tags = "t1") > 0), tags = "t1")
+  expect_false(p$check())
+  expect_equal(nrow(p$checks), 4)
+})
+
+test_that("remove", {
+
 })

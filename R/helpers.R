@@ -84,9 +84,7 @@ env_append <- function(env, var, values) {
   !(x %in% table)
 }
 
-unprefix <- function(x, split = "__") {
-  x <- strsplit(x, split, fixed = TRUE)
-  vapply(x, function(.x) {
-    .x[[length(.x)]]
-  }, character(1))
+unprefix <- function(x, split = "__", which = 1) {
+  start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]], integer(1)) + 2
+  substr(x, start, 1e3)
 }

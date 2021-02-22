@@ -151,49 +151,6 @@
   }
 }
 
-.extract_id <- function(self, private, id, tags) {
-
-  ids <- .get_field(self, private$.ids, id, tags)
-  which_ids <- paste0(ids, collapse = "|")
-  supports <- .get_field(self, private$.supports, id = ids, inc_null = FALSE)
-  values <- .get_field(self, private$.values, id = ids)
-  tags <- .get_field(self, private$.tags, id = ids)
-
-  ps <- as.ParameterSet(
-        unname(Map(prm,
-          id = ids,
-          support = supports,
-          value = values,
-          tags = tags,
-          .check = FALSE
-        ))
-      )
-
-  if (!is.null(private$.deps)) {
-    deps <- subset(private$.deps, grepl(which_ids, id) | grepl(which_ids, on))
-    if (nrow(deps)) {
-      pri <- get_private(ps)
-      pri$.deps <- deps
-    }
-  }
-
-  if (!is.null(private$.checks)) {
-    private$.checks
-    checks <- subset(private$.checks, grepl(which_ids, ids))
-    if (nrow(checks)) {
-      pri <- get_private(ps)
-      pri$.deps <- deps
-    }
-  }
-
-  ps
-
-}
-
-.extract_prefix <- function(self, private, prefix) {
-
-}
-
 assert_no_cycles <- function(lookup) {
   check <- data.table::data.table(lookup[, 2])
   checks <- data.table::data.table(lookup[, 1])

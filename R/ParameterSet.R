@@ -29,7 +29,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - ADD HIDE COLS FOR TRAFOS, DEPS, CHECKS
-    print = function(sort = TRUE) { # hide_cols = c("Parent", "Trafo"),
+    print = function(sort = TRUE) {
+      # hide_cols = c("Parent", "Trafo"),
       #checkmate::assert_subset(hide_cols, c("Id", "Support", "Value", "Tags", "Parent", "Trafo"))
 
       dt <- suppressWarnings(as.data.table(self, sort = sort))
@@ -85,7 +86,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       private$.support[pars] <- NULL
       private$.value[pars] <- NULL
       private$.tags[pars] <- NULL
-       # fix for vectorised pars
+      # fix for vectorised pars
       private$.deps <- subset(private$.deps, !(grepl(id, pars) | grepl(on, pars)))
       private$.trafo[pars] <- NULL
       # FIXME - remove checks
@@ -105,6 +106,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
     add_dep = function(id, on, cnd) {
 
       checkmate::assert_class(cnd, "cnd")
+      all_ids <- unique(c(self$ids, unprefix(self$ids)))
+      checkmate::assert_subset(id, all_ids)
+      checkmate::assert_subset(on, all_ids)
+
       if (id == on) {
         stop("Parameters cannot depend on themselves.")
       }
@@ -155,13 +160,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - ADD TESTS & DOCUMENT
-    add_check = function(ids, fun, tags = NULL) {
+    add_check = function(fun, ids = NULL, tags = NULL) {
 
       if (is.null(self$checks)) {
         checks <- data.table(ids = list(), tags = list(), fun = list())
       } else {
         checks <- self$checks
       }
+
+      if (is.null(ids) && is.null(tags)) {
+        stop("At least one of 'ids' and 'tags' must be non-NULL.")
+      }
+
+      checkmate::assert_subset(ids, unique(c(self$ids, unprefix(self$ids))))
+      checkmate::assert_subset(tags, unlist(self$tags))
+
 
       checkmate::assert_function(fun, c("x", "self"))
       if (!checkmate::test_logical(fun(self$values, self), len = 1)) {
@@ -224,83 +237,64 @@ ParameterSet <- R6::R6Class("ParameterSet",
         stop("One of 'id' or 'prefix' must be non-NULL.")
       } else if (!is.null(id) && !is.null(prefix)) {
         warning("'prefix' argument ignored.")
-      } else if (is.null(prefix)) {
-        .extract_id(self, private, id, tags)
-      } else {
-        .extract_prefix(self, private, prefix)
+        prefix <- NULL
       }
 
+        if (!is.null(prefix)) {
+          ids <- .get_field(self, private$.ids, prefix)
+          unfix_ids <- unprefix(ids)
+        } else {
+          ids <- .get_field(self, private$.ids, id, tags)
+          unfix_ids <- NULL
+        }
 
+        which_ids <- paste0(ids, collapse = "|")
+        supports <- .get_field(self, private$.supports, id = ids, inc_null = FALSE)
+        values <- .get_field(self, private$.values, id = ids)
+        tag <- .get_field(self, private$.tags, id = ids)
 
+        ps <- as.ParameterSet(
+            unname(Map(prm,
+              id = ids,
+              support = supports,
+              value = values,
+              tags = tag,
+              .check = FALSE
+            ))
+          )
 
+        if (!is.null(private$.deps)) {
+          deps <- subset(private$.deps, grepl(which_ids, id) | grepl(which_ids, on))
+          if (nrow(deps)) {
+            if (!is.null(unfix_ids)) {
+              deps$id <- unfix_ids[match(deps$id, ids)]
+              deps$on <- unfix_ids[match(deps$on, ids)]
+            }
+            pri <- get_private(ps)
+            pri$.deps <- deps
+          }
+        }
 
-
-      if (isTRUE(rm_prefix) && any(grepl("__", ids, fixed = TRUE))) {
-        prefixes <- vapply(strsplit(ids, "__", fixed = TRUE), function(x) {
-          if (length(x) > 1) {
-            x[[1]]
+        if (!is.null(private$.checks)) {
+          if (is.null(tags)) {
+            tags0 <- ""
           } else {
-            NA_character_
+            tags0 <- tags
           }
-        }, character(1))
-        if (any(id %in% prefixes)) {
-          new_ids <- unprefix(ids)
-        }
-
-      } else if (checkmate::test_character(rm_prefix) &&
-                  any(grepl("__", ids, fixed = TRUE)) &&
-                  any(grepl(paste0(rm_prefix, collapse = "|"), ids))) {
-
-        new_ids <- ids
-        for (i in seq_along(rm_prefix)) {
-          .x <- rm_prefix[[i]]
-           which <- grepl(.x, new_ids)
-          if (any(which)) {
-            new_ids[which] <- substr(new_ids[which], nchar(.x) + 3, 1000)
+          checks <- subset(private$.checks, grepl(which_ids, ids) | grepl(tags0, tags))
+          if (nrow(checks)) {
+            if (!is.null(unfix_ids)) {
+              checks$id <- unfix_ids[match(checks$id, ids)]
+              checks$on <- unfix_ids[match(checks$on, ids)]
+            }
+            pri <- get_private(ps)
+            pri$.checks <- checks
           }
         }
-        rm(.x)
-      }
 
-      ps <- as.ParameterSet(
-        unname(Map(prm,
-          id = ids,
-          support = supports,
-          value = values,
-          tags = tags,
-          .check = FALSE
-        ))
-      )
-#browser()
-      if (!is.null(private$.deps)) {
-        deps <- subset(private$.deps, id %in% ids & on %in% ids)
-        if (nrow(deps)) {
-          pri <- get_private(ps)
-          if (length(new_ids)) {
-            deps$id <- new_ids[match(deps$id, ids)]
-            deps$on <- new_ids[match(deps$on, ids)]
-          }
-          pri$.deps <- deps
-        }
-      }
-
-      if (!is.null(private$.checks)) {
-        private$.checks
-        checks <- subset(private$.checks, grepl(paste0(id, collapse = "|"), ids))
-        if (nrow(checks)) {
-          pri <- get_private(ps)
-          if (length(new_ids)) {
-            deps$id <- new_ids[match(deps$id, ids)]
-            deps$on <- new_ids[match(deps$on, ids)]
-          }
-          pri$.deps <- deps
-        }
-      }
-
-      ps
-
+        ps
     }
-    ),
+  ),
 
   active = list(
     #' @field supports
@@ -346,13 +340,14 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' @field deps
     #' Get parameter dependencies, NULL if none.
     deps = function() {
-      .x = private$.deps
-      if (!is.null(.x)) {
-        .x
-      } else {
-        NULL
-      }
+      private$.deps
     },
+
+    #' @field checks
+    #' Get custom parameter checks, NULL if none.
+    checks = function() {
+      private$.checks
+    }
 
     # FIXME - DOCUMENT
     trafo = function(x) {
@@ -372,17 +367,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
         private$.trafo <- x
         invisible(self)
-      }
-    },
-
-    #' @field checks
-    #' Get custom parameter checks, NULL if none.
-    checks = function() {
-      .x = private$.checks
-      if (!is.null(.x)) {
-        .x
-      } else {
-        NULL
       }
     }
   ),
