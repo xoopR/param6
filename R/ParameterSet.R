@@ -19,6 +19,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
         private$.value <- un_null_list(lapply(prms, "[[", "value"))
         private$.tags <- un_null_list(lapply(prms, "[[", "tags"))
+
+        if (any(duplicated(c(private$.id, unique(private$.tags))))) {
+          stop("ids and tags must have different names.")
+        }
       }
 
       invisible(self)
@@ -151,20 +155,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - ADD TESTS & DOCUMENT
-    add_check = function(params, fun) {
+    add_check = function(ids, fun, tags = NULL) {
 
       if (is.null(self$checks)) {
-        checks <- data.table(params = character(0L), fun = list())
+        checks <- data.table(ids = list(), tags = list(), fun = list())
       } else {
         checks <- self$checks
       }
-      checkmate::assert_subset(params, self$ids)
+
       checkmate::assert_function(fun, c("x", "self"))
       if (!checkmate::test_logical(fun(self$values, self), len = 1)) {
         stop("'fun' should evaluate to a scalar logical.")
       }
       private$.checks <- rbind(private$.checks,
-                               data.table::data.table(params = list(params),
+                               data.table::data.table(ids = list(ids),
+                                                      tags = list(tags),
                                                       fun = list(body(fun))))
 
       invisible(self)
@@ -209,19 +214,26 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - ADD CHECKS TO EXTRACT
-    extract = function(id = NULL, rm_prefix = TRUE) {
+    extract = function(id = NULL, tags = NULL, prefix = NULL) {
 
       if (!is.null(private$.checks) || !is.null(private$.trafo)) {
         warning("Checks and transformations are not included in extraction.")
       }
 
-      which_ids <- paste0(id, collapse = "|")
-      ids <- self$ids[grepl(which_ids, self$ids)]
-      supports <- private$.supports[grepl(which_ids, names(private$.supports))]
-      values <- expand_list(self$ids, self$values)
-      values <- values[grepl(which_ids, names(values))]
-      tags <- expand_list(self$ids, self$tags)
-      tags <- tags[grepl(which_ids, names(tags))]
+      if (is.null(id) && is.null(prefix)) {
+        stop("One of 'id' or 'prefix' must be non-NULL.")
+      } else if (!is.null(id) && !is.null(prefix)) {
+        warning("'prefix' argument ignored.")
+      } else if (is.null(prefix)) {
+        .extract_id(self, private, id, tags)
+      } else {
+        .extract_prefix(self, private, prefix)
+      }
+
+
+
+
+
 
       if (isTRUE(rm_prefix) && any(grepl("__", ids, fixed = TRUE))) {
         prefixes <- vapply(strsplit(ids, "__", fixed = TRUE), function(x) {
@@ -232,9 +244,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
           }
         }, character(1))
         if (any(id %in% prefixes)) {
-          new_ids <- vapply(strsplit(ids, paste0(prefixes, "__")), function(x) {
-            tryCatch(x[[2]], error = function(e) x[[1]])
-          }, character(1))
+          new_ids <- unprefix(ids)
         }
 
       } else if (checkmate::test_character(rm_prefix) &&
@@ -261,10 +271,23 @@ ParameterSet <- R6::R6Class("ParameterSet",
           .check = FALSE
         ))
       )
-
+#browser()
       if (!is.null(private$.deps)) {
         deps <- subset(private$.deps, id %in% ids & on %in% ids)
         if (nrow(deps)) {
+          pri <- get_private(ps)
+          if (length(new_ids)) {
+            deps$id <- new_ids[match(deps$id, ids)]
+            deps$on <- new_ids[match(deps$on, ids)]
+          }
+          pri$.deps <- deps
+        }
+      }
+
+      if (!is.null(private$.checks)) {
+        private$.checks
+        checks <- subset(private$.checks, grepl(paste0(id, collapse = "|"), ids))
+        if (nrow(checks)) {
           pri <- get_private(ps)
           if (length(new_ids)) {
             deps$id <- new_ids[match(deps$id, ids)]

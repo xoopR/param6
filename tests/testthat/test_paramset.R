@@ -277,7 +277,7 @@ test_that("c", {
 
 test_that("extract - no deps or checks", {
   prms <- list(
-    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par1__a", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2"),
     prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre2__par2", "reals", 3, tags = "t2")
@@ -341,6 +341,37 @@ test_that("extract - deps", {
 
 })
 
+test_that("extract - checks", {
+  prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", 1.5, tags = "t1"),
+    prm("d", "reals", 2, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_silent(p$add_check(c("a", "b"), function(x, self) x$a + x$b == 2.5))
+  p$extract("a")
+
+
+
+  p$add_dep("a", "d", cnd(0, "gt"))
+
+  expect_equal(p$extract("a")$deps, NULL)
+  expect_equal(p$extract(letters[1:2])$deps,
+              data.table::data.table(id = "b", on = "a", cond = list(cnd(1, "eq"))))
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    prm("Pre2__par2", "reals", 3, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  p$add_dep("Pre1__par1", "Pre1__par2", cnd(3, "eq"))
+  expect_equal(p$extract("Pre1")$deps,
+              data.table::data.table(id = "par1", on = "par2", cond = list(cnd(3, "eq"))))
+
+})
+
 test_that("checks", {
   prms <- list(
     prm("a", Set$new(0.5, 1), 1, tags = "t1"),
@@ -359,40 +390,4 @@ test_that("checks", {
   expect_true(p$check())
   expect_silent(p$add_check("d", function(x, self) x$d == 6))
   expect_false(p$check())
-})
-
-
-test_that("remove", {
-  p4 <- ParameterSet$new(
-    a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
-    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"
-  )
-  expect_equal(
-    p4$remove("a", "b"),
-    ParameterSet$new(c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  )
-
-  p4 <- ParameterSet$new(
-    a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
-    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"
-  )
-  expect_equal(
-    p4$remove(c("a", "b")),
-    ParameterSet$new(c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  )
-
-  p4 <- ParameterSet$new(
-    a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
-    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"
-  )
-  expect_equal(
-    p4$remove(list("a", "g")),
-    ParameterSet$new(b = Set$new("b") ~ "b", c = Set$new("c") ~ "c", d = Set$new("d") ~ "d")
-  )
-
-  p4 <- ParameterSet$new(
-    a = Set$new("a") ~ "a", b = Set$new("b") ~ "b",
-    c = Set$new("c") ~ "c", d = Set$new("d") ~ "d"
-  )
-  expect_equal(p4$remove("e"), p4)
 })

@@ -10,44 +10,6 @@ assert_contains <- function(set, value, name) {
   }
 }
 
-assert_no_cycles <- function(lookup) {
-  check <- data.table::data.table(lookup[, 2])
-  checks <- data.table::data.table(lookup[, 1])
-
-  for (i in seq_len(ncol(lookup))) {
-    check <- merge(check, lookup, by.x = "on", by.y = "id", sort = FALSE)[, 2]
-    colnames(check) <- "on"
-    checks <- cbind(checks, check)
-
-    checker <- apply(checks, 1, function(x) any(duplicated(x)) & !any(is.na(x)))
-    if (any(checker)) {
-      stop(sprintf("Cycles detected starting from id(s): %s",
-                   paste0("{", paste0(checks$id[checker], collapse = ","), "}")))
-    }
-
-
-  }
-}
-
-assert_condition <- function(id, support, cond) {
-
-  val <- attr(cond, "value")
-
-  if (attr(cond, "type") %in% c("eq", "geq", "leq", "gt", "lt", "any")) {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.",
-                   val, id, as.character(support))
-  } else {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.",
-                   val, id, as.character(support))
-  }
-
-  if (!(testContains(support, val))) {
-    stop(msg)
-  } else {
-    invisible(val)
-  }
-}
-
 string_as_set <- function(str) {
   if (!is.null(str)) {
     paste0("{", paste0(str, collapse = ", "), "}")
@@ -120,4 +82,11 @@ env_append <- function(env, var, values) {
 
 `%nin%` <- function(x, table) {
   !(x %in% table)
+}
+
+unprefix <- function(x, split = "__") {
+  x <- strsplit(x, split, fixed = TRUE)
+  vapply(x, function(.x) {
+    .x[[length(.x)]]
+  }, character(1))
 }

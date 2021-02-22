@@ -4,17 +4,27 @@
     x <- expand_list(self$ids, x)
   }
 
+  tagx <- idx <- NULL
+
   if (!is.null(tags)) {
-    which <- names(self$tags)[(grepl(tags, self$tags))]
-    x <- x[match(which, names(x), 0L)]
+    if (length(tags)) {
+      which <- names(self$tags)[(grepl(tags, self$tags))]
+      tagx <- x[match(which, names(x), 0L)]
+    } else {
+      tagx <- named_list()
+    }
   }
 
   if (!is.null(id)) {
     if (length(id)) {
-      x <- x[grepl(paste0(id, collapse = "|"), names(x))]
+      idx <- x[grepl(paste0(id, collapse = "|"), names(x))]
     } else {
-      x <- named_list()
+      idx <- named_list()
     }
+  }
+
+  if (!is.null(tagx) || !is.null(idx)) {
+    x <- unique(c(idx, tagx))
   }
 
   x
@@ -130,7 +140,7 @@
 .check_custom <- function(self, values, checks, id, error_on_fail) {
   if (!is.null(checks) && nrow(checks)) {
     if (!is.null(id)) {
-      checks <- subset(checks, grepl(paste0(id, collapse = "|"), params))
+      checks <- subset(checks, grepl(paste0(id, collapse = "|"), ids))
     }
 
     all(vapply(checks$fun, function(.y) {
@@ -138,5 +148,86 @@
     }, logical(1)))
   } else {
     TRUE
+  }
+}
+
+.extract_id <- function(self, private, id, tags) {
+
+  ids <- .get_field(self, private$.ids, id, tags)
+  which_ids <- paste0(ids, collapse = "|")
+  supports <- .get_field(self, private$.supports, id = ids, inc_null = FALSE)
+  values <- .get_field(self, private$.values, id = ids)
+  tags <- .get_field(self, private$.tags, id = ids)
+
+  ps <- as.ParameterSet(
+        unname(Map(prm,
+          id = ids,
+          support = supports,
+          value = values,
+          tags = tags,
+          .check = FALSE
+        ))
+      )
+
+  if (!is.null(private$.deps)) {
+    deps <- subset(private$.deps, grepl(which_ids, id) | grepl(which_ids, on))
+    if (nrow(deps)) {
+      pri <- get_private(ps)
+      pri$.deps <- deps
+    }
+  }
+
+  if (!is.null(private$.checks)) {
+    private$.checks
+    checks <- subset(private$.checks, grepl(which_ids, ids))
+    if (nrow(checks)) {
+      pri <- get_private(ps)
+      pri$.deps <- deps
+    }
+  }
+
+  ps
+
+}
+
+.extract_prefix <- function(self, private, prefix) {
+
+}
+
+assert_no_cycles <- function(lookup) {
+  check <- data.table::data.table(lookup[, 2])
+  checks <- data.table::data.table(lookup[, 1])
+
+  for (i in seq_len(ncol(lookup))) {
+    check <- merge(check, lookup, by.x = "on", by.y = "id", sort = FALSE)[, 2]
+    colnames(check) <- "on"
+    checks <- cbind(checks, check)
+
+    checker <- apply(checks, 1, function(x) any(duplicated(x)) & !any(is.na(x)))
+    if (any(checker)) {
+      stop(sprintf("Cycles detected starting from id(s): %s",
+                   paste0("{", paste0(checks$id[checker], collapse = ","), "}")))
+    }
+
+
+  }
+}
+
+assert_condition <- function(id, support, cond) {
+
+  val <- attr(cond, "value")
+
+  if (attr(cond, "type") %in% c("eq", "geq", "leq", "gt", "lt", "any")) {
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.",
+                   val, id, as.character(support))
+  } else {
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.",
+                   val, id, as.character(support))
+  }
+
+  if (!(testContains(support, val))) {
+    stop(msg)
+  } else {
+    invisible(val)
   }
 }
