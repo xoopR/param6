@@ -2,14 +2,14 @@ test_that("ParameterSet constructor - silent", {
   prms <- list(
     prm("a", Set$new(1), 1, "a"),
     prm("b", "reals", NULL),
-    prm("c", "reals", 2)
+    prm("d", "reals", 2)
   )
   expect_silent(ParameterSet$new(prms))
 
   prms <- list(
     prm("a", Set$new(1), 1),
     prm("b", "reals"),
-    prm("c", "reals")
+    prm("d", "reals")
   )
   expect_silent(ParameterSet$new(prms))
 
@@ -17,7 +17,6 @@ test_that("ParameterSet constructor - silent", {
 })
 
 test_that("ParameterSet constructor - error", {
-
   prms <- list(
     prm("a", Set$new(1), 1, "a"),
     prm("a", "reals", NULL),
@@ -28,16 +27,17 @@ test_that("ParameterSet constructor - error", {
 
 test_that("ParamSet actives - not values", {
   prms <- list(
-    prm("a", Set$new(1, 2), 1, c("a", "b")),
-    prm("b", "reals", NULL, "d"),
+    prm("a", Set$new(1, 2), 1, c("t1", "t2")),
+    prm("b", "reals", NULL, "t2"),
     prm("d", "reals", 2)
   )
-  p <- ParameterSet$new(prms)
+  p <- ParameterSet$new(prms, list(t1 = "linked", t2 = "required"))
 
-  expect_equal(p$tags, list(a = c("a", "b"), b = "d"))
-  expect_equal(p$ids, letters[1:3])
+  expect_equal(p$tags, list(t1 = list(id = "a", properties = "linked"),
+                            t2 = list(id = c("a", "b"), properties = "required")))
+  expect_equal(p$ids, c('a', 'b', 'd'))
   expect_equal(length(p), 3)
-  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(), c = Reals$new()))
+  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(), d = Reals$new()))
 })
 
 test_that("ParamSet actives - values", {
@@ -375,7 +375,7 @@ test_that("extract - checks", {
     prm("b", "reals", 1.5, tags = "t1"),
     prm("d", "reals", 2, tags = "t2")
   )
-  p <- ParameterSet$new(prms)
+  p <- pset(prms)
   p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b"))
   p$add_check(function(x, self) x$a + x$b == 2.5, tags = "t1")
 
