@@ -229,28 +229,28 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # FIXME - ADD CHECKS TO EXTRACT
     extract = function(id = NULL, tags = NULL, prefix = NULL) {
 
-      if (!is.null(private$.checks) || !is.null(private$.trafo)) {
-        warning("Checks and transformations are not included in extraction.")
+      if (!is.null(private$.trafo)) {
+        warning("Transformations are not included in extraction.")
       }
 
-      if (is.null(id) && is.null(prefix)) {
-        stop("One of 'id' or 'prefix' must be non-NULL.")
+      if (is.null(id) && is.null(prefix) && is.null(tags)) {
+        stop("One argument must be non-NULL.")
       } else if (!is.null(id) && !is.null(prefix)) {
         warning("'prefix' argument ignored.")
         prefix <- NULL
       }
 
-        if (!is.null(prefix)) {
-          ids <- .get_field(self, private$.ids, prefix)
+      if (!is.null(prefix)) {
+          ids <- names(.get_field(self, private$.value, prefix))
           unfix_ids <- unprefix(ids)
-        } else {
-          ids <- .get_field(self, private$.ids, id, tags)
+      } else {
+          ids <- names(.get_field(self, private$.value, id, tags))
           unfix_ids <- NULL
         }
 
         which_ids <- paste0(ids, collapse = "|")
         supports <- .get_field(self, private$.supports, id = ids, inc_null = FALSE)
-        values <- .get_field(self, private$.values, id = ids)
+        values <- .get_field(self, private$.value, id = ids)
         tag <- .get_field(self, private$.tags, id = ids)
 
         ps <- as.ParameterSet(
@@ -276,16 +276,23 @@ ParameterSet <- R6::R6Class("ParameterSet",
         }
 
         if (!is.null(private$.checks)) {
-          if (is.null(tags)) {
-            tags0 <- ""
-          } else {
-            tags0 <- tags
-          }
-          checks <- subset(private$.checks, grepl(which_ids, ids) | grepl(tags0, tags))
+          which_checks <- vapply(seq(nrow(private$.checks)), function(i) {
+            .x <- private$.checks[i, ]
+            cids <- unlist(.x[[1]])
+            ctags <- unlist(.x[[2]])
+            if (!is.null(id) && !is.null(cids) && all(cids %in% id)) {
+              TRUE
+            } else if (!is.null(tags) && !is.null(ctags) && all(ctags %in% tags)) {
+              TRUE
+            } else {
+              FALSE
+            }
+          }, logical(1))
+
+          checks <- subset(private$.checks, which_checks)
           if (nrow(checks)) {
             if (!is.null(unfix_ids)) {
-              checks$id <- unfix_ids[match(checks$id, ids)]
-              checks$on <- unfix_ids[match(checks$on, ids)]
+              checks$ids[match(checks$ids, ids, 0)] <- unfix_ids[match(checks$ids, ids, 0)]
             }
             pri <- get_private(ps)
             pri$.checks <- checks
@@ -347,7 +354,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' Get custom parameter checks, NULL if none.
     checks = function() {
       private$.checks
-    }
+    },
 
     # FIXME - DOCUMENT
     trafo = function(x) {

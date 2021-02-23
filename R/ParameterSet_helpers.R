@@ -4,27 +4,19 @@
     x <- expand_list(self$ids, x)
   }
 
-  tagx <- idx <- NULL
+  tagx <- idx <- named_list()
 
   if (!is.null(tags)) {
-    if (length(tags)) {
-      which <- names(self$tags)[(grepl(tags, self$tags))]
-      tagx <- x[match(which, names(x), 0L)]
-    } else {
-      tagx <- named_list()
-    }
+    which <- names(self$tags)[(grepl(tags, self$tags))]
+    tagx <- x[match(which, names(x), 0L)]
   }
 
   if (!is.null(id)) {
-    if (length(id)) {
-      idx <- x[grepl(paste0(id, collapse = "|"), names(x))]
-    } else {
-      idx <- named_list()
-    }
+    idx <- x[grepl(paste0(id, collapse = "|"), names(x))]
   }
 
   if (!is.null(tagx) || !is.null(idx)) {
-    x <- unique(c(idx, tagx))
+    x <- unique_nlist(c(idx, tagx))
   }
 
   x

@@ -88,3 +88,7 @@ unprefix <- function(x, split = "__", which = 1) {
   start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]], integer(1)) + 2
   substr(x, start, 1e3)
 }
+
+unique_nlist <- function(x) {
+  x[!duplicated(names(x))]
+}

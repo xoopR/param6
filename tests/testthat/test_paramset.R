@@ -275,6 +275,33 @@ test_that("c", {
   expect_equal(as.data.table(c(p1, p2, p3)), as.data.table(p))
 })
 
+test_that("checks", {
+  prms <- list(
+    prm("a", Set$new(0.5, 1), 1, tags = "t1"),
+    prm("b", "reals", 2, tags = "t1"),
+    prm("d", "reals", 5, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  expect_equal(p$checks, NULL)
+  expect_error(p$add_check(function(x, self) x$a == 1, "e"), "subset")
+  expect_silent(p$add_check(function(x, self) x$a == 0.5, "a"))
+  expect_equal(
+    p$checks,
+    data.table(ids = list("a"), tags = list(), fun = list(body(function(x) x$a == 0.5))))
+  expect_false(p$check())
+  p$values$a <- 0.5
+  expect_true(p$check())
+  expect_silent(p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b")))
+  expect_true(p$check())
+  expect_silent(p$add_check(function(x, self) x$d == 6, "d"))
+  expect_false(p$check())
+
+
+  p$add_check(function(x, self) all(self$get_values(tags = "t1") > 0), tags = "t1")
+  expect_false(p$check())
+  expect_equal(nrow(p$checks), 4)
+})
+
 test_that("extract - no deps or checks", {
   prms <- list(
     prm("Pre1__par1__a", Set$new(1), 1, tags = "t1"),
@@ -341,6 +368,7 @@ test_that("extract - deps", {
 
 })
 
+
 test_that("extract - checks", {
   prms <- list(
     prm("a", Set$new(1), 1, tags = "t1"),
@@ -348,56 +376,18 @@ test_that("extract - checks", {
     prm("d", "reals", 2, tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_silent(p$add_check(c("a", "b"), function(x, self) x$a + x$b == 2.5))
-  p$extract("a")
+  p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b"))
+  p$add_check(function(x, self) x$a + x$b == 2.5, tags = "t1")
 
 
-
-  p$add_dep("a", "d", cnd(0, "gt"))
-
-  expect_equal(p$extract("a")$deps, NULL)
-  expect_equal(p$extract(letters[1:2])$deps,
-              data.table::data.table(id = "b", on = "a", cond = list(cnd(1, "eq"))))
-
-  prms <- list(
-    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
-    prm("Pre1__par2", "reals", 3, tags = "t2"),
-    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
-    prm("Pre2__par2", "reals", 3, tags = "t2")
-  )
-  p <- ParameterSet$new(prms)
-  p$add_dep("Pre1__par1", "Pre1__par2", cnd(3, "eq"))
-  expect_equal(p$extract("Pre1")$deps,
-              data.table::data.table(id = "par1", on = "par2", cond = list(cnd(3, "eq"))))
-
+  expect_equal(p$extract("a")$checks, NULL)
+  expect_equal(p$extract("b")$checks, NULL)
+  expect_equal(p$extract(c("a", "b"))$checks, p$checks[1, ])
+  expect_equal(p$extract(tags = "t1")$checks, p$checks[2, ])
+  expect_equal(p$extract(id = c("a", "b"), tags = "t1")$checks, p$checks)
 })
 
-test_that("checks", {
-  prms <- list(
-    prm("a", Set$new(0.5, 1), 1, tags = "t1"),
-    prm("b", "reals", 2, tags = "t1"),
-    prm("d", "reals", 5, tags = "t2")
-  )
-  p <- ParameterSet$new(prms)
-  expect_equal(p$checks, NULL)
-  expect_error(p$add_check(function(x, self) x$a == 1, "e"), "subset")
-  expect_silent(p$add_check(function(x, self) x$a == 0.5, "a"))
-  expect_equal(
-    p$checks,
-    data.table(ids = list("a"), tags = list(), fun = list(body(function(x) x$a == 0.5))))
-  expect_false(p$check())
-  p$values$a <- 0.5
-  expect_true(p$check())
-  expect_silent(p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b")))
-  expect_true(p$check())
-  expect_silent(p$add_check(function(x, self) x$d == 6, "d"))
-  expect_false(p$check())
 
-
-  p$add_check(function(x, self) all(self$get_values(tags = "t1") > 0), tags = "t1")
-  expect_false(p$check())
-  expect_equal(nrow(p$checks), 4)
-})
 
 test_that("remove", {
 
