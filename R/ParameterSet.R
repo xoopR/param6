@@ -70,13 +70,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .ParameterSet__print(self, private, sort)
     },
 
-    # FIXME - FINISH
-    set_tag_type = function(tag, type) {
-      checkmate::assert_subset(type, c("required", "group"), FALSE)
-      checkmate::assert_subset(tag, unlist(self$tags), FALSE)
-
-    },
-
     # FIXME - DOCUMENT
     get_values = function(id = NULL, tags = NULL, transform = TRUE, inc_null = TRUE,
                           simplify = TRUE) {
@@ -128,6 +121,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' Get tags from the parameter set.
     tags = function() {
       private$.tags
+    },
+
+    #' @field tags None -> `named_list()` \cr
+    #' Get tag properties and ids with the tag.
+    tag_properties = function() {
+      private$.tag_properties
     },
 
     #' @field ids None -> `character()` \cr
@@ -209,6 +208,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .supports = list(),
     .value = list(),
     .tags = list(),
+    .tag_properties = list(),
     .trafo = NULL,
     .deps = NULL,
     .checks = NULL,

@@ -31,12 +31,12 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
   x
 }
 
+# FIXME - ADD TAG PROPERTIES
 #' @export
 c.ParameterSet <- function(...) {
   ParameterSet$new(unlist(lapply(list(...), as.prm), FALSE))
 }
 
-# FIXME - CONSIDER ADDING DEPS
 #' @export
 as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # nolint
   if (length(x$deps) || length(x$trafos) || length(x$checks)) {

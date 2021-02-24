@@ -1,6 +1,6 @@
 test_that("ParameterSet constructor - silent", {
   prms <- list(
-    prm("a", Set$new(1), 1, "a"),
+    prm("a", Set$new(1), 1, "t1"),
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
@@ -33,7 +33,8 @@ test_that("ParamSet actives - not values", {
   )
   p <- ParameterSet$new(prms, list(t1 = "linked", t2 = "required"))
 
-  expect_equal(p$tags, list(t1 = list(id = "a", properties = "linked"),
+  expect_equal(p$tags, list(a = c("t1", "t2"), b = "t2"))
+  expect_equal(p$tag_properties, list(t1 = list(id = "a", properties = "linked"),
                             t2 = list(id = c("a", "b"), properties = "required")))
   expect_equal(p$ids, c('a', 'b', 'd'))
   expect_equal(length(p), 3)

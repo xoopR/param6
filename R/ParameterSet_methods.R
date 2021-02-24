@@ -15,25 +15,23 @@
 
       private$.value <- un_null_list(lapply(prms, "[[", "value"))
 
-      tag_list <- un_null_list(lapply(prms, "[[", "tags"))
-      utags <- unique(unlist(tag_list))
-      if (!is.null(tag_properties)) {
-        checkmate::assert_subset(unlist(tag_properties), c("linked", "required"))
-      }
-      private$.tags <- lapply(utags, function(.x) {
-        which <- vapply(seq_along(tag_list), function(i) {
-          .x %in% tag_list[[i]]
-            }, logical(1))
+      tag_list <- lapply(prms, "[[", "tags")
+      if (length(tag_list)) {
+        private$.tags <- un_null_list(tag_list)
+        utags <- unique(unlist(tag_list))
+        private$.tag_properties <- lapply(utags, function(.x) {
+        ids <- names(tag_list)[grepl(.x, tag_list)]
         if (!is.null(tag_properties) && .x %in% names(tag_properties)) {
           properties <- tag_properties[[.x]]
         } else {
           properties <- NULL
         }
-        list(id = names(tag_list)[which], properties = properties)
+        list(id = ids, properties = properties)
       })
-      names(private$.tags) <- utags
+      names(private$.tag_properties) <- utags
+      }
 
-      if (any(duplicated(c(private$.id, names(private$.tags))))) {
+      if (any(duplicated(c(private$.id, unique(unlist(private$.tags)))))) {
          stop("ids and tags must have different names.")
       }
     }
@@ -47,6 +45,7 @@
   print(dt)
 }
 
+# FIXME - ADD TAG PROPERTIES
 .ParameterSet__get_values <- function(self, private, id, tags, transform, inc_null, simplify) {
     .get_values(self, private, private$.value, id, tags, transform, inc_null, simplify)
 }
@@ -132,11 +131,13 @@
       invisible(self)
 }
 
+# FIXME - ADD TAG PROPERTIES
 .ParameterSet__check <- function(self, private, supports, custom, deps, id, error_on_fail) {
     .check(self, supports, custom, deps, id, error_on_fail, value_check = self$values,
              support_check = private$.isupports, dep_check = self$deps, custom_check = self$checks)
 }
 
+# FIXME - ADD TAG PROPERTIES
 .ParameterSet__rep <- function(self, private, times, prefix) {
       if (length(prefix) == 1) {
         prefix <- paste0(prefix, seq_len(times))
@@ -167,6 +168,7 @@
       invisible(self)
 }
 
+# FIXME - ADD TAG PROPERTIES
 .ParameterSet__extract <- function(self, private, id, tags, prefix) {
 if (!is.null(private$.trafo)) {
         warning("Transformations are not included in extraction.")
