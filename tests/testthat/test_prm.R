@@ -35,6 +35,11 @@ test_that("prm - error", {
   expect_error(prm("a", 1, 1, "a"), "character scalar")
 })
 
+test_that("required prm", {
+  expect_silent(prm("a", Set$new(1), 1, "required"))
+  expect_error(prm("a", Set$new(1), NULL, "required"), "required")
+})
+
 test_that("as.prm.data.table", {
   prms <- list(
     prm("a", Set$new(1), 1, letters[1:2]),
@@ -57,4 +62,13 @@ test_that("as.prm.data.table", {
       Value = list(1, NULL, 2),
       Tags = list(letters[1:2], NULL, NULL))
   expect_equal(as.prm(dt), prms)
+})
+
+test_that("as.prm.ParameterSet", {
+  prms <- list(
+    prm("a", Set$new(1), 1),
+    prm("b", "reals"),
+    prm("d", "reals")
+  )
+  expect_equal(as.prm(as.ParameterSet(prms)), prms)
 })

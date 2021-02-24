@@ -92,9 +92,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - DOCUMENT
-    check = function(supports = TRUE, custom = TRUE, deps = TRUE, id = NULL,
+    check = function(supports = TRUE, custom = TRUE, deps = TRUE, tags = TRUE, id = NULL,
                      error_on_fail = TRUE) {
-      .ParameterSet__check(self, private, supports, custom, deps, id, error_on_fail)
+      .ParameterSet__check(self, private, supports, custom, deps, tags, id, error_on_fail)
     },
 
     # FIXME - DOCUMENT
@@ -123,10 +123,20 @@ ParameterSet <- R6::R6Class("ParameterSet",
       private$.tags
     },
 
-    #' @field tags None -> `named_list()` \cr
-    #' Get tag properties and ids with the tag.
-    tag_properties = function() {
-      private$.tag_properties
+    #' @field tag_properties `list() -> self` / None -> `list()` \cr
+    #' If `x` is missing then returns tag properties if any. \cr
+    #' If `x` is not missing then used to tag properties. Currently properties can either be: \cr
+    #' i) 'required' - parameters with this tag must have set (non-NULL) values;\cr
+    #' ii) 'linked' - parameters with 'linked' tags are dependent on one another and only one can
+    #'  be set (non-NULL at a time).
+    tag_properties = function(x) {
+      if (missing(x)) {
+        private$.tag_properties
+      } else {
+        .check(self, tag_check = x)
+        private$.tag_properties <- x
+        invisible(self)
+      }
     },
 
     #' @field ids None -> `character()` \cr
@@ -141,7 +151,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       length(self$ids)
     },
 
-    # @field values `list() -> self` / None -> `list()` \cr
+    #' @field values `list() -> self` / None -> `list()` \cr
     #' If `vals` is missing then returns the set (non-NULL) values without transformation or
     #' filtering; use `$get_values` for a more sophisticated getter of values. \cr
     #' If `vals` is not missing then used to set values of parameters, which are first checked
@@ -153,7 +163,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       } else {
         .check(self, id = names(vals), value_check = vals,
                support_check = private$.isupports, dep_check = self$deps,
-               custom_check = self$checks)
+               tag_check = self$tag_properties, custom_check = self$checks)
 
         private$.value <- vals
         invisible(self)

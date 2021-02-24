@@ -1,40 +1,37 @@
 .ParameterSet__initialize <- function(self, private, prms, tag_properties) {
-    if (length(prms)) {
-        checkmate::assert_list(prms, "prm", any.missing = FALSE)
+  if (length(prms)) {
+    checkmate::assert_list(prms, "prm", any.missing = FALSE)
 
-        ids <- vapply(prms, "[[", character(1), "id")
-        if (any(duplicated(ids))) {
-          stop("ids are not unique.")
-        } else {
-          names(prms) <- ids
-          private$.id <- ids
-        }
+    ids <- vapply(prms, "[[", character(1), "id")
+    if (any(duplicated(ids))) {
+      stop("ids are not unique.")
+    } else {
+      names(prms) <- ids
+      private$.id <- ids
+    }
 
-      private$.supports <- vapply(prms, "[[", character(1), "support")
-      private$.isupports <- invert_names(private$.supports)
+    private$.supports <- vapply(prms, "[[", character(1), "support")
+    private$.isupports <- invert_names(private$.supports)
 
-      private$.value <- un_null_list(lapply(prms, "[[", "value"))
+    private$.value <- un_null_list(lapply(prms, "[[", "value"))
 
-      tag_list <- lapply(prms, "[[", "tags")
-      if (length(tag_list)) {
-        private$.tags <- un_null_list(tag_list)
-        utags <- unique(unlist(tag_list))
-        private$.tag_properties <- lapply(utags, function(.x) {
-        ids <- names(tag_list)[grepl(.x, tag_list)]
-        if (!is.null(tag_properties) && .x %in% names(tag_properties)) {
-          properties <- tag_properties[[.x]]
-        } else {
-          properties <- NULL
-        }
-        list(id = ids, properties = properties)
-      })
-      names(private$.tag_properties) <- utags
+    tag_list <- lapply(prms, "[[", "tags")
+    if (length(tag_list)) {
+      private$.tags <- un_null_list(tag_list)
+      utags <- unique(unlist(tag_list))
+      if (!is.null(tag_properties)) {
+        checkmate::assert_list(tag_properties, unique = TRUE, names = "unique")
+        checkmate::assert_subset(unlist(tag_properties), utags)
+        checkmate::assert_subset(names(tag_properties), c("required", "linked"))
+        .check_tags(self, self$values, tag_properties, NULL, TRUE)
+        private$.tag_properties <- tag_properties
       }
 
       if (any(duplicated(c(private$.id, unique(unlist(private$.tags)))))) {
-         stop("ids and tags must have different names.")
+        stop("ids and tags must have different names.")
       }
     }
+  }
 
     invisible(self)
 }
@@ -132,9 +129,9 @@
 }
 
 # FIXME - ADD TAG PROPERTIES
-.ParameterSet__check <- function(self, private, supports, custom, deps, id, error_on_fail) {
-    .check(self, supports, custom, deps, id, error_on_fail, value_check = self$values,
-             support_check = private$.isupports, dep_check = self$deps, custom_check = self$checks)
+.ParameterSet__check <- function(self, private, supports, custom, deps, tags, id, error_on_fail) {
+    .check(self, supports, custom, deps, tags, id, error_on_fail, self$values,
+             private$.isupports, self$deps, self$checks, self$tag_properties)
 }
 
 # FIXME - ADD TAG PROPERTIES

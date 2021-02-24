@@ -55,6 +55,20 @@ prms <- list(
  prm("d", "reals", 2, tags = "t2")
 )
 ParameterSet$new(prms)
+
+## ------------------------------------------------
+## Method `ParameterSet$print`
+## ------------------------------------------------
+
+prms <- list(
+ prm("a", Set$new(1), 1, tags = "t1"),
+ prm("b", "reals", 1.5, tags = "t1"),
+ prm("d", "reals", 2, tags = "t2")
+)
+p <- ParameterSet$new(prms)
+p$print()
+print(p)
+p
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -65,11 +79,20 @@ Get supports from the parameter set.}
 \item{\code{tags}}{None -> \code{named_list()} \cr
 Get tags from the parameter set.}
 
+\item{\code{tag_properties}}{\code{list() -> self} / None -> \code{list()} \cr
+If \code{x} is missing then returns tag properties if any. \cr
+If \code{x} is not missing then used to tag properties. Currently properties can either be: \cr
+i) 'required' - parameters with this tag must have set (non-NULL) values;\cr
+ii) 'linked' - parameters with 'linked' tags are dependent on one another and only one can
+be set (non-NULL at a time).}
+
 \item{\code{ids}}{None -> \code{character()} \cr
 Get ids from the parameter set.}
 
 \item{\code{length}}{None -> \code{integer(1)} \cr
-Get the length of the parameter set as the number of parameters.
+Get the length of the parameter set as the number of parameters.}
+
+\item{\code{values}}{\code{list() -> self} / None -> \code{list()} \cr
 If \code{vals} is missing then returns the set (non-NULL) values without transformation or
 filtering; use \verb{$get_values} for a more sophisticated getter of values. \cr
 If \code{vals} is not missing then used to set values of parameters, which are first checked
@@ -115,7 +138,7 @@ See examples at end.}
 \subsection{Method \code{new()}}{
 Constructs a \code{ParameterSet} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$new(prms = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$new(prms = list(), tag_properties = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -156,6 +179,22 @@ alphabetically by id.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{prms <- list(
+ prm("a", Set$new(1), 1, tags = "t1"),
+ prm("b", "reals", 1.5, tags = "t1"),
+ prm("d", "reals", 2, tags = "t2")
+)
+p <- ParameterSet$new(prms)
+p$print()
+print(p)
+p
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_values"></a>}}

@@ -43,10 +43,9 @@
       values
 }
 
-.check <- function(self, supports = TRUE, custom = TRUE, deps = TRUE, id = NULL,
+.check <- function(self, supports = TRUE, custom = TRUE, deps = TRUE, tags = TRUE, id = NULL,
                   error_on_fail = TRUE, value_check = NULL, support_check = NULL, dep_check = NULL,
-                  custom_check = NULL) {
-
+                  custom_check = NULL, tag_check = NULL) {
   # 1. Containedness checks
   if (supports && length(self)) {
     x <- .check_supports(self, value_check, support_check, id, error_on_fail)
@@ -59,6 +58,15 @@
   # 2. Dependencies
   if (deps && !is.null(dep_check)) {
     x <- .check_deps(self, value_check, dep_check, id, error_on_fail)
+  }
+
+  if (!x) {
+    return(FALSE)
+  }
+
+  # 3. Tags
+  if (tags && !is.null(tag_check)) {
+    x <- .check_tags(self, value_check, tag_check, id, error_on_fail)
   }
 
   if (!x) {
@@ -78,23 +86,23 @@
 }
 
 .check_supports <- function(self, values, supports, id, error_on_fail) {
-
   for (i in seq_along(supports)) {
     ids <- supports[[i]]
     if (!is.null(id)) {
       ids <- intersect(id, ids)
     }
+    if (length(ids)) {
+      value <- .get_values(self, get_private(self), values, ids, inc_null = FALSE)
 
-    value <- .get_values(self, get_private(self), values, ids, inc_null = FALSE)
-
-    set <- support_dictionary$get(names(supports)[[i]])
-    if (!set$contains(value, all = TRUE)) {
-      msg <- sprintf("%s does not lie in %s.", value, as.character(set))
-      if (error_on_fail) {
-        stop(msg)
-      } else {
-        warning(msg)
-        return(FALSE)
+      set <- support_dictionary$get(names(supports)[[i]])
+      if (!set$contains(value, all = TRUE)) {
+        msg <- sprintf("%s does not lie in %s.", value, as.character(set))
+        if (error_on_fail) {
+          stop(msg)
+        } else {
+          warning(msg)
+          return(FALSE)
+        }
       }
     }
   }
@@ -127,6 +135,26 @@
   } else {
     TRUE
   }
+}
+
+.check_tags <- function(self, values, tags, id, error_on_fail) {
+  if (length(tags)) {
+    nok <- "required" %in% names(tags) &&
+      any(vapply(.get_field(self, values, id, tags = tags[["required"]]),
+                  is.null, logical(1)))
+    if (nok) {
+      stop("Not all required parameters are set.")
+    }
+
+    nok <- "linked" %in% names(tags) &&
+      length(.get_values(self, get_private(self), values, id, tags = tags[["linked"]],
+                         inc_null = FALSE)) > 1
+    if (nok) {
+      stop("Multiple linked parameters are set.")
+    }
+  }
+
+  TRUE
 }
 
 .check_custom <- function(self, values, checks, id, error_on_fail) {

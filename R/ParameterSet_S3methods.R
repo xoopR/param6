@@ -33,8 +33,11 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 
 # FIXME - ADD TAG PROPERTIES
 #' @export
-c.ParameterSet <- function(...) {
-  ParameterSet$new(unlist(lapply(list(...), as.prm), FALSE))
+c.ParameterSet <- function(..., pss = list(...)) {
+  ParameterSet$new(
+    unlist(lapply(pss, as.prm), FALSE),
+    unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
+  )
 }
 
 #' @export
