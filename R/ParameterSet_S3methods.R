@@ -31,13 +31,28 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
   x
 }
 
-# FIXME - ADD TAG PROPERTIES
 #' @export
 c.ParameterSet <- function(..., pss = list(...)) {
-  ParameterSet$new(
-    unlist(lapply(pss, as.prm), FALSE),
-    unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
-  )
+  prms <- unlist(lapply(pss, as.prm), FALSE)
+  props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
+  if (length(props)) {
+    tprop <- list()
+    req_props <- props[names(props) %in% "required"]
+    if (length(req_props)) {
+      tprop$required <- unique(unlist(req_props))
+    }
+    lin_props <- props[names(props) %in% "linked"]
+    if (length(lin_props)) {
+      tprop$linked <- unique(unlist(lin_props))
+    }
+    if (any(duplicated(unlist(tprop)))) {
+      stop("Cannot merge inconsistent tag properties.")
+    }
+  } else {
+    tprop <- NULL
+  }
+
+  ParameterSet$new(prms, tprop)
 }
 
 #' @export

@@ -1,3 +1,4 @@
+#' @export
 prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   checkmate::assert_character(id, len = 1)
   if (id == "c") {

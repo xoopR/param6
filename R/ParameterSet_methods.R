@@ -42,7 +42,6 @@
   print(dt)
 }
 
-# FIXME - ADD TAG PROPERTIES
 .ParameterSet__get_values <- function(self, private, id, tags, transform, inc_null, simplify) {
     .get_values(self, private, private$.value, id, tags, transform, inc_null, simplify)
 }
@@ -128,13 +127,11 @@
       invisible(self)
 }
 
-# FIXME - ADD TAG PROPERTIES
 .ParameterSet__check <- function(self, private, supports, custom, deps, tags, id, error_on_fail) {
     .check(self, supports, custom, deps, tags, id, error_on_fail, self$values,
              private$.isupports, self$deps, self$checks, self$tag_properties)
 }
 
-# FIXME - ADD TAG PROPERTIES
 .ParameterSet__rep <- function(self, private, times, prefix) {
       if (length(prefix) == 1) {
         prefix <- paste0(prefix, seq_len(times))
@@ -162,11 +159,29 @@
       names(tags) <- paste(rep(prefix, each = length(private$.tags)), names(tags), sep = "__")
       private$.tags <- tags
 
+      if (length(private$.tag_properties) && length(private$.tag_properties$linked)) {
+        new_linked <- paste(rep(prefix, each = length(private$.tag_properties$linked)),
+                            private$.tag_properties$linked, sep = "__")
+        # frustrating loop here but should incur minimal overhead
+        for (i in seq_along(private$.tags)) {
+          which <- private$.tags[[i]] %in% private$.tag_properties$linked
+          if (any(which)) {
+            private$.tags[[i]][which] <-
+              paste(rep(get_prefix(names(private$.tags)[[i]]),
+                          each = length(private$.tags[[i]][which])),
+                      private$.tags[[i]][which], sep = "__")
+          }
+        }
+        private$.tag_properties$linked <- new_linked
+
+      }
+
       invisible(self)
 }
 
 # FIXME - ADD TAG PROPERTIES
 .ParameterSet__extract <- function(self, private, id, tags, prefix) {
+
 if (!is.null(private$.trafo)) {
         warning("Transformations are not included in extraction.")
       }
@@ -187,11 +202,22 @@ if (!is.null(private$.trafo)) {
         }
 
         which_ids <- paste0(ids, collapse = "|")
-        supports <- .get_field(self, private$.supports, id = ids, inc_null = FALSE)
-        values <- .get_field(self, private$.value, id = ids)
-        tag <- .get_field(self, private$.tags, id = ids)
+        supports <- unname(.get_field(self, private$.supports, id = ids, inc_null = FALSE))
+        values <- unname(.get_field(self, private$.value, id = ids))
+        tag <- unname(.get_field(self, private$.tags, id = ids))
 
-        ps <- as.ParameterSet(
+        if (length(unfix_ids)) {
+          ps <- as.ParameterSet(
+            unname(Map(prm,
+              id = unfix_ids,
+              support = supports,
+              value = values,
+              tags = tag,
+              .check = FALSE
+            ))
+          )
+        } else {
+          ps <- as.ParameterSet(
             unname(Map(prm,
               id = ids,
               support = supports,
@@ -200,9 +226,10 @@ if (!is.null(private$.trafo)) {
               .check = FALSE
             ))
           )
+        }
 
         if (!is.null(private$.deps)) {
-          deps <- subset(private$.deps, grepl(which_ids, id) | grepl(which_ids, on))
+          deps <- subset(private$.deps, grepl(which_ids, id) & grepl(which_ids, on))
           if (nrow(deps)) {
             if (!is.null(unfix_ids)) {
               deps$id <- unfix_ids[match(deps$id, ids)]

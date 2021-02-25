@@ -84,9 +84,13 @@ env_append <- function(env, var, values) {
   !(x %in% table)
 }
 
-unprefix <- function(x, split = "__", which = 1) {
+unprefix <- function(x, split = "__") {
   start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]], integer(1)) + 2
   substr(x, start, 1e3)
+}
+
+get_prefix <- function(x, split = "__") {
+  vapply(x, function(.x) unlist(strsplit(.x, split, TRUE))[[1]], character(1), USE.NAMES = FALSE)
 }
 
 unique_nlist <- function(x) {

@@ -247,6 +247,7 @@ p
   supports = TRUE,
   custom = TRUE,
   deps = TRUE,
+  tags = TRUE,
   id = NULL,
   error_on_fail = TRUE
 )}\if{html}{\out{</div>}}

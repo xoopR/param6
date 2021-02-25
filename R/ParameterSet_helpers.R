@@ -1,5 +1,4 @@
 .get_field <- function(self, x, id = NULL, tags = NULL, inc_null = TRUE) {
-
   if (inc_null) {
     x <- expand_list(self$ids, x)
   }
@@ -7,7 +6,7 @@
   tagx <- idx <- named_list()
 
   if (!is.null(tags)) {
-    which <- names(self$tags)[(grepl(tags, self$tags))]
+    which <- names(self$tags)[(grepl(paste0(tags, collapse = "|"), self$tags))]
     tagx <- x[match(which, names(x), 0L)]
   }
 
@@ -15,7 +14,7 @@
     idx <- x[grepl(paste0(id, collapse = "|"), names(x))]
   }
 
-  if (!is.null(tagx) || !is.null(idx)) {
+  if (!is.null(tags) || !is.null(id)) {
     x <- unique_nlist(c(idx, tagx))
   }
 
@@ -82,7 +81,7 @@
     return(FALSE)
   }
 
-  invisible(TRUE)
+  return(TRUE)
 }
 
 .check_supports <- function(self, values, supports, id, error_on_fail) {
@@ -96,17 +95,14 @@
 
       set <- support_dictionary$get(names(supports)[[i]])
       if (!set$contains(value, all = TRUE)) {
-        msg <- sprintf("%s does not lie in %s.", value, as.character(set))
-        if (error_on_fail) {
-          stop(msg)
-        } else {
-          warning(msg)
-          return(FALSE)
-        }
+        return(.return_fail(
+          msg = sprintf("%s does not lie in %s.", value, as.character(set)),
+          error_on_fail
+        ))
       }
     }
   }
-  TRUE
+  return(TRUE)
 }
 
 .check_deps <- function(self, values, deps, id, error_on_fail) {
@@ -121,20 +117,17 @@
       if (length(id_value)) {
         ok <- fun(on_value)
         if (!ok) {
-          msg <- sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
-                        attr(cnd, "type"), string_as_set(attr(cnd, "value")))
-          if (error_on_fail) {
-            stop(msg)
-          } else {
-            warning(msg)
-            return(FALSE)
-          }
+          return(.return_fail(
+            msg = sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
+                        attr(cnd, "type"), string_as_set(attr(cnd, "value"))),
+            error_on_fail
+          ))
         }
       }
     }
-  } else {
-    TRUE
   }
+
+  return(TRUE)
 }
 
 .check_tags <- function(self, values, tags, id, error_on_fail) {
@@ -143,18 +136,24 @@
       any(vapply(.get_field(self, values, id, tags = tags[["required"]]),
                   is.null, logical(1)))
     if (nok) {
-      stop("Not all required parameters are set.")
+      return(.return_fail(
+        msg = "Not all required parameters are set.",
+        error_on_fail
+      ))
     }
 
     nok <- "linked" %in% names(tags) &&
       length(.get_values(self, get_private(self), values, id, tags = tags[["linked"]],
-                         inc_null = FALSE)) > 1
+                         inc_null = FALSE)) > length(tags[["linked"]])
     if (nok) {
-      stop("Multiple linked parameters are set.")
+      return(.return_fail(
+        msg = "Multiple linked parameters are set.",
+        error_on_fail
+      ))
     }
   }
 
-  TRUE
+  return(TRUE)
 }
 
 .check_custom <- function(self, values, checks, id, error_on_fail) {
@@ -163,12 +162,17 @@
       checks <- subset(checks, grepl(paste0(id, collapse = "|"), ids))
     }
 
-    all(vapply(checks$fun, function(.y) {
-      as.function(list(x = values, self = self, .y))()
-    }, logical(1)))
-  } else {
-    TRUE
+    # `for` instead of `vapply` allows early breaking
+    for (i in seq_along(checks$fun)) {
+      .y <- checks$fun[[i]]
+      ok <- as.function(list(x = values, self = self, .y))()
+      if (!ok) {
+        return(.return_fail(sprintf("Check on '%s' failed.", deparse(.y)), error_on_fail))
+      }
+    }
   }
+
+  return(TRUE)
 }
 
 assert_no_cycles <- function(lookup) {
@@ -206,5 +210,14 @@ assert_condition <- function(id, support, cond) {
     stop(msg)
   } else {
     invisible(val)
+  }
+}
+
+.return_fail <- function(msg, error_on_fail) {
+  if (error_on_fail) {
+    stop(msg)
+  } else {
+    warning(msg)
+    return(FALSE)
   }
 }
