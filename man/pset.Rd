@@ -13,6 +13,8 @@ pset(prms)
 See \link{ParameterSet} for full details.
 }
 \examples{
+library(set6)
+
 prms <- list(
  prm("a", Set$new(1), 1, tags = "t1"),
  prm("b", "reals", 1.5, tags = "t1"),

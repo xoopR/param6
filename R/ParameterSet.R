@@ -208,6 +208,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #' @description See [ParameterSet] for full details.
 #' @param prms (`list()`) \cr List of [prm] objects.
 #' @examples
+#' library(set6)
+#'
 #' prms <- list(
 #'  prm("a", Set$new(1), 1, tags = "t1"),
 #'  prm("b", "reals", 1.5, tags = "t1"),

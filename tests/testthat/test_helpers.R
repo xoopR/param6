@@ -20,16 +20,16 @@ test_that("assert_no_cycles", {
 })
 
 test_that("assert_condition", {
-  expect_silent(assert_condition("a", Set$new(1), "Equal", 1))
-  expect_silent(assert_condition("a", Set$new(1, 2, 3), "AnyOf", c(1, 2)))
+  expect_silent(assert_condition("a", Set$new(1), cnd(1, "eq")))
+  expect_silent(assert_condition("a", Set$new(1, 2, 3), cnd(c(1,2), "any")))
 
-  expect_error(assert_condition("a", Set$new(1), "Equal", 2),
+  expect_error(assert_condition("a", Set$new(1), cnd(2, "eq")),
                "Condition is not possible")
-  expect_error(assert_condition("a", Set$new(1, 2, 3), "AnyOf", c(1, 4)),
+  expect_error(assert_condition("a", Set$new(1, 2, 3), cnd(c(1, 4), "any")),
                "Condition is not possible")
-  expect_error(assert_condition("a", Set$new(1), "NotEqual", 2),
+  expect_error(assert_condition("a", Set$new(1), cnd(2, "neq")),
                "Condition is redundant")
-  expect_error(assert_condition("a", Set$new(1, 2, 3), "NotAnyOf", c(1, 4)),
+  expect_error(assert_condition("a", Set$new(1, 2, 3), cnd(c(1, 4), "nany")),
                "Condition is redundant")
 })
 

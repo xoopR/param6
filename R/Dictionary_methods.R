@@ -29,7 +29,13 @@
 
 .Dictionary__get <- function(self, private, x) { # nolint
    if (length(private$.types) == 1 || length(x) == 1) {
-      private$.items[checkmate::assert_subset(x, self$keys)][[1]]
+      x <- private$.items[checkmate::assert_subset(x, self$keys)]
+      if (length(x) == 1) {
+         x <- x[[1]]
+      } else {
+         x <- unlist(x, TRUE, FALSE)
+      }
+      return(x)
    } else {
       stop("'get' can only be used if length of 'x' is '1' or if Dictionary has one type.") # nolint
    }

@@ -206,7 +206,7 @@ assert_condition <- function(id, support, cond) {
 
   val <- attr(cond, "value")
 
-  if (attr(cond, "type") %in% c("eq", "geq", "leq", "gt", "lt", "any")) {
+  if (attr(cond, "type") %in% c("==", ">=", "<=", ">", "<", "%in%")) {
     msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", # nolint
                    val, id, as.character(support))
   } else {

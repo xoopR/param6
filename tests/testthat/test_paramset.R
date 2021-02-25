@@ -67,7 +67,7 @@ test_that("ParamSet actives - tag properties", {
   prms <- list(
     prm("a", Set$new(1, 2), 1, c("t1", "t2")),
     prm("b", "reals", 2, "t2"),
-    prm("d", "reals", 2, "t3")
+    prm("d", "reals", NULL, "t3")
   )
   p <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
 
@@ -210,7 +210,8 @@ test_that("trafo", {
        prm(id = "d", 4, support = Reals$new()))
 )
   p$trafo <- function(x, self) {
-    out <- lapply(self$get_values(tags = "t1"), function(.x) 2^.x)
+    out <- lapply(self$get_values(tags = "t1", transform = FALSE),
+                  function(.x) 2^.x)
     out <- c(out, list(d = x$d))
     out
   }

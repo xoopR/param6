@@ -1,4 +1,4 @@
-# @export
+#' @export
 `[.Dictionary` <- function(object, i) {
   object$get_list(i)
 }
