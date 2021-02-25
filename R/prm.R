@@ -1,3 +1,46 @@
+#' @title S3 Parameter Constructor
+#' @description The `prm` class is required for [ParameterSet] objects, it
+#' allows specifying a parameter as a named set and optionally setting values
+#' and tags.
+#' @param id (`character(1)`) \cr
+#' Parameter identifier.
+#' @param support `([set6::Set]|character(1))` \cr
+#' Either a set object from
+#' \CRANpkg{set6} or a character representing the set if it is already present
+#' in the [support_dictionary]. If a [set6::Set] is provided then the set and
+#' its string representation are added automatically to [support_dictionary]
+#' in order to provie fast internal checks. Common sets (such as the reals,
+#' naturals, etc.) are already provided in [support_dictionary].
+#' @param value `ANY` \cr
+#' Optional to assign the parameter, will internally
+#' be checked that it lies within the given support.
+#' @param tags (`character()`) \cr
+#' An optional character vector of tags to apply to the parameter. On their own
+#' tags offer little extra benefit, however they can be assigned properties
+#' when creating [ParameterSet] objects that enable them to be more powerful.
+#' @param .check For internal use only.
+#' @examples
+#' # Constructing a prm with a Set support
+#' prm(
+#'  id = "a",
+#'  support = Reals$new(),
+#'  value = 1
+#' )
+#'
+#' # Constructing a prm with a support already in the dictionary
+#' prm(
+#'  id = "a",
+#'  support = "reals",
+#'  value = 1
+#' )
+#'
+#' # Adding tags
+#' prm(
+#'  id = "a",
+#'  support = "reals",
+#'  value = 1,
+#'  tags = c("tag1", "tag2")
+#' )
 #' @export
 prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   checkmate::assert_character(id, len = 1)
