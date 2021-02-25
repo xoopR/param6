@@ -25,7 +25,7 @@ test_that("ParameterSet constructor - error", {
   expect_error(ParameterSet$new(prms), "ids are not unique")
 })
 
-test_that("ParamSet actives - not values", {
+test_that("ParamSet actives - not values or tag propeties", {
   prms <- list(
     prm("a", Set$new(1, 2), 1, c("t1", "t2")),
     prm("b", "reals", 2, "t2"),
@@ -34,7 +34,6 @@ test_that("ParamSet actives - not values", {
   p <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
 
   expect_equal(p$tags, list(a = c("t1", "t2"), b = "t2"))
-  expect_equal(p$tag_properties, list(linked = "t1", required = "t2"))
   expect_equal(p$ids, c("a", "b", "d"))
   expect_equal(length(p), 3)
   expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(),
@@ -62,6 +61,22 @@ test_that("ParamSet actives - values", {
   p$values <- list(a = 1, b = 1, d = 1)
   p$values$a <- NULL
   expect_equal(p$values, list(b = 1, d = 1))
+})
+
+test_that("ParamSet actives - tag properties", {
+  prms <- list(
+    prm("a", Set$new(1, 2), 1, c("t1", "t2")),
+    prm("b", "reals", 2, "t2"),
+    prm("d", "reals", 2, "t3")
+  )
+  p <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
+
+  expect_equal(p$tag_properties, list(linked = "t1", required = "t2"))
+  expect_silent({p$tag_properties <- NULL}) # nolint
+  expect_silent({p$tag_properties$required <- "t2"}) # nolint
+  expect_error({p$tag_properties <- list(required = "t1", linked = "t1")}) # nolint
+  expect_error({p$tag_properties <- list(required = "t3")}) # nolint
+  expect_error({p$tag_properties <- list(linked = "t2")}) # nolint
 })
 
 test_that("as.data.table.ParameterSet and print", {
@@ -382,6 +397,22 @@ test_that("extract - no deps or checks", {
   )
   p2 <- ParameterSet$new(prms)
   expect_equal(p$extract("Pre1__par1"), p2)
+
+  prms <- list(
+    prm("Pre1__par1", Set$new(1), 1, tags = "Pre1__t1"),
+    prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "Pre2__t1"),
+    prm("Pre2__par2", "reals", 3, tags = "t2")
+  )
+  p <- ParameterSet$new(prms, list(linked = c("Pre1__t1", "Pre2__t1"),
+                                   required = c("t2")))
+
+  prms <- list(
+    prm("par1", Set$new(1), 1, tags = "t1"),
+    prm("par2", "reals", 3, tags = "t2")
+  )
+  p2 <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
+  expect_equal(p$extract(prefix = "Pre1"), p2)
 })
 
 test_that("extract - deps", {

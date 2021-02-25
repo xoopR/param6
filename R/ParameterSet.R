@@ -72,9 +72,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' p$print()
     #' print(p)
     #' p
-    print = function(sort = TRUE) {
-      .ParameterSet__print(self, private, sort)
-    },
+    print = function(sort = TRUE) .ParameterSet__print(self, private, sort),
 
     # FIXME - DOCUMENT
     get_values = function(id = NULL, tags = NULL, transform = TRUE,
@@ -118,19 +116,29 @@ ParameterSet <- R6::R6Class("ParameterSet",
   ),
 
   active = list(
-    #' @field supports None -> `named_list()` \cr
-    #' Get supports from the parameter set.
-    supports = function() {
-      sups <- support_dictionary$get_list(private$.supports)
-      names(sups) <- self$ids
-      sups
-    },
-
     #' @field tags None -> `named_list()` \cr
     #' Get tags from the parameter set.
-    tags = function() {
-      private$.tags
-    },
+    tags = function() private$.tags,
+
+    #' @field ids None -> `character()` \cr
+    #' Get ids from the parameter set.
+    ids = function() private$.id,
+
+    #' @field length None -> `integer(1)` \cr
+    #' Get the length of the parameter set as the number of parameters.
+    length = function() length(self$ids),
+
+    #' @field deps None -> [data.table::data.table]
+    #' Get parameter dependencies, NULL if none.
+    deps = function() private$.deps,
+
+    #' @field checks None -> [data.table::data.table]
+    #' Get custom parameter checks, NULL if none.
+    checks = function() private$.checks,
+
+    #' @field supports None -> `named_list()` \cr
+    #' Get supports from the parameter set.
+    supports = function() .ParameterSet__supports(self, private),
 
     #' @field tag_properties `list() -> self` / None -> `list()` \cr
     #' If `x` is missing then returns tag properties if any. \cr
@@ -141,59 +149,18 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' ii) 'linked' - parameters with 'linked' tags are dependent on one another
     #' and only one can be set (non-NULL at a time).
     tag_properties = function(x) {
-      if (missing(x)) {
-        private$.tag_properties
-      } else {
-        .check(self, tag_check = x)
-        private$.tag_properties <- x
-        invisible(self)
-      }
-    },
-
-    #' @field ids None -> `character()` \cr
-    #' Get ids from the parameter set.
-    ids = function() {
-      private$.id
-    },
-
-    #' @field length None -> `integer(1)` \cr
-    #' Get the length of the parameter set as the number of parameters.
-    length = function() {
-      length(self$ids)
+      .ParameterSet__tag_properties(self, private, x)
     },
 
     #' @field values `list() -> self` / None -> `list()` \cr
-    #' If `vals` is missing then returns the set (non-NULL) values without
+    #' If `x` is missing then returns the set (non-NULL) values without
     #' transformation or filtering; use `$get_values` for a more sophisticated
     #' getter of values. \cr
-    #' If `vals` is not missing then used to set values of parameters, which are
+    #' If `x` is not missing then used to set values of parameters, which are
     #' first checked internally with the `$check` method before setting the new
     #' values. \cr
     #' See examples at end.
-    values = function(vals) {
-      if (missing(vals)) {
-        return(private$.value)
-      } else {
-        .check(self, id = names(vals), value_check = vals,
-               support_check = private$.isupports, dep_check = self$deps,
-               tag_check = self$tag_properties, custom_check = self$checks)
-
-        private$.value <- vals
-        invisible(self)
-      }
-    },
-
-    #' @field deps None -> [data.table::data.table]
-    #' Get parameter dependencies, NULL if none.
-    deps = function() {
-      private$.deps
-    },
-
-    #' @field checks None -> [data.table::data.table]
-    #' Get custom parameter checks, NULL if none.
-    checks = function() {
-      private$.checks
-    },
+    values = function(x) .ParameterSet__values(self, private, x),
 
     #' @field trafo `function() -> self` / None -> `function()` \cr
     #' If `x` is missing then returns a transformation function if previously
@@ -206,26 +173,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' therefore result in a list. If using `self$get_values()` within the
     #' transformation function, make sure to set `transform = FALSE` to prevent
     #' infinite recursion, see examples at end.
-    trafo = function(x) {
-      if (missing(x)) {
-        private$.trafo
-      } else {
-        checkmate::assert_function(x, args = c("x", "self"))
-        vals <- x(self$values, self)
-        checkmate::assert_list(vals)
-
-        tryCatch(.check(self, id = names(vals), value_check = vals,
-                        support_check = private$.isupports,
-                        dep_check = self$deps, custom_check = self$checks),
-                 error = function(e) {
-                   stop("Transformation results in values outside of supports.")
-                 })
-
-        private$.trafo <- x
-        invisible(self)
-      }
-    }
-  ),
+    trafo = function(x) .ParameterSet__trafo(self, private, x)
+    ),
 
   private = list(
     .id = list(),
@@ -239,21 +188,21 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .checks = NULL,
     deep_clone = function(name, value) {
       switch(name,
-        ".deps" = {
-          if (!is.null(value)) {
-            data.table::copy(value)
-          }
-        },
-        ".checks" = {
-          if (!is.null(value)) {
-            data.table::copy(value)
-          }
-        },
-        value
+             ".deps" = {
+               if (!is.null(value)) {
+                 data.table::copy(value)
+               }
+             },
+             ".checks" = {
+               if (!is.null(value)) {
+                 data.table::copy(value)
+               }
+             },
+             value
       )
     }
   )
-)
+  )
 
 #' @title Convenience Function for Constructing a ParameterSet
 #' @description See [ParameterSet] for full details.

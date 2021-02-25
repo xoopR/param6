@@ -20,6 +20,8 @@
 #' when creating [ParameterSet] objects that enable them to be more powerful.
 #' @param .check For internal use only.
 #' @examples
+#' library(set6)
+#'
 #' # Constructing a prm with a Set support
 #' prm(
 #'  id = "a",

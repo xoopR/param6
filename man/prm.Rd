@@ -35,6 +35,8 @@ allows specifying a parameter as a named set and optionally setting values
 and tags.
 }
 \examples{
+library(set6)
+
 # Constructing a prm with a Set support
 prm(
  id = "a",

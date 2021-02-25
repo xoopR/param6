@@ -1,3 +1,7 @@
+#---------------
+# Public Methods
+#---------------
+
 .ParameterSet__initialize <- function(self, private, prms, tag_properties) { # nolint
   if (length(prms)) {
     checkmate::assert_list(prms, "prm", any.missing = FALSE)
@@ -191,7 +195,6 @@
   invisible(self)
 }
 
-# FIXME - ADD TAG PROPERTIES
 .ParameterSet__extract <- function(self, private, id, tags, prefix) { # nolint
 
   if (!is.null(private$.trafo)) {
@@ -217,7 +220,11 @@
   supports <- unname(.get_field(self, private$.supports, id = ids,
                                 inc_null = FALSE))
   values <- unname(.get_field(self, private$.value, id = ids))
+
   tag <- unname(.get_field(self, private$.tags, id = ids))
+  if (!is.null(prefix)) {
+    unfix_tags <- unprefix(tag)
+  }
 
   if (length(unfix_ids)) {
     ps <- as.ParameterSet(
@@ -225,7 +232,7 @@
                  id = unfix_ids,
                  support = supports,
                  value = values,
-                 tags = tag,
+                 tags = unfix_tags,
                  .check = FALSE
       ))
     )
@@ -280,5 +287,84 @@
     }
   }
 
+  if (length(private$.tag_properties)) {
+    new_props <- list()
+    if (length(private$.tag_properties$linked)) {
+      new_props$linked <-
+        unprefix(
+          private$.tag_properties$linked[private$.tag_properties$linked %in%
+                                           tag]
+        )
+    }
+    if (length(private$.tag_properties$required)) {
+      new_props$required <-
+        private$.tag_properties$required[private$.tag_properties$required %in%
+                                           tag]
+    }
+    ps$tag_properties <- new_props
+  }
+
+
   ps
+}
+#---------------
+# Active Bindings
+#---------------
+
+.ParameterSet__supports <- function(self, private) { # nolint
+  sups <- support_dictionary$get_list(private$.supports)
+  names(sups) <- self$ids
+  sups
+}
+
+.ParameterSet__tag_properties <- function(self, private, x) { # nolint
+  if (missing(x)) {
+    private$.tag_properties
+  } else {
+    if (!is.null(x)) {
+      checkmate::assert_list(x, unique = TRUE, names = "unique")
+      checkmate::assert_subset(unlist(x), unlist(self$tags))
+      checkmate::assert_subset(names(x), c("required", "linked"))
+      .check_tags(self, self$values, x, NULL, TRUE)
+    }
+    private$.tag_properties <- x
+    invisible(self)
+  }
+}
+
+.ParameterSet__values <- function(self, private, x) { # nolint
+  if (missing(x)) {
+    return(private$.value)
+  } else {
+    if (!is.null(x)) {
+      .check(self,
+             id = names(x), value_check = x,
+             support_check = private$.isupports, dep_check = self$deps,
+             tag_check = self$tag_properties, custom_check = self$checks
+      )
+    }
+
+    private$.value <- x
+    invisible(self)
+  }
+}
+
+.ParameterSet__trafo <- function(self, private, x) { # nolint
+  if (missing(x)) {
+    private$.trafo
+  } else {
+    checkmate::assert_function(x, args = c("x", "self"))
+    vals <- x(self$values, self)
+    checkmate::assert_list(vals)
+
+    tryCatch(.check(self, id = names(vals), value_check = vals,
+                    support_check = private$.isupports,
+                    dep_check = self$deps, custom_check = self$checks),
+             error = function(e) {
+               stop("Transformation results in values outside of supports.")
+             })
+
+    private$.trafo <- x
+    invisible(self)
+  }
 }

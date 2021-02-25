@@ -78,11 +78,23 @@ p
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{supports}}{None -> \code{named_list()} \cr
-Get supports from the parameter set.}
-
 \item{\code{tags}}{None -> \code{named_list()} \cr
 Get tags from the parameter set.}
+
+\item{\code{ids}}{None -> \code{character()} \cr
+Get ids from the parameter set.}
+
+\item{\code{length}}{None -> \code{integer(1)} \cr
+Get the length of the parameter set as the number of parameters.}
+
+\item{\code{deps}}{None -> \link[data.table:data.table]{data.table::data.table}
+Get parameter dependencies, NULL if none.}
+
+\item{\code{checks}}{None -> \link[data.table:data.table]{data.table::data.table}
+Get custom parameter checks, NULL if none.}
+
+\item{\code{supports}}{None -> \code{named_list()} \cr
+Get supports from the parameter set.}
 
 \item{\code{tag_properties}}{\code{list() -> self} / None -> \code{list()} \cr
 If \code{x} is missing then returns tag properties if any. \cr
@@ -93,26 +105,14 @@ values;\cr
 ii) 'linked' - parameters with 'linked' tags are dependent on one another
 and only one can be set (non-NULL at a time).}
 
-\item{\code{ids}}{None -> \code{character()} \cr
-Get ids from the parameter set.}
-
-\item{\code{length}}{None -> \code{integer(1)} \cr
-Get the length of the parameter set as the number of parameters.}
-
 \item{\code{values}}{\code{list() -> self} / None -> \code{list()} \cr
-If \code{vals} is missing then returns the set (non-NULL) values without
+If \code{x} is missing then returns the set (non-NULL) values without
 transformation or filtering; use \verb{$get_values} for a more sophisticated
 getter of values. \cr
-If \code{vals} is not missing then used to set values of parameters, which are
+If \code{x} is not missing then used to set values of parameters, which are
 first checked internally with the \verb{$check} method before setting the new
 values. \cr
 See examples at end.}
-
-\item{\code{deps}}{None -> \link[data.table:data.table]{data.table::data.table}
-Get parameter dependencies, NULL if none.}
-
-\item{\code{checks}}{None -> \link[data.table:data.table]{data.table::data.table}
-Get custom parameter checks, NULL if none.}
 
 \item{\code{trafo}}{\verb{function() -> self} / None -> \verb{function()} \cr
 If \code{x} is missing then returns a transformation function if previously
