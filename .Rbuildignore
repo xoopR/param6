@@ -1,16 +1,15 @@
 ^LICENSE\.md
 ^inst/data-raw$
 ^tic\.R$
-^appveyor\.yml$
 .ignore
 .editorconfig
 .gitignore
-^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^man-roxygen$
 ^attic$
 ^docs$
+^todo$
 ^pkgdown$
 inst/trigger-mlr3book.sh
 ^\.lintr$

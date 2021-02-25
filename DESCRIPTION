@@ -1,16 +1,17 @@
 Package: param6
-Title: Paradox v2
-Description: Paradox v2 description.
-Version: 0.0.0-9000
+Title: A Fast and Lightweight R6 Parameter Interface
+Description: param6 makes use of {set6} alongside the S3 and R6 paradigms to provide a fast and lightweight interface for parameters and parameter sets.
+Version: 0.1.0.9000
 Authors@R:
-  c(person(given = "A",
-           family = "B",
-           role = c("cre","aut"),
-           email = "a@b.com"))
+  person(given = "Raphael",
+             family = "Sonabend",
+             role = c("aut","cre"),
+             email = "raphael.sonabend.15@ucl.ac.uk",
+             comment = c(ORCID = "0000-0001-9225-4654"))
 License: MIT + file LICENSE
 Encoding: UTF-8
 NeedsCompilation: no
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.1.1
 Imports:
   checkmate,
