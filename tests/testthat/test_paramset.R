@@ -188,6 +188,18 @@ test_that("trafo", {
   p2 <- ParameterSet$new(prms)
 
   expect_equal(as.data.table(p$transform()), as.data.table(p2))
+
+  p <- ParameterSet$new(
+  list(prm(id = "a", 2, support = Reals$new(), tags = "t1"),
+       prm(id = "b", 3, support = Reals$new(), tags = "t1"),
+       prm(id = "d", 4, support = Reals$new()))
+)
+  p$trafo <- function(x, self) {
+    out <- lapply(self$get_values(tags = "t1"), function(.x) 2^.x)
+    out <- c(out, list(d = x$d))
+    out
+  }
+  p$get_values()
 })
 
 test_that("rep", {

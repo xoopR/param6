@@ -37,11 +37,14 @@ p$get_values()
 # more complex transformation on tags
 p <- ParameterSet$new(
   list(prm(id = "a", 2, support = Reals$new(), tags = "t1"),
-       prm(id = "b", 3, support = Reals$new(), tags = "t1")),
-       prm(id = "c", 4, support = Reals$new())))
+       prm(id = "b", 3, support = Reals$new(), tags = "t1"),
+       prm(id = "d", 4, support = Reals$new()))
+)
+# make sure `transform = FALSE` to prevent infinite recursion
 p$trafo <- function(x, self) {
- out <- 2^self$get_values(tags = "t1")
- out <- c(out, list(c = x$c))
+ out <- lapply(self$get_values(tags = "t1", transform = FALSE),
+               function(.x) 2^.x)
+ out <- c(out, list(d = x$d))
  out
 }
 p$get_values()
@@ -119,8 +122,9 @@ If \code{x} is not missing then it should be a function with arguments \code{x} 
 the transformation is being added to, and \code{x <- self$values}. The
 transformation function is automatically called after a call to
 \code{self$get_values()} and is used to transform set values, it should
-therefore result in a list. \cr
-See examples at end.}
+therefore result in a list. If using \code{self$get_values()} within the
+transformation function, make sure to set \code{transform = FALSE} to prevent
+infinite recursion, see examples at end.}
 }
 \if{html}{\out{</div>}}
 }

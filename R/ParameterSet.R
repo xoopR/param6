@@ -31,11 +31,14 @@
 #' # more complex transformation on tags
 #' p <- ParameterSet$new(
 #'   list(prm(id = "a", 2, support = Reals$new(), tags = "t1"),
-#'        prm(id = "b", 3, support = Reals$new(), tags = "t1")),
-#'        prm(id = "c", 4, support = Reals$new())))
+#'        prm(id = "b", 3, support = Reals$new(), tags = "t1"),
+#'        prm(id = "d", 4, support = Reals$new()))
+#' )
+#' # make sure `transform = FALSE` to prevent infinite recursion
 #' p$trafo <- function(x, self) {
-#'  out <- 2^self$get_values(tags = "t1")
-#'  out <- c(out, list(c = x$c))
+#'  out <- lapply(self$get_values(tags = "t1", transform = FALSE),
+#'                function(.x) 2^.x)
+#'  out <- c(out, list(d = x$d))
 #'  out
 #' }
 #' p$get_values()
@@ -200,8 +203,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' the transformation is being added to, and `x <- self$values`. The
     #' transformation function is automatically called after a call to
     #' `self$get_values()` and is used to transform set values, it should
-    #' therefore result in a list. \cr
-    #' See examples at end.
+    #' therefore result in a list. If using `self$get_values()` within the
+    #' transformation function, make sure to set `transform = FALSE` to prevent
+    #' infinite recursion, see examples at end.
     trafo = function(x) {
       if (missing(x)) {
         private$.trafo
