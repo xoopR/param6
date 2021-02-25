@@ -9,6 +9,8 @@
 #' * Storing subsets of parameters under prefixes
 #'
 #' @examples
+#' library(set6)
+#'
 #' ## $value examples
 #' p <- ParameterSet$new(list(prm(id = "a", support = Reals$new())))
 #' p$values$a <- 2

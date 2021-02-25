@@ -4,3 +4,7 @@
 "_PACKAGE"
 
 utils::globalVariables("support_dictionary")
+
+.onLoad = function(libname, pkgname) { # nolint
+  assign("support_dictionary", load_support(), envir = topenv())
+}

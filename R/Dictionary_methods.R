@@ -40,7 +40,6 @@
 }
 
 .Dictionary__has <- function(self, private, x) { # nolint
-   checkmate::assert_character(x)
    x %in% self$keys
 }
 

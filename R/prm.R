@@ -93,7 +93,7 @@ as.prm <- function(x, ...) { # nolint
 
 #' @rdname as.prm
 #' @export
-as.prm.ParameterSet <- function(x) {
+as.prm.ParameterSet <- function(x, ...) {
   unname(Map(prm,
     id = x$ids,
     support = get_private(x)$.supports,
@@ -105,7 +105,7 @@ as.prm.ParameterSet <- function(x) {
 
 #' @rdname as.prm
 #' @export
-as.prm.data.table <- function(x) { # nolint
+as.prm.data.table <- function(x, ...) { # nolint
   checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tags"))
   unname(Map(prm,
     id = x$Id,
