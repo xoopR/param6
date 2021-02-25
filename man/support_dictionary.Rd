@@ -14,8 +14,7 @@ support_dictionary
 \link{Dictionary} for parameter supports
 }
 \details{
-See \link{Dictionary} for full details of how to add other \link[set6:Set]{set6::Set} objects as supports
-to this dictionary.
-NULL
+See \link{Dictionary} for full details of how to add other \link[set6:Set]{set6::Set}
+objects as supports to this dictionary.
 }
 \keyword{datasets}

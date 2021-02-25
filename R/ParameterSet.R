@@ -1,6 +1,6 @@
 #' @title Parameter Set
-#' @description `ParameterSet` objects store parameters ([prm] objects) and add internal validation
-#' checks and methods for:
+#' @description `ParameterSet` objects store parameters ([prm] objects) and add
+#' internal validation checks and methods for:
 #'
 #' * Getting and setting parameter values
 #' * Transforming parameter values
@@ -55,7 +55,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .ParameterSet__initialize(self, private, prms, tag_properties)
     },
 
-    #' @description Prints the `ParameterSet` after coercion with [as.data.table.ParameterSet].
+    #' @description Prints the `ParameterSet` after coercion with
+    #' [as.data.table.ParameterSet].
     #' @examples
     #' prms <- list(
     #'  prm("a", Set$new(1), 1, tags = "t1"),
@@ -71,9 +72,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - DOCUMENT
-    get_values = function(id = NULL, tags = NULL, transform = TRUE, inc_null = TRUE,
-                          simplify = TRUE) {
-      .ParameterSet__get_values(self, private, id, tags, transform, inc_null, simplify)
+    get_values = function(id = NULL, tags = NULL, transform = TRUE,
+                          inc_null = TRUE, simplify = TRUE) {
+      .ParameterSet__get_values(self, private, id, tags, transform, inc_null,
+                                simplify)
     },
 
     # FIXME - DOCUMENT
@@ -92,9 +94,11 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     # FIXME - DOCUMENT
-    check = function(supports = TRUE, custom = TRUE, deps = TRUE, tags = TRUE, id = NULL,
+    check = function(supports = TRUE, custom = TRUE, deps = TRUE, tags = TRUE,
+                     id = NULL,
                      error_on_fail = TRUE) {
-      .ParameterSet__check(self, private, supports, custom, deps, tags, id, error_on_fail)
+      .ParameterSet__check(self, private, supports, custom, deps, tags, id,
+                           error_on_fail)
     },
 
     # FIXME - DOCUMENT
@@ -125,10 +129,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
     #' @field tag_properties `list() -> self` / None -> `list()` \cr
     #' If `x` is missing then returns tag properties if any. \cr
-    #' If `x` is not missing then used to tag properties. Currently properties can either be: \cr
-    #' i) 'required' - parameters with this tag must have set (non-NULL) values;\cr
-    #' ii) 'linked' - parameters with 'linked' tags are dependent on one another and only one can
-    #'  be set (non-NULL at a time).
+    #' If `x` is not missing then used to tag properties. Currently properties
+    #' can either be: \cr
+    #' i) 'required' - parameters with this tag must have set (non-NULL)
+    #' values;\cr
+    #' ii) 'linked' - parameters with 'linked' tags are dependent on one another
+    #' and only one can be set (non-NULL at a time).
     tag_properties = function(x) {
       if (missing(x)) {
         private$.tag_properties
@@ -152,10 +158,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     #' @field values `list() -> self` / None -> `list()` \cr
-    #' If `vals` is missing then returns the set (non-NULL) values without transformation or
-    #' filtering; use `$get_values` for a more sophisticated getter of values. \cr
-    #' If `vals` is not missing then used to set values of parameters, which are first checked
-    #' internally with the `$check` method before setting the new values. \cr
+    #' If `vals` is missing then returns the set (non-NULL) values without
+    #' transformation or filtering; use `$get_values` for a more sophisticated
+    #' getter of values. \cr
+    #' If `vals` is not missing then used to set values of parameters, which are
+    #' first checked internally with the `$check` method before setting the new
+    #' values. \cr
     #' See examples at end.
     values = function(vals) {
       if (missing(vals)) {
@@ -183,13 +191,14 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     #' @field trafo `function() -> self` / None -> `function()` \cr
-    #' If `x` is missing then returns a transformation function if previously set,
-    #' otherwise `NULL`. \cr
-    #' If `x` is not missing then it should be a function with arguments `x` and `self`, which
-    #' internally correspond to `self` being the `ParameterSet` the transformation is being added
-    #' to, and `x <- self$values`. The transformation function is automatically called after a call
-    #' to `self$get_values()` and is used to transform set values, it should therefore result in a
-    #' list. \cr
+    #' If `x` is missing then returns a transformation function if previously
+    #' set, otherwise `NULL`. \cr
+    #' If `x` is not missing then it should be a function with arguments `x` and
+    #' `self`, which internally correspond to `self` being the `ParameterSet`
+    #' the transformation is being added to, and `x <- self$values`. The
+    #' transformation function is automatically called after a call to
+    #' `self$get_values()` and is used to transform set values, it should
+    #' therefore result in a list. \cr
     #' See examples at end.
     trafo = function(x) {
       if (missing(x)) {
@@ -200,8 +209,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
         checkmate::assert_list(vals)
 
         tryCatch(.check(self, id = names(vals), value_check = vals,
-                        support_check = private$.isupports, dep_check = self$deps,
-                        custom_check = self$checks),
+                        support_check = private$.isupports,
+                        dep_check = self$deps, custom_check = self$checks),
                  error = function(e) {
                    stop("Transformation results in values outside of supports.")
                  })

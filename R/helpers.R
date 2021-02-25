@@ -3,7 +3,8 @@ assert_contains <- function(set, value, name) {
     invisible(value)
   } else {
     if (!missing(name)) {
-      stop(sprintf("%s does not lie in support of %s (%s).", value, name, as.character(set)))
+      stop(sprintf("%s does not lie in support of %s (%s).", value, name,
+                   as.character(set)))
     } else {
       stop(sprintf("%s does not lie in %s.", value, as.character(set)))
     }
@@ -85,12 +86,14 @@ env_append <- function(env, var, values) {
 }
 
 unprefix <- function(x, split = "__") {
-  start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]], integer(1)) + 2
+  start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]],
+                  integer(1)) + 2
   substr(x, start, 1e3)
 }
 
 get_prefix <- function(x, split = "__") {
-  vapply(x, function(.x) unlist(strsplit(.x, split, TRUE))[[1]], character(1), USE.NAMES = FALSE)
+  vapply(x, function(.x) unlist(strsplit(.x, split, TRUE))[[1]], character(1),
+         USE.NAMES = FALSE)
 }
 
 unique_nlist <- function(x) {

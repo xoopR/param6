@@ -8,7 +8,7 @@ cnd <- function(value, type) {
     "lt" = `<`,
     "any" = `%in%`,
     "nany" = `%nin%`,
-    stop("'type' must be one of {'eq', 'neq', 'geq', 'leq', 'gt', 'lt', 'any', 'nany'}.")
+    stop("'type' must be one of {'eq', 'neq', 'geq', 'leq', 'gt', 'lt', 'any', 'nany'}.") # nolint
   )
 
   fun <- substitute(function(x) !any(is.null(x)) && all(fun(unlist(x), value)))

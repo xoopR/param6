@@ -4,8 +4,8 @@
 \alias{ParameterSet}
 \title{Parameter Set}
 \description{
-\code{ParameterSet} objects store parameters (\link{prm} objects) and add internal validation
-checks and methods for:
+\code{ParameterSet} objects store parameters (\link{prm} objects) and add
+internal validation checks and methods for:
 \itemize{
 \item Getting and setting parameter values
 \item Transforming parameter values
@@ -81,10 +81,12 @@ Get tags from the parameter set.}
 
 \item{\code{tag_properties}}{\code{list() -> self} / None -> \code{list()} \cr
 If \code{x} is missing then returns tag properties if any. \cr
-If \code{x} is not missing then used to tag properties. Currently properties can either be: \cr
-i) 'required' - parameters with this tag must have set (non-NULL) values;\cr
-ii) 'linked' - parameters with 'linked' tags are dependent on one another and only one can
-be set (non-NULL at a time).}
+If \code{x} is not missing then used to tag properties. Currently properties
+can either be: \cr
+i) 'required' - parameters with this tag must have set (non-NULL)
+values;\cr
+ii) 'linked' - parameters with 'linked' tags are dependent on one another
+and only one can be set (non-NULL at a time).}
 
 \item{\code{ids}}{None -> \code{character()} \cr
 Get ids from the parameter set.}
@@ -93,10 +95,12 @@ Get ids from the parameter set.}
 Get the length of the parameter set as the number of parameters.}
 
 \item{\code{values}}{\code{list() -> self} / None -> \code{list()} \cr
-If \code{vals} is missing then returns the set (non-NULL) values without transformation or
-filtering; use \verb{$get_values} for a more sophisticated getter of values. \cr
-If \code{vals} is not missing then used to set values of parameters, which are first checked
-internally with the \verb{$check} method before setting the new values. \cr
+If \code{vals} is missing then returns the set (non-NULL) values without
+transformation or filtering; use \verb{$get_values} for a more sophisticated
+getter of values. \cr
+If \code{vals} is not missing then used to set values of parameters, which are
+first checked internally with the \verb{$check} method before setting the new
+values. \cr
 See examples at end.}
 
 \item{\code{deps}}{None -> \link[data.table:data.table]{data.table::data.table}
@@ -106,13 +110,14 @@ Get parameter dependencies, NULL if none.}
 Get custom parameter checks, NULL if none.}
 
 \item{\code{trafo}}{\verb{function() -> self} / None -> \verb{function()} \cr
-If \code{x} is missing then returns a transformation function if previously set,
-otherwise \code{NULL}. \cr
-If \code{x} is not missing then it should be a function with arguments \code{x} and \code{self}, which
-internally correspond to \code{self} being the \code{ParameterSet} the transformation is being added
-to, and \code{x <- self$values}. The transformation function is automatically called after a call
-to \code{self$get_values()} and is used to transform set values, it should therefore result in a
-list. \cr
+If \code{x} is missing then returns a transformation function if previously
+set, otherwise \code{NULL}. \cr
+If \code{x} is not missing then it should be a function with arguments \code{x} and
+\code{self}, which internally correspond to \code{self} being the \code{ParameterSet}
+the transformation is being added to, and \code{x <- self$values}. The
+transformation function is automatically called after a call to
+\code{self$get_values()} and is used to transform set values, it should
+therefore result in a list. \cr
 See examples at end.}
 }
 \if{html}{\out{</div>}}
@@ -166,7 +171,8 @@ ParameterSet$new(prms)
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
-Prints the \code{ParameterSet} after coercion with \link{as.data.table.ParameterSet}.
+Prints the \code{ParameterSet} after coercion with
+\link{as.data.table.ParameterSet}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$print(sort = TRUE)}\if{html}{\out{</div>}}
 }

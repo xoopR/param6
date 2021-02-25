@@ -21,30 +21,31 @@
   x
 }
 
-.get_values <- function(self, private, values, id = NULL, tags = NULL, transform = TRUE,
-                      inc_null = TRUE, simplify = TRUE) {
+.get_values <- function(self, private, values, id = NULL, tags = NULL,
+                        transform = TRUE, inc_null = TRUE, simplify = TRUE) {
 
-      values <- .get_field(self, values, id = id, tags = tags,
-                          inc_null = inc_null)
+  values <- .get_field(self, values, id = id, tags = tags,
+                       inc_null = inc_null)
 
-      if (transform && !is.null(private$.trafo)) {
-        values <- private$.trafo(values, self)
-      }
+  if (transform && !is.null(private$.trafo)) {
+    values <- private$.trafo(values, self)
+  }
 
-      if (simplify) {
-        if (length(values) == 0) {
-          values <- NULL
-        } else if (length(values) == 1) {
-          values <- values[[1]]
-        }
-      }
+  if (simplify) {
+    if (length(values) == 0) {
+      values <- NULL
+    } else if (length(values) == 1) {
+      values <- values[[1]]
+    }
+  }
 
-      values
+  values
 }
 
-.check <- function(self, supports = TRUE, custom = TRUE, deps = TRUE, tags = TRUE, id = NULL,
-                  error_on_fail = TRUE, value_check = NULL, support_check = NULL, dep_check = NULL,
-                  custom_check = NULL, tag_check = NULL) {
+.check <- function(self, supports = TRUE, custom = TRUE, deps = TRUE,
+                   tags = TRUE, id = NULL, error_on_fail = TRUE,
+                   value_check = NULL, support_check = NULL, dep_check = NULL,
+                   custom_check = NULL, tag_check = NULL) {
   # 1. Containedness checks
   if (supports && length(self)) {
     x <- .check_supports(self, value_check, support_check, id, error_on_fail)
@@ -91,7 +92,8 @@
       ids <- intersect(id, ids)
     }
     if (length(ids)) {
-      value <- .get_values(self, get_private(self), values, ids, inc_null = FALSE)
+      value <- .get_values(self, get_private(self), values, ids,
+                           inc_null = FALSE)
 
       set <- support_dictionary$get(names(supports)[[i]])
       if (!set$contains(value, all = TRUE)) {
@@ -112,14 +114,16 @@
       on <- deps[i, 2][[1]]
       cnd <- deps[i, 3][[1]][[1]]
       fun <- eval(cnd)
-      id_value <- .get_values(self, get_private(self), values, id, inc_null = FALSE)
-      on_value <- .get_values(self, get_private(self), values, on, inc_null = FALSE)
+      id_value <- .get_values(self, get_private(self), values, id,
+                              inc_null = FALSE)
+      on_value <- .get_values(self, get_private(self), values, on,
+                              inc_null = FALSE)
       if (length(id_value)) {
         ok <- fun(on_value)
         if (!ok) {
           return(.return_fail(
             msg = sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
-                        attr(cnd, "type"), string_as_set(attr(cnd, "value"))),
+                          attr(cnd, "type"), string_as_set(attr(cnd, "value"))),
             error_on_fail
           ))
         }
@@ -134,7 +138,7 @@
   if (length(tags)) {
     nok <- "required" %in% names(tags) &&
       any(vapply(.get_field(self, values, id, tags = tags[["required"]]),
-                  is.null, logical(1)))
+                 is.null, logical(1)))
     if (nok) {
       return(.return_fail(
         msg = "Not all required parameters are set.",
@@ -143,7 +147,8 @@
     }
 
     nok <- "linked" %in% names(tags) &&
-      length(.get_values(self, get_private(self), values, id, tags = tags[["linked"]],
+      length(.get_values(self, get_private(self), values, id,
+                         tags = tags[["linked"]],
                          inc_null = FALSE)) > length(tags[["linked"]])
     if (nok) {
       return(.return_fail(
@@ -159,6 +164,7 @@
 .check_custom <- function(self, values, checks, id, error_on_fail) {
   if (!is.null(checks) && nrow(checks)) {
     if (!is.null(id)) {
+      ids <- NULL
       checks <- subset(checks, grepl(paste0(id, collapse = "|"), ids))
     }
 
@@ -167,7 +173,8 @@
       .y <- checks$fun[[i]]
       ok <- as.function(list(x = values, self = self, .y))()
       if (!ok) {
-        return(.return_fail(sprintf("Check on '%s' failed.", deparse(.y)), error_on_fail))
+        return(.return_fail(sprintf("Check on '%s' failed.", deparse(.y)),
+                            error_on_fail))
       }
     }
   }
@@ -187,7 +194,8 @@ assert_no_cycles <- function(lookup) {
     checker <- apply(checks, 1, function(x) any(duplicated(x)) & !any(is.na(x)))
     if (any(checker)) {
       stop(sprintf("Cycles detected starting from id(s): %s",
-                   paste0("{", paste0(checks$id[checker], collapse = ","), "}")))
+                   paste0("{", paste0(checks$id[checker],
+                                      collapse = ","), "}")))
     }
 
 
@@ -199,10 +207,10 @@ assert_condition <- function(id, support, cond) {
   val <- attr(cond, "value")
 
   if (attr(cond, "type") %in% c("eq", "geq", "leq", "gt", "lt", "any")) {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.",
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", # nolint
                    val, id, as.character(support))
   } else {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.",
+    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", # nolint
                    val, id, as.character(support))
   }
 

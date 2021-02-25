@@ -18,7 +18,8 @@ Dictionary <- R6Class("Dictionary",
 
     public = list(
         initialize = function(x = list(), types = NULL) {
-            private$.items <- checkmate::assert_list(x, types = types, names = "unique")
+            private$.items <- checkmate::assert_list(x, types = types,
+                                                     names = "unique")
             private$.types <- types
             invisible(self)
         },
@@ -26,13 +27,14 @@ Dictionary <- R6Class("Dictionary",
         add = function(x = list(), keys = NULL, values = NULL) {
             if (!length(x)) {
               if (is.null(keys) || is.null(values)) {
-                stop("Either a named list or 'keys' and 'values' must be provided.")
+                stop("Either a named list or 'keys' and 'values' must be provided.") # nolint
               }
               x <- named_list(values, keys)
             }
             # signif quicker than first concatenating and then checking
             checkmate::assert_list(x, min.len = 1, types = private$.types)
-            private$.items <- checkmate::assert_list(c(private$.items, x), names = "unique")
+            private$.items <- checkmate::assert_list(c(private$.items, x),
+                                                     names = "unique")
             invisible(self)
         },
 
@@ -48,7 +50,7 @@ Dictionary <- R6Class("Dictionary",
           if (length(private$.types) == 1 || length(x) == 1) {
             private$.items[checkmate::assert_subset(x, self$keys)][[1]]
           } else {
-            stop("'get' can only be used if length of 'x' is '1' or if Dictionary has one type.")
+            stop("'get' can only be used if length of 'x' is '1' or if Dictionary has one type.") # nolint
           }
         },
 
@@ -66,7 +68,7 @@ Dictionary <- R6Class("Dictionary",
         },
 
         print = function(n = 2) {
-         cat(as.character(self, n = n),"\n")
+         cat(as.character(self, n = n), "\n")
         },
 
         summary = function(n = 2) {
@@ -82,7 +84,8 @@ Dictionary <- R6Class("Dictionary",
         rekey = function(key, new_key) {
           checkmate::assert_choice(key, self$keys)
           checkmate::assert_character(c(new_key, self$keys), unique = TRUE)
-          names(private$.items)[which(names(private$.items) %in% key)] <- new_key
+          names(private$.items)[which(names(private$.items) %in% key)] <-
+            new_key
           invisible(self)
         },
 
@@ -111,7 +114,8 @@ Dictionary <- R6Class("Dictionary",
             if (missing(x)) {
                 private$.items
             } else {
-              checkmate::assert_list(x, types = private$.types, names = "unique")
+              checkmate::assert_list(x, types = private$.types,
+                                     names = "unique")
               private$.items <- x
             }
         },
@@ -148,12 +152,13 @@ summary.Dictionary <- function(object, n = 2, ...) {
 
 #' @export
 as.character.Dictionary <- function(x, n = 2, ...) { # nolint
-    keys = x$keys
-    values = unname(unlist(sapply(x$values, as.character)))
+    keys <- x$keys
+    values <- unname(unlist(sapply(x$values, as.character)))
 
-    lng = x$length
+    lng <- x$length
     if (lng > (2 * n)) {
-        string <- paste0(paste(keys[1:n], values[1:n], sep = ": ", collapse = ", "),
+        string <- paste0(paste(keys[1:n], values[1:n], sep = ": ",
+                               collapse = ", "),
         ", ..., ", paste(keys[(lng - n + 1):lng], values[(lng - n + 1):lng],
         sep = ": ", collapse = ", "))
     } else {

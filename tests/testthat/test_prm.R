@@ -46,10 +46,11 @@ test_that("as.prm.data.table", {
     prm("b", Reals$new(), NULL),
     prm("d", Reals$new(), 2)
   )
-  dt <- data.table::data.table(Id = letters[c(1,2,4)],
-      Support = list(Set$new(1), Reals$new(), Reals$new()),
-      Value = list(1, NULL, 2),
-      Tags = list(letters[1:2], NULL, NULL))
+  dt <- data.table::data.table(Id = letters[c(1, 2, 4)],
+                               Support = list(Set$new(1), Reals$new(),
+                                              Reals$new()),
+                               Value = list(1, NULL, 2),
+                               Tags = list(letters[1:2], NULL, NULL))
   expect_equal(as.prm(dt), prms)
 
   prms <- list(
@@ -57,10 +58,10 @@ test_that("as.prm.data.table", {
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
-  dt <- data.table::data.table(Id = letters[c(1,2,4)],
-      Support = list("naturals", "reals", "reals"),
-      Value = list(1, NULL, 2),
-      Tags = list(letters[1:2], NULL, NULL))
+  dt <- data.table::data.table(Id = letters[c(1, 2, 4)],
+                               Support = list("naturals", "reals", "reals"),
+                               Value = list(1, NULL, 2),
+                               Tags = list(letters[1:2], NULL, NULL))
   expect_equal(as.prm(dt), prms)
 })
 

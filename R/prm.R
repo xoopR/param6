@@ -8,7 +8,7 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   # if character, check to see if exists in dictionary otherwise error
   if (checkmate::test_character(support, len = 1)) {
     if (!support_dictionary$has(support)) {
-      stop("'suppport' given as character but does not exist in support_dictionary.")
+      stop("'suppport' given as character but does not exist in support_dictionary.") # nolint
     }
     str_support <- support
     support <- support_dictionary$get(str_support)
@@ -44,7 +44,7 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
 }
 
 #' @export
-as.prm <- function(x, ...) {
+as.prm <- function(x, ...) { # nolint
   UseMethod("as.prm")
 }
 
@@ -62,7 +62,7 @@ as.prm.ParameterSet <- function(x) {
 
 #' @rdname as.prm
 #' @export
-as.prm.data.table <- function(x) {
+as.prm.data.table <- function(x) { # nolint
   checkmate::assertSubset(colnames(x), c("Id", "Support", "Value", "Tags"))
   unname(Map(prm,
     id = x$Id,

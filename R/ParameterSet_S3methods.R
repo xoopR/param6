@@ -60,14 +60,14 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, string = FALSE, ...) { # 
   if (length(x$deps) || length(x$trafos) || length(x$checks)) {
     warning("Dependencies, trafos, and checks are lost in coercion.")
   }
-  dt = data.table::data.table(
+  dt <- data.table::data.table(
     Id = x$ids,
     Support = x$supports,
     Value = expand_list(x$ids, x$values),
     Tags = expand_list(x$ids, x$tags)
   )
   if (sort) {
-    Id = NULL # visible binding fix
+    Id <- NULL # binding fix
     data.table::setorder(dt, Id)
   }
   dt

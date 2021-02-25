@@ -35,9 +35,10 @@ test_that("ParamSet actives - not values", {
 
   expect_equal(p$tags, list(a = c("t1", "t2"), b = "t2"))
   expect_equal(p$tag_properties, list(linked = "t1", required = "t2"))
-  expect_equal(p$ids, c('a', 'b', 'd'))
+  expect_equal(p$ids, c("a", "b", "d"))
   expect_equal(length(p), 3)
-  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(), d = Reals$new()))
+  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(),
+                                d = Reals$new()))
 })
 
 test_that("ParamSet actives - values", {
@@ -71,10 +72,11 @@ test_that("as.data.table.ParameterSet and print", {
   )
   p <- ParameterSet$new(prms)
   expect_equal(as.data.table(p),
-    data.table::data.table(Id = letters[c(1,2,4)],
-      Support = list(Set$new(1), Reals$new(), Reals$new()),
-      Value = list(1, NULL, 2),
-      Tags = list(c("t1", "t2"), NULL, NULL)))
+               data.table::data.table(Id = letters[c(1, 2, 4)],
+                                      Support = list(Set$new(1), Reals$new(),
+                                                     Reals$new()),
+                                      Value = list(1, NULL, 2),
+                                      Tags = list(c("t1", "t2"), NULL, NULL)))
 
   expect_output(print(p))
 })
@@ -85,10 +87,11 @@ test_that("as.ParameterSet.data.table", {
     prm("b", Reals$new(), NULL),
     prm("d", Reals$new(), 2)
   )
-  dt <- data.table::data.table(Id = letters[c(1,2,4)],
-      Support = list(Set$new(1), Reals$new(), Reals$new()),
-      Value = list(1, NULL, 2),
-      Tags = list(c("t1", "t2"), NULL, NULL))
+  dt <- data.table::data.table(Id = letters[c(1, 2, 4)],
+                               Support = list(Set$new(1), Reals$new(),
+                                              Reals$new()),
+                               Value = list(1, NULL, 2),
+                               Tags = list(c("t1", "t2"), NULL, NULL))
   expect_equal(as.ParameterSet(dt), ParameterSet$new(prms))
 
   prms <- list(
@@ -96,15 +99,15 @@ test_that("as.ParameterSet.data.table", {
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
-  dt <- data.table::data.table(Id = letters[c(1,2,4)],
-      Support = list("naturals", "reals", "reals"),
-      Value = list(1, NULL, 2),
-      Tags = list(c("t1", "t2"), NULL, NULL))
+  dt <- data.table::data.table(Id = letters[c(1, 2, 4)],
+                               Support = list("naturals", "reals", "reals"),
+                               Value = list(1, NULL, 2),
+                               Tags = list(c("t1", "t2"), NULL, NULL))
   expect_equal(as.ParameterSet(dt), ParameterSet$new(prms))
 })
 
 test_that("get_values", {
- prms <- list(
+  prms <- list(
     prm("a", Set$new(1), 1, tags = "t1"),
     prm("b", "reals", tags = "t1"),
     prm("d", "reals", tags = "t2")
@@ -113,12 +116,15 @@ test_that("get_values", {
   expect_equal(p$get_values(inc_null = TRUE), list(a = 1, b = NULL, d = NULL))
   expect_equal(p$get_values(inc_null = FALSE, simplify = FALSE), list(a = 1))
 
-  expect_equal(p$get_values(inc_null = TRUE, tags = "t1"), list(a = 1, b = NULL))
+  expect_equal(p$get_values(inc_null = TRUE, tags = "t1"),
+               list(a = 1, b = NULL))
   expect_equal(p$get_values(inc_null = FALSE, tags = "t1"), 1)
-  expect_equal(p$get_values(inc_null = FALSE, tags = "t1", simplify = FALSE), list(a = 1))
+  expect_equal(p$get_values(inc_null = FALSE, tags = "t1", simplify = FALSE),
+               list(a = 1))
 
   expect_equal(p$get_values(inc_null = TRUE, tags = "t2"), NULL)
-  expect_equal(p$get_values(inc_null = FALSE, tags = "t2", simplify = FALSE), list())
+  expect_equal(p$get_values(inc_null = FALSE, tags = "t2", simplify = FALSE),
+               list())
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
@@ -129,7 +135,8 @@ test_that("get_values", {
   p <- ParameterSet$new(prms)
   expect_equal(p$get_values("Pre1"), list(Pre1__par1 = 1, Pre1__par2 = 2))
   expect_equal(p$get_values(c("Pre1", "Pre2")),
-    list(Pre1__par1 = 1, Pre1__par2 = 2, Pre2__par1 = 1, Pre2__par2 = NULL))
+               list(Pre1__par1 = 1, Pre1__par2 = 2, Pre2__par1 = 1,
+                    Pre2__par2 = NULL))
   expect_equal(p$get_values("par1"), list(Pre1__par1 = 1, Pre2__par1 = 1))
 })
 
@@ -141,19 +148,19 @@ test_that("trafo", {
   )
   p <- ParameterSet$new(prms)
   expect_equal(p$trafo, NULL)
-  expect_error({p$trafo <- "a"}, "function")
-  expect_error({p$trafo <- function(x, self) "a"}, "list")
+  expect_error({p$trafo <- "a"}, "function") # nolint
+  expect_error({p$trafo <- function(x, self) "a"}, "list") # nolint
   expect_silent({
     p$trafo <- function(x, self) {
-      x$a = x$a + 1
-      x$b = 3
+      x$a <- x$a + 1
+      x$b <- 3
       x
     }
   })
   expect_error({
     p$trafo <- function(x, self) {
-      x$a = x$a + 2
-      x$b = 3
+      x$a <- x$a + 2
+      x$b <- 3
       x
     }
   }, "outside")
@@ -188,7 +195,8 @@ test_that("rep", {
     prm("par1", Set$new(1), 1, tags = "t1"),
     prm("par2", "reals", 3, tags = "t2")
   )
-  p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1", linked = "t2"))
+  p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1",
+                                                     linked = "t2"))
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
@@ -207,7 +215,8 @@ test_that("rep", {
     prm("par1", Set$new(1), 1, tags = "t1"),
     prm("par2", "reals", 3, tags = "t2")
   )
-  p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1", linked = "t2"))
+  p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1",
+                                                     linked = "t2"))
   expect_equal(rep(p1, 2, "Pre"), p2)
   expect_equal(length(p1), 2)
 })
@@ -222,7 +231,7 @@ test_that("add_dep", {
   expect_error(p$add_dep("a", "b", cnd(1, "eq")), "failed")
   expect_silent(p$add_dep("b", "a", cnd(1, "eq")))
   p$values$b <- 3
-  expect_error({ p$values$a <- NULL }, "failed")
+  expect_error({ p$values$a <- NULL }, "failed") # nolint
 
 
   prms <- list(
@@ -272,9 +281,10 @@ test_that("checks", {
   expect_silent(p$add_check(function(x, self) x$a == 0.5, "a"))
   expect_equal(
     p$checks,
-    data.table(ids = list("a"), tags = list(), fun = list(body(function(x) x$a == 0.5))))
-  expect_false(expect_warning(p$check(error_on_fail = FALSE), "Check on")) # a is 1 not 0.5
-  expect_error(p$check(error_on_fail = TRUE), "Check on") # a is 1 not 0.5
+    data.table(ids = list("a"), tags = list(),
+               fun = list(body(function(x) x$a == 0.5))))
+  expect_false(expect_warning(p$check(error_on_fail = FALSE), "Check on"))
+  expect_error(p$check(error_on_fail = TRUE), "Check on")
   p$values$a <- 0.5
   expect_true(p$check())
   expect_silent(p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b")))
@@ -283,7 +293,8 @@ test_that("checks", {
   expect_error(p$check())
 
 
-  p$add_check(function(x, self) all(self$get_values(tags = "t1") > 0), tags = "t1")
+  p$add_check(function(x, self) all(self$get_values(tags = "t1") > 0),
+              tags = "t1")
   expect_error(p$check())
   expect_equal(nrow(p$checks), 4)
 
@@ -373,7 +384,8 @@ test_that("extract - deps", {
 
   expect_equal(p$extract("a")$deps, NULL)
   expect_equal(p$extract(letters[1:2])$deps,
-              data.table::data.table(id = "b", on = "a", cond = list(cnd(1, "eq"))))
+               data.table::data.table(id = "b", on = "a",
+                                      cond = list(cnd(1, "eq"))))
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
@@ -384,7 +396,8 @@ test_that("extract - deps", {
   p <- ParameterSet$new(prms)
   p$add_dep("Pre1__par1", "Pre1__par2", cnd(3, "eq"))
   expect_equal(p$extract(prefix = "Pre1")$deps,
-              data.table::data.table(id = "par1", on = "par2", cond = list(cnd(3, "eq"))))
+               data.table::data.table(id = "par1", on = "par2",
+                                      cond = list(cnd(3, "eq"))))
 
 })
 
