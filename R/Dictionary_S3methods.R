@@ -1,28 +1,22 @@
+# FIXME - DOCUMENT
 #' @export
 `[.Dictionary` <- function(object, i) {
   object$get_list(i)
 }
 
-#' @export
-`%has%` <- function(object, x, ...) { # nolint
-  UseMethod("%has%", object)
-}
-
-#' @export
-`%has%.Dictionary` <- function(object, x, ...) { # nolint
-  object$has(x)
-}
-
+# FIXME - DOCUMENT
 #' @export
 length.Dictionary <- function(x) {
   x$length
 }
 
+# FIXME - DOCUMENT
 #' @export
 summary.Dictionary <- function(object, n = 2, ...) {
   object$summary(n = n)
 }
 
+# FIXME - DOCUMENT
 #' @export
 as.character.Dictionary <- function(x, n = 2, ...) { # nolint
   keys <- x$keys
@@ -41,6 +35,7 @@ as.character.Dictionary <- function(x, n = 2, ...) { # nolint
   return(paste0("{", string, "}"))
 }
 
+# FIXME - DOCUMENT
 #' @export
 c.Dictionary <- function(...) {
   x <- list(...)

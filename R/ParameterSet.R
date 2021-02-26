@@ -104,7 +104,24 @@ ParameterSet <- R6::R6Class("ParameterSet",
                            error_on_fail)
     },
 
-    # FIXME - DOCUMENT
+    #' @description Replicate the `ParameterSet` with identical parameters.
+    #' In order to avoid duplicated parameter ids, every id in the
+    #' `ParameterSet` is given a `prefix` in the format `prefix__id`. In
+    #' addition, linked tags are also given the same prefix to prevent
+    #' incorrectly linking parameters.
+    #'
+    #' The primary use-case of this method is to treat the `ParameterSet` as a
+    #' collection of identical `ParameterSet` objects.
+    #'
+    #' Note that this mutates the `ParameterSet`, if you want to instead create
+    #' a new object then use [rep.ParameterSet] instead (or copy and deep clone)
+    #' first.
+    #' @param times (`integer(1)`) \cr
+    #' Numer of times to replicate the `ParameterSet`.
+    #' @param prefix (`character(1)|character(length(times))`) \cr
+    #' The prefix to add to ids and linked tags. If length `1` then is
+    #' internally coerced to `paste0(prefix, seq(times))`, otherwise the length
+    #' should be equal to `times`.
     rep = function(times, prefix) {
       .ParameterSet__rep(self, private, times, prefix)
     },

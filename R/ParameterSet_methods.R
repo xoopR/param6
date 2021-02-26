@@ -66,8 +66,9 @@
   aid <- id
   aon <- on
 
-  if (!is.null(private$.deps) &&
-      nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))) {
+  nok <- !is.null(private$.deps) &&
+    nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))
+  if (nok) {
     stop(sprintf("%s already depends on %s.", id, on))
   }
 

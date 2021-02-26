@@ -3,7 +3,7 @@
 #' @importFrom data.table as.data.table data.table
 "_PACKAGE"
 
-utils::globalVariables("support_dictionary")
+utils::globalVariables(c("support_dictionary", "on"))
 
 .onLoad = function(libname, pkgname) { # nolint
   assign("support_dictionary", load_support(), envir = topenv())

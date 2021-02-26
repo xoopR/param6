@@ -270,10 +270,35 @@ p
 \if{html}{\out{<a id="method-rep"></a>}}
 \if{latex}{\out{\hypertarget{method-rep}{}}}
 \subsection{Method \code{rep()}}{
+Replicate the \code{ParameterSet} with identical parameters.
+In order to avoid duplicated parameter ids, every id in the
+\code{ParameterSet} is given a \code{prefix} in the format \code{prefix__id}. In
+addition, linked tags are also given the same prefix to prevent
+incorrectly linking parameters.
+
+The primary use-case of this method is to treat the \code{ParameterSet} as a
+collection of identical \code{ParameterSet} objects.
+
+Note that this mutates the \code{ParameterSet}, if you want to instead create
+a new object then use \link{rep.ParameterSet} instead (or copy and deep clone)
+first.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$rep(times, prefix)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{times}}{(\code{integer(1)}) \cr
+Numer of times to replicate the \code{ParameterSet}.}
+
+\item{\code{prefix}}{(\code{character(1)|character(length(times))}) \cr
+The prefix to add to ids and linked tags. If length \code{1} then is
+internally coerced to \code{paste0(prefix, seq(times))}, otherwise the length
+should be equal to \code{times}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-extract"></a>}}

@@ -294,6 +294,26 @@ test_that("c", {
   expect_equal(as.data.table(c(p1, p2, p3)), as.data.table(p))
   expect_equal(p$tag_properties, c(p1, p2)$tag_properties)
   expect_equal(c(p2, p3)$tag_properties, list())
+
+  prms <- list(
+    prm("a", "reals", 2),
+    prm("b", "reals", 2),
+    prm("d", "reals"),
+    prm("e", "reals")
+  )
+  p <- ParameterSet$new(prms)
+  p$add_check(function(x, self) x$a == 2, "a")
+  p$add_dep("a", "b", cnd(1, "neq"))
+
+  p1 <- ParameterSet$new(list(prm("a", "reals", 2), prm("b", "reals", 2)))
+  p1$add_check(function(x, self) x$a == 2, "a")
+  p1$add_dep("a", "b", cnd(1, "neq"))
+  p2 <- ParameterSet$new(list(prm("d", "reals"), prm("e", "reals")))
+  p2$trafo <- function(x, self) {
+    x$d <- 2
+    x
+  }
+  expect_equal(expect_warning(c(p1, p2), "Transformations"), p)
 })
 
 test_that("checks", {

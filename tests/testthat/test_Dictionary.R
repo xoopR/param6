@@ -96,7 +96,6 @@ test_that("has", {
   expect_true(d_untyped$has("a"))
   expect_false(d_untyped$has("c"))
   expect_equal(d_untyped$has(c("a", "c", "b")), c(TRUE, FALSE, TRUE))
-  expect_equal(d_untyped %has% c("a", "c", "b"), c(TRUE, FALSE, TRUE))
 })
 
 test_that("rekey", {

@@ -88,6 +88,10 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   param
 }
 
+#' @title Coercion Methods to prm
+#' @description Methods for coercing various objects to a [prm].
+#' @param x (`ANY`) \cr Object to coerce.
+#' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.prm <- function(x, ...) { # nolint
   UseMethod("as.prm")
