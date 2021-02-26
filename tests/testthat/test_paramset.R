@@ -4,16 +4,18 @@ test_that("ParameterSet constructor - silent", {
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
-  expect_silent(ParameterSet$new(prms))
+  expect_is(ParameterSet$new(prms), "ParameterSet")
 
   prms <- list(
     prm("a", Set$new(1), 1),
     prm("b", "reals"),
     prm("d", "reals")
   )
-  expect_silent(ParameterSet$new(prms))
+  expect_is(ParameterSet$new(prms), "ParameterSet")
 
-  expect_silent(ParameterSet$new())
+  expect_is(ParameterSet$new(), "ParameterSet")
+
+  expect_is(as.ParameterSet(prm("a", "reals")), "ParameterSet")
 })
 
 test_that("ParameterSet constructor - error", {
@@ -23,6 +25,13 @@ test_that("ParameterSet constructor - error", {
     prm("d", "reals", 2)
   )
   expect_error(ParameterSet$new(prms), "ids are not unique")
+
+  prms <- list(
+    prm("a", Set$new(1), 1, "d"),
+    prm("b", "reals", NULL),
+    prm("d", "reals", 2)
+  )
+  expect_error(ParameterSet$new(prms), "ids and tags")
 })
 
 test_that("ParamSet actives - not values or tag propeties", {
@@ -43,24 +52,50 @@ test_that("ParamSet actives - not values or tag propeties", {
 test_that("ParamSet actives - values", {
   prms <- list(
     prm("a", Set$new(1, 2), 1),
-    prm("b", "reals", NULL),
-    prm("d", "reals", 2)
+    prm("b", "reals", NULL, "t1"),
+    prm("d", "reals", 2, "t1")
   )
-  p <- ParameterSet$new(prms)
+  p <- ParameterSet$new(prms, list(linked = "t1"))
 
   expect_equal(p$values, list(a = 1, d = 2))
   expect_silent(p$values$a <- 2)
   expect_equal(p$values$a, 2)
   expect_error(p$values$a <- 3, "3 does not")
   expect_equal(p$values$a, 2)
-  expect_error(p$values <- list(a = 3, b = 1, c = 1), "3 does not")
+  expect_error(p$values <- list(a = 3, d = 1), "3 does not")
   expect_equal(p$values, list(a = 2, d = 2))
   expect_silent(p$values <- list(a = 1))
   expect_equal(p$values, list(a = 1))
   expect_silent(p$values$a <- NULL)
-  p$values <- list(a = 1, b = 1, d = 1)
+  p$values <- list(a = 1, b = 1, d = NULL)
   p$values$a <- NULL
-  expect_equal(p$values, list(b = 1, d = 1))
+  expect_equal(p$values, list(b = 1))
+
+  p$values$a <- 1
+
+  expect_false(expect_warning(
+    .check(p, supports = TRUE, custom = FALSE, deps = FALSE, tags = FALSE,
+           error_on_fail = FALSE, value_check = list(a = 3),
+           support_check = get_private(p)$.isupports)))
+
+  p$add_check(function(x, self) x$a == 1, "a")
+  expect_false(expect_warning(
+    .check(p, supports = FALSE, custom = TRUE, deps = FALSE, tags = FALSE,
+           error_on_fail = FALSE, value_check = list(a = 2),
+           custom_check = p$checks)))
+
+  p$add_dep("b", "a", cnd(1, "eq"))
+  expect_false(expect_warning(
+    .check(p, supports = FALSE, custom = FALSE, deps = TRUE, tags = FALSE,
+           error_on_fail = FALSE, value_check = list(b = 1, a = 3),
+           dep_check = p$deps)))
+
+  expect_false(expect_warning(
+    .check(p, supports = FALSE, custom = FALSE, deps = FALSE, tags = TRUE,
+           id = c("b", "d"),
+           error_on_fail = FALSE, value_check = list(b = 1, d = 1),
+           tag_check = p$tag_properties)))
+  expect_error({p$values <- list(a = 1, b = 1, d = 1)}, "Multiple linked") # nolint
 })
 
 test_that("ParamSet actives - tag properties", {
@@ -94,6 +129,9 @@ test_that("as.data.table.ParameterSet and print", {
                                       Tags = list(c("t1", "t2"), NULL, NULL)))
 
   expect_output(print(p))
+
+  p$trafo <- function(x, self) x
+  expect_warning(as.data.table(p), "Dependencies")
 })
 
 test_that("as.ParameterSet.data.table", {
@@ -202,7 +240,7 @@ test_that("trafo", {
   )
   p2 <- ParameterSet$new(prms)
 
-  expect_equal(as.data.table(p$transform()), as.data.table(p2))
+  expect_equal(expect_warning(as.data.table(p$transform())), as.data.table(p2))
 
   p <- ParameterSet$new(
   list(prm(id = "a", 2, support = Reals$new(), tags = "t1"),
@@ -238,6 +276,7 @@ test_that("rep", {
   )
 
   expect_equal(p1$rep(2, "Pre"), p2)
+  expect_error(p1$rep(3, letters[1:2]), "either be")
 
   prms <- list(
     prm("par1", Set$new(1), 1, tags = "t1"),
@@ -257,7 +296,9 @@ test_that("add_dep", {
   )
   p <- ParameterSet$new(prms)
   expect_error(p$add_dep("a", "b", cnd(1, "eq")), "failed")
+  expect_error(p$add_dep("a", "a", cnd(1, "eq")), "themselves")
   expect_silent(p$add_dep("b", "a", cnd(1, "eq")))
+  expect_error(p$add_dep("b", "a", cnd(1, "eq")), "already depends")
   p$values$b <- 3
   expect_error({ p$values$a <- NULL }, "failed") # nolint
 
@@ -316,35 +357,30 @@ test_that("c", {
   expect_equal(expect_warning(c(p1, p2), "Transformations"), p)
 })
 
-test_that("checks", {
+test_that("add_check", {
   prms <- list(
     prm("a", Set$new(0.5, 1), 1, tags = "t1"),
     prm("b", "reals", 2, tags = "t1"),
     prm("d", "reals", 5, tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_true(p$check())
   expect_equal(p$checks, NULL)
+  p$add_check(function(x) )
+
+  expect_error(p$add_check(function(x, self) x$a == 1), "At least one")
   expect_error(p$add_check(function(x, self) x$a == 1, "e"), "subset")
-  expect_silent(p$add_check(function(x, self) x$a == 0.5, "a"))
+  expect_error(p$add_check(function(x, self) x$a == 0.5, "a"), "Check on")
+  expect_error(p$add_check(function(x, self) 1, "a"), "scalar")
+  expect_silent(p$add_check(function(x, self) x$a == 1, "a"))
   expect_equal(
     p$checks,
     data.table(ids = list("a"), tags = list(),
-               fun = list(body(function(x) x$a == 0.5))))
-  expect_false(expect_warning(p$check(error_on_fail = FALSE), "Check on"))
-  expect_error(p$check(error_on_fail = TRUE), "Check on")
-  p$values$a <- 0.5
-  expect_true(p$check())
-  expect_silent(p$add_check(function(x, self) x$a + x$b == 2.5, c("a", "b")))
-  expect_true(p$check())
-  expect_silent(p$add_check(function(x, self) x$d == 6, "d"))
-  expect_error(p$check())
-
+               fun = list(body(function(x) x$a == 1))))
 
   p$add_check(function(x, self) all(self$get_values(tags = "t1") > 0),
               tags = "t1")
-  expect_error(p$check())
-  expect_equal(nrow(p$checks), 4)
+
+  expect_equal(nrow(p$checks), 2)
 
   prms <- list(
     prm("a", Set$new(0.5, 1), 1, tags = "t1"),
@@ -352,7 +388,7 @@ test_that("checks", {
     prm("d", "reals", 5, tags = "t2")
   )
   p <- ParameterSet$new(prms, list(required = "t1"))
-  expect_true(p$check())
+
   expect_error(p$values$a <- NULL, "Not all")
   expect_error(p$values$b <- NULL, "Not all")
 
@@ -378,7 +414,17 @@ test_that("checks", {
     prm("d", "reals", 1, tags = "t2")
   )
   p <- ParameterSet$new(prms, list(required = "t2", linked = "t1"))
-  expect_true(p$check())
+
+  expect_error(p$values$a <- 1, "Multiple")
+  expect_error(p$values$d <- NULL, "required")
+
+  prms <- list(
+    prm("a", Set$new(0.5, 1), tags = "t1"),
+    prm("b", "reals", 1, tags = "t1"),
+    prm("d", "reals", 1, tags = "t2")
+  )
+  p <- ParameterSet$new(prms, list(required = "t2", linked = "t1"))
+
   expect_error(p$values$a <- 1, "Multiple")
   expect_error(p$values$d <- NULL, "required")
 })
@@ -398,6 +444,7 @@ test_that("extract - no deps or checks", {
   )
   p2 <- ParameterSet$new(prms)
   expect_equal(p$extract(prefix = "Pre1"), p2)
+  expect_error(p$extract(), "One argument")
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
@@ -412,6 +459,7 @@ test_that("extract - no deps or checks", {
   )
   p2 <- ParameterSet$new(prms)
   expect_equal(p$extract("par1"), p2)
+  expect_warning(p$extract("par1", prefix = "A"), "argument ignored")
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1")
@@ -420,13 +468,12 @@ test_that("extract - no deps or checks", {
   expect_equal(p$extract("Pre1__par1"), p2)
 
   prms <- list(
-    prm("Pre1__par1", Set$new(1), 1, tags = "Pre1__t1"),
+    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2"),
-    prm("Pre2__par1", Set$new(1), 1, tags = "Pre2__t1"),
+    prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre2__par2", "reals", 3, tags = "t2")
   )
-  p <- ParameterSet$new(prms, list(linked = c("Pre1__t1", "Pre2__t1"),
-                                   required = c("t2")))
+  p <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
 
   prms <- list(
     prm("par1", Set$new(1), 1, tags = "t1"),
@@ -434,6 +481,14 @@ test_that("extract - no deps or checks", {
   )
   p2 <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
   expect_equal(p$extract(prefix = "Pre1"), p2)
+
+  prms <- list(
+    prm("par1", Set$new(1)),
+    prm("par2", "reals")
+  )
+  p <- ParameterSet$new(prms)
+  p$trafo <- function(x, self) list(par1 = 1)
+  expect_warning(p['par1'], "Transformations")
 })
 
 test_that("extract - deps", {
@@ -482,4 +537,31 @@ test_that("extract - checks", {
   expect_equal(p$extract(c("a", "b"))$checks, p$checks[1, ])
   expect_equal(p$extract(tags = "t1")$checks, p$checks[2, ])
   expect_equal(p$extract(id = c("a", "b"), tags = "t1")$checks, p$checks)
+
+  prms <- list(
+    prm("pre1__a", Set$new(1), 1, tags = "pre1__t1"),
+    prm("pre1__b", "reals", tags = "pre1__t1"),
+    prm("d", "reals", 2, tags = "t2")
+  )
+  p <- pset(prms, list(linked = "pre1__t1"))
+  p$add_check(function(x, self) x$pre1__a == 1, c("pre1__a", "pre1__b"))
+  p$add_check(function(x, self) x$pre1__a == 1, tags = "pre1__t1")
+})
+
+test_that("deep clone", {
+  prms <- list(
+    prm("a", Set$new(1), 1, tags = "t1"),
+    prm("b", "reals", 1.5, tags = "t1"),
+    prm("d", "reals", 2, tags = "t2")
+  )
+  p <- pset(prms)
+  p$add_check(function(x, self) x$b == 1.5, "b")
+  p$add_dep("a", "b", cnd(1.5, "eq"))
+  p2 <- p$clone(deep = TRUE)
+  p2$values$d <- 3
+  expect_true(p$values$d != p2$values$d)
+
+  p3 <- p
+  p3$values$d <- 3
+  expect_true(p$values$d == p3$values$d)
 })

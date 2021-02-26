@@ -44,6 +44,7 @@
 #' p$get_values()
 #'
 #' @template param_prms
+#' @template tag_properties
 #' @template param_sort
 #' @export
 ParameterSet <- R6::R6Class("ParameterSet",
@@ -94,14 +95,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
     # FIXME - ADD TESTS & DOCUMENT
     add_check = function(fun, ids = NULL, tags = NULL) {
       .ParameterSet__add_check(self, private, fun, ids, tags)
-    },
-
-    # FIXME - DOCUMENT
-    check = function(supports = TRUE, custom = TRUE, deps = TRUE, tags = TRUE,
-                     id = NULL,
-                     error_on_fail = TRUE) {
-      .ParameterSet__check(self, private, supports, custom, deps, tags, id,
-                           error_on_fail)
     },
 
     #' @description Replicate the `ParameterSet` with identical parameters.
@@ -164,7 +157,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' i) 'required' - parameters with this tag must have set (non-NULL)
     #' values;\cr
     #' ii) 'linked' - parameters with 'linked' tags are dependent on one another
-    #' and only one can be set (non-NULL at a time).
+    #' and only one can be set (non-NULL at a time);\cr
+    #' iii) 'unique' - parameters with this tag must have no duplicated
+    #' elements, therefore this tag only makes sense for vector parameters.
     tag_properties = function(x) {
       .ParameterSet__tag_properties(self, private, x)
     },
@@ -224,6 +219,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #' @title Convenience Function for Constructing a ParameterSet
 #' @description See [ParameterSet] for full details.
 #' @param prms (`list()`) \cr List of [prm] objects.
+#' @param tag_properties (`list()`) \cr List of tag properties, see
+#' [ParameterSet] for full details.
 #' @examples
 #' library(set6)
 #'
@@ -234,6 +231,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #' )
 #' p <- pset(prms)
 #' @export
-pset <- function(prms) {
-  ParameterSet$new(prms)
+pset <- function(prms, tag_properties) {
+  ParameterSet$new(prms, tag_properties)
 }

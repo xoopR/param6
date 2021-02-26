@@ -37,6 +37,8 @@ test_that("add untyped", {
     Dictionary$new(list(a = 1, b = 2))$add(list(c = 3, d = 4)),
     Dictionary$new(list(a = 1, b = 2, c = 3, d = 4))
   )
+
+  expect_error(Dictionary$new()$add(), "Either")
 })
 
 test_that("add typed", {
@@ -98,6 +100,13 @@ test_that("has", {
   expect_equal(d_untyped$has(c("a", "c", "b")), c(TRUE, FALSE, TRUE))
 })
 
+test_that("has_value", {
+  d_untyped <- Dictionary$new(list(a = 1, b = 2))
+  expect_true(d_untyped$has_value(1))
+  expect_false(d_untyped$has_value(3))
+  expect_equal(d_untyped$has_value(1:3), c(TRUE, TRUE, FALSE))
+})
+
 test_that("rekey", {
   d_untyped <- Dictionary$new(list(a = 1, b = 2))
   expect_silent(d_untyped$rekey("a", "c"))
@@ -154,6 +163,7 @@ test_that("concatenate", {
   b_typed <- Dictionary$new(list(b = 2), types = c("numeric", "integer"))
   c_typed <- Dictionary$new(list(c = 3), types = c("integer", "numeric"))
   d_typed <- Dictionary$new(list(a = 3), types = "numeric")
+  e_typed <- Dictionary$new(list(a = 3L), types = "integer")
 
   a_untyped <- Dictionary$new(list(a = 1))
   b_untyped <- Dictionary$new(list(b = 2))
@@ -162,6 +172,7 @@ test_that("concatenate", {
 
   expect_error(c(a_typed, b_typed), "same type")
   expect_error(c(a_typed, c_typed), "same type")
+  expect_error(c(d_typed, e_typed), "same type")
   expect_error(c(a_typed, a_untyped), "typed or all")
   expect_error(c(a_typed, d_typed), "duplicated")
   expect_equal(c(b_typed, c_typed),
@@ -188,4 +199,13 @@ test_that("merge", {
                list(a = 1, b = 2, c = 2))
   expect_error(a_typed$merge(a_untyped)$items, "character")
   expect_error(a_typed$merge("a"), "Dictionary or")
+})
+
+test_that("deep clone", {
+  d1 <- Dictionary$new(list(a = Set$new(1), d = 1))
+  d2 <- d1$clone(deep = TRUE)
+  d3 <- d1
+  d2$add(list(b = 2))
+  expect_equal(length(d1), length(d3))
+  expect_false(length(d1) == length(d2))
 })

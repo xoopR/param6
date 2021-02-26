@@ -84,3 +84,19 @@ test_that("cnd", {
   expect_error(cnd(1, "a"), "must be one")
   expect_s3_class(cnd(1, "eq"), "cnd")
 })
+
+
+test_that("load_support", {
+  expect_is(load_support(), "Dictionary")
+})
+
+test_that("sort_named_list", {
+  expect_equal(sort_named_list(list(b = 1, a = 2)),
+               list(a = 2, b = 1))
+})
+
+test_that("%nin%", {
+  expect_false("a" %nin% letters)
+  expect_true(1 %nin% letters)
+})
+

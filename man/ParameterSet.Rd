@@ -137,7 +137,6 @@ infinite recursion, see examples at end.}
 \item \href{#method-add_dep}{\code{ParameterSet$add_dep()}}
 \item \href{#method-transform}{\code{ParameterSet$transform()}}
 \item \href{#method-add_check}{\code{ParameterSet$add_check()}}
-\item \href{#method-check}{\code{ParameterSet$check()}}
 \item \href{#method-rep}{\code{ParameterSet$rep()}}
 \item \href{#method-extract}{\code{ParameterSet$extract()}}
 \item \href{#method-clone}{\code{ParameterSet$clone()}}
@@ -247,22 +246,6 @@ p
 \subsection{Method \code{add_check()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$add_check(fun, ids = NULL, tags = NULL)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-check"></a>}}
-\if{latex}{\out{\hypertarget{method-check}{}}}
-\subsection{Method \code{check()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$check(
-  supports = TRUE,
-  custom = TRUE,
-  deps = TRUE,
-  tags = TRUE,
-  id = NULL,
-  error_on_fail = TRUE
-)}\if{html}{\out{</div>}}
 }
 
 }

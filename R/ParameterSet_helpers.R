@@ -46,6 +46,8 @@
                    tags = TRUE, id = NULL, error_on_fail = TRUE,
                    value_check = NULL, support_check = NULL, dep_check = NULL,
                    custom_check = NULL, tag_check = NULL) {
+  x <- TRUE
+
   # 1. Containedness checks
   if (supports && length(self)) {
     x <- .check_supports(self, value_check, support_check, id, error_on_fail)
@@ -80,9 +82,9 @@
 
   if (!x) {
     return(FALSE)
+  } else {
+    return(TRUE)
   }
-
-  return(TRUE)
 }
 
 .check_supports <- function(self, values, supports, id, error_on_fail) {
@@ -135,32 +137,62 @@
 }
 
 .check_tags <- function(self, values, tags, id, error_on_fail) {
+
   if (length(tags)) {
-    nok <- "required" %in% names(tags) &&
-      any(vapply(.get_field(self, values, id, tags = tags[["required"]]),
-                 is.null, logical(1)))
-    if (nok) {
-      return(.return_fail(
-        msg = "Not all required parameters are set.",
-        error_on_fail
-      ))
+    # required tag
+    if (length(tags$required)) {
+      vals <- .get_field(self, values, NULL, tags = tags[["required"]])
+      nok <- checkmate::testList(vals, any.missing = FALSE)
+      if (nok) {
+        return(.return_fail(
+          msg = "Not all required parameters are set.",
+          error_on_fail
+        ))
+      }
     }
 
-    nok <- "linked" %in% names(tags) &&
-      length(.get_values(self, get_private(self), values, id,
-                         tags = tags[["linked"]],
-                         inc_null = FALSE)) > length(tags[["linked"]])
-    if (nok) {
-      return(.return_fail(
-        msg = "Multiple linked parameters are set.",
-        error_on_fail
-      ))
+    # linked tag
+    if (length(tags$linked)) {
+      vals <- .get_values(self, get_private(self), values, NULL,
+                          tags = tags[["linked"]],
+                          inc_null = FALSE
+      )
+      if (any(grepl("__", names(vals), fixed = TRUE))) {
+        nok <- any(vapply(get_prefix(names(vals)), function(i) {
+          length(vals[grepl(i, names(vals))]) > length(tags[["linked"]])
+        }, logical(1)))
+      } else {
+        nok <- length(vals) > length(tags[["linked"]])
+      }
+
+        if (nok) {
+          return(.return_fail(
+            msg = "Multiple linked parameters are set.",
+            error_on_fail
+          ))
+        }
+    }
+
+    # unique tag
+    if (length(tags$unique)) {
+      vals <- .get_values(self, get_private(self), values, NULL,
+                          tags = tags[["unique"]],
+                          inc_null = FALSE
+      )
+      nok <- any(vapply(vals, function(i) any(duplicated(i)), logical(1)))
+      if (nok) {
+          return(.return_fail(
+            msg = "One or more unique parameters are duplicated.",
+            error_on_fail
+          ))
+      }
     }
   }
 
   return(TRUE)
 }
 
+# REMOVE ALL CUSTOM CHECKS FOR DEPS - ADD LENGTH TO DEPS
 .check_custom <- function(self, values, checks, id, error_on_fail) {
   if (!is.null(checks) && nrow(checks)) {
     if (!is.null(id)) {
@@ -171,7 +203,9 @@
     # `for` instead of `vapply` allows early breaking
     for (i in seq_along(checks$fun)) {
       .y <- checks$fun[[i]]
-      ok <- as.function(list(x = values, self = self, .y))()
+      ivalues <- .get_values(self, get_private(self), values, checks$ids[[i]],
+                             checks$tags[[i]])
+      ok <- as.function(list(x = ivalues, self = self, .y))()
       if (!ok) {
         return(.return_fail(sprintf("Check on '%s' failed.", deparse(.y)),
                             error_on_fail))
@@ -228,4 +262,20 @@ assert_condition <- function(id, support, cond) {
     warning(msg)
     return(FALSE)
   }
+}
+
+.assert_tag_properties <- function(prop, utags, self) {
+  if (!is.null(prop)) {
+    checkmate::assert_list(prop, names = "unique")
+    checkmate::assert_subset(unlist(prop), utags)
+    checkmate::assert_subset(names(prop),
+                             c("required", "linked", "unique"))
+    if (!is.null(prop$linked) && !is.null(prop$required)) {
+      checkmate::assert_character(c(prop$linked, prop$required), unique = TRUE)
+    }
+    .check_tags(self, self$values, prop, NULL, TRUE)
+  }
+
+  invisible(prop)
+
 }

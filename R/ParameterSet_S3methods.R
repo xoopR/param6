@@ -88,6 +88,10 @@ c.ParameterSet <- function(..., pss = list(...)) {
     if (length(lin_props)) {
       tprop$linked <- unique(unlist(lin_props))
     }
+    un_props <- props[names(props) %in% "unique"]
+    if (length(lin_props)) {
+      tprop$unique <- unique(unlist(un_props))
+    }
     if (any(duplicated(unlist(tprop)))) {
       stop("Cannot merge inconsistent tag properties.")
     }
@@ -121,7 +125,7 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
-  if (length(x$deps) || length(x$trafos) || length(x$checks)) {
+  if (length(x$deps) || length(x$trafo) || length(x$checks)) {
     warning("Dependencies, trafos, and checks are lost in coercion.")
   }
   dt <- data.table::data.table(
@@ -135,4 +139,10 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
     data.table::setorder(dt, Id)
   }
   dt
+}
+
+# FIXME - DOCUMENT
+#' @export
+`[.ParameterSet` <- function(object, i, tags = NULL, prefix = NULL, ...) {
+  object$extract(i, tags, prefix)
 }

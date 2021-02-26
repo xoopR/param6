@@ -22,14 +22,8 @@
     tag_list <- lapply(prms, "[[", "tags")
     if (length(tag_list)) {
       private$.tags <- un_null_list(tag_list)
-      utags <- unique(unlist(tag_list))
-      if (!is.null(tag_properties)) {
-        checkmate::assert_list(tag_properties, unique = TRUE, names = "unique")
-        checkmate::assert_subset(unlist(tag_properties), utags)
-        checkmate::assert_subset(names(tag_properties), c("required", "linked"))
-        .check_tags(self, self$values, tag_properties, NULL, TRUE)
-        private$.tag_properties <- tag_properties
-      }
+      private$.tag_properties <-
+        .assert_tag_properties(tag_properties, unique(unlist(tag_list)), self)
 
       if (any(duplicated(c(private$.id, unique(unlist(private$.tags)))))) {
         stop("ids and tags must have different names.")
@@ -74,10 +68,6 @@
 
   support <- unique(
     unlist(private$.supports[grepl(on, names(private$.supports))]))
-
-  if (length(support) > 1) {
-    stop("Single dependency cannot be added on multiple supports.")
-  }
 
   support <- support_dictionary$get(support)
 
@@ -124,23 +114,21 @@
   checkmate::assert_subset(ids, unique(c(self$ids, unprefix(self$ids))))
   checkmate::assert_subset(tags, unlist(self$tags))
 
-
-  checkmate::assert_function(fun, c("x", "self"))
+  checkmate::assert_function(fun, "x", TRUE)
   if (!checkmate::test_logical(fun(self$values, self), len = 1)) {
     stop("'fun' should evaluate to a scalar logical.")
   }
-  private$.checks <- rbind(checks,
-                           data.table::data.table(ids = list(ids),
-                                                  tags = list(tags),
-                                                  fun = list(body(fun))))
+
+  new_checks <- rbind(checks,
+                      data.table::data.table(ids = list(ids),
+                                             tags = list(tags),
+                                             fun = list(body(fun))))
+
+  .check_custom(self, self$values, new_checks, NULL, TRUE)
+
+  private$.checks <- new_checks
 
   invisible(self)
-}
-
-.ParameterSet__check <- function(self, private, supports, custom, deps, tags, # nolint
-                                 id, error_on_fail) {
-  .check(self, supports, custom, deps, tags, id, error_on_fail, self$values,
-         private$.isupports, self$deps, self$checks, self$tag_properties)
 }
 
 .ParameterSet__rep <- function(self, private, times, prefix) { # nolint
@@ -173,25 +161,6 @@
   names(tags) <- paste(rep(prefix, each = length(private$.tags)),
                        names(tags), sep = "__")
   private$.tags <- tags
-
-  if (length(private$.tag_properties) &&
-      length(private$.tag_properties$linked)) {
-    new_linked <- paste(rep(prefix,
-                            each = length(private$.tag_properties$linked)),
-                        private$.tag_properties$linked, sep = "__")
-    # frustrating loop here but should incur minimal overhead
-    for (i in seq_along(private$.tags)) {
-      which <- private$.tags[[i]] %in% private$.tag_properties$linked
-      if (any(which)) {
-        private$.tags[[i]][which] <-
-          paste(rep(get_prefix(names(private$.tags)[[i]]),
-                    each = length(private$.tags[[i]][which])),
-                private$.tags[[i]][which], sep = "__")
-      }
-    }
-    private$.tag_properties$linked <- new_linked
-
-  }
 
   invisible(self)
 }
@@ -290,17 +259,14 @@
 
   if (length(private$.tag_properties)) {
     new_props <- list()
-    if (length(private$.tag_properties$linked)) {
-      new_props$linked <-
+    for (i in c("linked", "required", "unique")) {
+      if (length(private$.tag_properties[[i]])) {
+      new_props[[i]] <-
         unprefix(
-          private$.tag_properties$linked[private$.tag_properties$linked %in%
+          private$.tag_properties[[i]][private$.tag_properties[[i]] %in%
                                            tag]
         )
-    }
-    if (length(private$.tag_properties$required)) {
-      new_props$required <-
-        private$.tag_properties$required[private$.tag_properties$required %in%
-                                           tag]
+      }
     }
     ps$tag_properties <- new_props
   }
@@ -322,13 +288,8 @@
   if (missing(x)) {
     private$.tag_properties
   } else {
-    if (!is.null(x)) {
-      checkmate::assert_list(x, unique = TRUE, names = "unique")
-      checkmate::assert_subset(unlist(x), unlist(self$tags))
-      checkmate::assert_subset(names(x), c("required", "linked"))
-      .check_tags(self, self$values, x, NULL, TRUE)
-    }
-    private$.tag_properties <- x
+    private$.tag_properties <-
+      .assert_tag_properties(x, unlist(self$tags), self)
     invisible(self)
   }
 }
@@ -337,7 +298,9 @@
   if (missing(x)) {
     return(private$.value)
   } else {
-    if (!is.null(x)) {
+
+    x <- un_null_list(x)
+    if (length(x)) {
       .check(self,
              id = names(x), value_check = x,
              support_check = private$.isupports, dep_check = self$deps,
@@ -354,7 +317,7 @@
   if (missing(x)) {
     private$.trafo
   } else {
-    checkmate::assert_function(x, args = c("x", "self"))
+    checkmate::assert_function(x, args = c("x", "self"), TRUE)
     vals <- x(self$values, self)
     checkmate::assert_list(vals)
 
