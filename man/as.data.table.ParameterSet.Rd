@@ -16,6 +16,6 @@ alphabetically by id.}
 }
 \description{
 Coercion from \link{ParameterSet} to \link[data.table:data.table]{data.table::data.table}.
-Dependencies, transformations, checks, and tag properties are all lost in
+Dependencies, transformations, and tag properties are all lost in
 coercion.
 }

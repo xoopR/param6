@@ -1,5 +1,3 @@
-context("helpers")
-
 test_that("assert_contains", {
   expect_silent(assert_contains(Set$new(1), 1, "ID"))
   expect_error(assert_contains(Set$new(1), 2, "ID"),
@@ -99,4 +97,3 @@ test_that("%nin%", {
   expect_false("a" %nin% letters)
   expect_true(1 %nin% letters)
 })
-

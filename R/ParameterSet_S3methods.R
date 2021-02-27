@@ -63,7 +63,7 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 #' @title Concatenate ParameterSet Objects
 #' @description Concatenate multiple [ParameterSet] objects into a single
 #' [ParameterSet].
-#' @details Concatenates ids, tags, tag properties, checks and dependencies,
+#' @details Concatenates ids, tags, tag properties and dependencies,
 #' but not transformations.
 #' @param ... ([ParameterSet]s) \cr [ParameterSet] objects to concatenate.
 #' @param pss (`list()`) \cr Alternatively pass a list of [ParameterSet]
@@ -102,11 +102,6 @@ c.ParameterSet <- function(..., pss = list(...)) {
   ps <- ParameterSet$new(prms, tprop)
   private <- get_private(ps)
 
-  checks <- lapply(pss, "[[", "checks")
-  if (any(!is.null(unlist(checks)))) {
-    private$.checks <- data.table::rbindlist(checks)
-  }
-
   deps <- lapply(pss, "[[", "deps")
   if (any(!is.null(unlist(deps)))) {
     private$.deps <- data.table::rbindlist(deps)
@@ -117,7 +112,7 @@ c.ParameterSet <- function(..., pss = list(...)) {
 
 #' @title Coerce a ParameterSet to a data.table
 #' @description Coercion from [ParameterSet] to [data.table::data.table].
-#' Dependencies, transformations, checks, and tag properties are all lost in
+#' Dependencies, transformations, and tag properties are all lost in
 #' coercion.
 #' @param x ([ParameterSet])
 #' @param sort (`logical(1)`) \cr If `TRUE`(default) sorts the [ParameterSet]
@@ -125,8 +120,8 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
-  if (length(x$deps) || length(x$trafo) || length(x$checks)) {
-    warning("Dependencies, trafos, and checks are lost in coercion.")
+  if (length(x$deps) || length(x$trafo)) {
+    warning("Dependencies and trafos are lost in coercion.")
   }
   dt <- data.table::data.table(
     Id = x$ids,

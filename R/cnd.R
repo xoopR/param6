@@ -1,4 +1,5 @@
 cnd <- function(value, type) {
+  choice <- c("eq", "neq", "geq", "leq", "gt", "lt", "any", "nany", "len")
   fun <- switch(type,
     "eq" = `==`,
     "neq" = `!=`,
@@ -8,10 +9,19 @@ cnd <- function(value, type) {
     "lt" = `<`,
     "any" = `%in%`,
     "nany" = `%nin%`,
-    stop("'type' must be one of {'eq', 'neq', 'geq', 'leq', 'gt', 'lt', 'any', 'nany'}.") # nolint
+    "len" = function(x, y) length(x) == length(y),
+    stop(sprintf("'type' must be one of %s.", string_as_set(choice)))
   )
 
-  fun <- substitute(function(x) !any(is.null(x)) && all(fun(unlist(x), value)))
+  if (checkmate::testCharacter(value)) {
+    fun <- substitute(function(on, idx, values) {
+      onx <- values[[value]]
+      !any(is.null(onx)) && all(fun(unlist(idx), unlist(onx)))
+    })
+  } else {
+    fun <- substitute(function(x, ...)
+      !any(is.null(x)) && all(fun(unlist(x), value)))
+  }
 
   char <- switch(type,
     "eq" = "==",
@@ -21,7 +31,8 @@ cnd <- function(value, type) {
     "gt" = ">",
     "lt" = "<",
     "any" = "%in%",
-    "nany" = "%nin%"
+    "nany" = "%nin%",
+    "len" = "len"
   )
 
   class(fun) <- "cnd"

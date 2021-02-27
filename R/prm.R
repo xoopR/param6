@@ -9,7 +9,7 @@
 #' \CRANpkg{set6} or a character representing the set if it is already present
 #' in the [support_dictionary]. If a [set6::Set] is provided then the set and
 #' its string representation are added automatically to [support_dictionary]
-#' in order to provie fast internal checks. Common sets (such as the reals,
+#' in order to provide fast internal checks. Common sets (such as the reals,
 #' naturals, etc.) are already provided in [support_dictionary].
 #' @param value `ANY` \cr
 #' Optional to assign the parameter, will internally
@@ -78,7 +78,7 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   }
 
   if (!is.null(value) && .check) {
-    assertContains(support, value)
+    assert_contains(support, value)
   } else if (is.null(value) && "required" %in% tags) {
     stop("Parameter is required but value is NULL.")
   }

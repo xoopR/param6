@@ -90,9 +90,6 @@ Get the length of the parameter set as the number of parameters.}
 \item{\code{deps}}{None -> \link[data.table:data.table]{data.table::data.table}
 Get parameter dependencies, NULL if none.}
 
-\item{\code{checks}}{None -> \link[data.table:data.table]{data.table::data.table}
-Get custom parameter checks, NULL if none.}
-
 \item{\code{supports}}{None -> \code{named_list()} \cr
 Get supports from the parameter set.}
 
@@ -103,7 +100,9 @@ can either be: \cr
 i) 'required' - parameters with this tag must have set (non-NULL)
 values;\cr
 ii) 'linked' - parameters with 'linked' tags are dependent on one another
-and only one can be set (non-NULL at a time).}
+and only one can be set (non-NULL at a time);\cr
+iii) 'unique' - parameters with this tag must have no duplicated
+elements, therefore this tag only makes sense for vector parameters.}
 
 \item{\code{values}}{\code{list() -> self} / None -> \code{list()} \cr
 If \code{x} is missing then returns the set (non-NULL) values without
@@ -136,7 +135,6 @@ infinite recursion, see examples at end.}
 \item \href{#method-get_values}{\code{ParameterSet$get_values()}}
 \item \href{#method-add_dep}{\code{ParameterSet$add_dep()}}
 \item \href{#method-transform}{\code{ParameterSet$transform()}}
-\item \href{#method-add_check}{\code{ParameterSet$add_check()}}
 \item \href{#method-rep}{\code{ParameterSet$rep()}}
 \item \href{#method-extract}{\code{ParameterSet$extract()}}
 \item \href{#method-clone}{\code{ParameterSet$clone()}}
@@ -155,6 +153,14 @@ Constructs a \code{ParameterSet} object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{prms}}{(\code{list()}) \cr List of \link{prm} objects. Ids should be unique.}
+
+\item{\code{tag_properties}}{(\code{list()}) \cr
+List of tag properties. Currently support properties are: i) 'required' -
+parameters with this tag property must be non-NULL; ii) 'linked' - only one
+parameter in a linked tag group can be non-NULL and the others should be
+NULL, this only makes sense with an associated \code{trafo}; iii) 'unique' -
+parameters with this tag must have no duplicated elements, only makes sense
+for vector parameters.}
 }
 \if{html}{\out{</div>}}
 }
@@ -237,15 +243,6 @@ p
 \subsection{Method \code{transform()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$transform()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-add_check"></a>}}
-\if{latex}{\out{\hypertarget{method-add_check}{}}}
-\subsection{Method \code{add_check()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$add_check(fun, ids = NULL, tags = NULL)}\if{html}{\out{</div>}}
 }
 
 }

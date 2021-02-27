@@ -15,7 +15,7 @@ Either a set object from
 \CRANpkg{set6} or a character representing the set if it is already present
 in the \link{support_dictionary}. If a \link[set6:Set]{set6::Set} is provided then the set and
 its string representation are added automatically to \link{support_dictionary}
-in order to provie fast internal checks. Common sets (such as the reals,
+in order to provide fast internal checks. Common sets (such as the reals,
 naturals, etc.) are already provided in \link{support_dictionary}.}
 
 \item{value}{\code{ANY} \cr

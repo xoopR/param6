@@ -4,10 +4,18 @@
 \alias{pset}
 \title{Convenience Function for Constructing a ParameterSet}
 \usage{
-pset(prms)
+pset(prms, tag_properties = NULL)
 }
 \arguments{
 \item{prms}{(\code{list()}) \cr List of \link{prm} objects.}
+
+\item{tag_properties}{(\code{list()}) \cr
+List of tag properties. Currently support properties are: i) 'required' -
+parameters with this tag property must be non-NULL; ii) 'linked' - only one
+parameter in a linked tag group can be non-NULL and the others should be
+NULL, this only makes sense with an associated \code{trafo}; iii) 'unique' -
+parameters with this tag must have no duplicated elements, only makes sense
+for vector parameters.}
 }
 \description{
 See \link{ParameterSet} for full details.

@@ -44,7 +44,7 @@
 #' p$get_values()
 #'
 #' @template param_prms
-#' @template tag_properties
+#' @template param_tag_properties
 #' @template param_sort
 #' @export
 ParameterSet <- R6::R6Class("ParameterSet",
@@ -92,11 +92,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .ParameterSet__transform(self, private)
     },
 
-    # FIXME - ADD TESTS & DOCUMENT
-    add_check = function(fun, ids = NULL, tags = NULL) {
-      .ParameterSet__add_check(self, private, fun, ids, tags)
-    },
-
     #' @description Replicate the `ParameterSet` with identical parameters.
     #' In order to avoid duplicated parameter ids, every id in the
     #' `ParameterSet` is given a `prefix` in the format `prefix__id`. In
@@ -141,10 +136,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' @field deps None -> [data.table::data.table]
     #' Get parameter dependencies, NULL if none.
     deps = function() private$.deps,
-
-    #' @field checks None -> [data.table::data.table]
-    #' Get custom parameter checks, NULL if none.
-    checks = function() private$.checks,
 
     #' @field supports None -> `named_list()` \cr
     #' Get supports from the parameter set.
@@ -194,18 +185,12 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .supports = list(),
     .value = list(),
     .tags = list(),
-    .tag_properties = list(),
+    .tag_properties = NULL,
     .trafo = NULL,
     .deps = NULL,
-    .checks = NULL,
     deep_clone = function(name, value) {
       switch(name,
              ".deps" = {
-               if (!is.null(value)) {
-                 data.table::copy(value)
-               }
-             },
-             ".checks" = {
                if (!is.null(value)) {
                  data.table::copy(value)
                }
@@ -219,8 +204,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #' @title Convenience Function for Constructing a ParameterSet
 #' @description See [ParameterSet] for full details.
 #' @param prms (`list()`) \cr List of [prm] objects.
-#' @param tag_properties (`list()`) \cr List of tag properties, see
-#' [ParameterSet] for full details.
+#' @template param_tag_properties
 #' @examples
 #' library(set6)
 #'
@@ -231,6 +215,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #' )
 #' p <- pset(prms)
 #' @export
-pset <- function(prms, tag_properties) {
+pset <- function(prms, tag_properties = NULL) {
   ParameterSet$new(prms, tag_properties)
 }

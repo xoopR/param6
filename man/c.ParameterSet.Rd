@@ -17,6 +17,6 @@ Concatenate multiple \link{ParameterSet} objects into a single
 \link{ParameterSet}.
 }
 \details{
-Concatenates ids, tags, tag properties, checks and dependencies,
+Concatenates ids, tags, tag properties and dependencies,
 but not transformations.
 }

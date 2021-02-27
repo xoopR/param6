@@ -71,17 +71,18 @@
 
   support <- support_dictionary$get(support)
 
-  assert_condition(on, support, cnd)
+
 
   if (is.null(self$deps)) {
-    deps <- data.table::data.table(id = character(0L), on = character(0L),
-                                   cond = list())
+    deps <- data.table(id = character(0L), on = character(0L),
+                       cond = list())
   } else {
     deps <- self$deps
   }
 
-  new_dt <- rbind(deps, data.table::data.table(id = id, on = on,
-                                               cond = list(cnd)))
+  new_dt <- rbind(deps,
+                  data.table(id = id, on = on,
+                             cond = list(assert_condition(on, support, cnd))))
 
   assert_no_cycles(new_dt)
 
@@ -96,37 +97,6 @@
   if (!is.null(private$.trafo)) {
     private$.value <- private$.trafo(self$values, self)
   }
-
-  invisible(self)
-}
-
-.ParameterSet__add_check <- function(self, private, fun, ids, tags) { # nolint
-  if (is.null(self$checks)) {
-    checks <- data.table(ids = list(), tags = list(), fun = list())
-  } else {
-    checks <- self$checks
-  }
-
-  if (is.null(ids) && is.null(tags)) {
-    stop("At least one of 'ids' and 'tags' must be non-NULL.")
-  }
-
-  checkmate::assert_subset(ids, unique(c(self$ids, unprefix(self$ids))))
-  checkmate::assert_subset(tags, unlist(self$tags))
-
-  checkmate::assert_function(fun, "x", TRUE)
-  if (!checkmate::test_logical(fun(self$values, self), len = 1)) {
-    stop("'fun' should evaluate to a scalar logical.")
-  }
-
-  new_checks <- rbind(checks,
-                      data.table::data.table(ids = list(ids),
-                                             tags = list(tags),
-                                             fun = list(body(fun))))
-
-  .check_custom(self, self$values, new_checks, NULL, TRUE)
-
-  private$.checks <- new_checks
 
   invisible(self)
 }
@@ -231,32 +201,6 @@
     }
   }
 
-  if (!is.null(private$.checks)) {
-    which_checks <- vapply(seq(nrow(private$.checks)), function(i) {
-      .x <- private$.checks[i, ]
-      cids <- unlist(.x[[1]])
-      ctags <- unlist(.x[[2]])
-      if (!is.null(id) && !is.null(cids) && all(cids %in% id)) {
-        TRUE
-      } else if (!is.null(tags) && !is.null(ctags) &&
-                 all(ctags %in% tags)) {
-        TRUE
-      } else {
-        FALSE
-      }
-    }, logical(1))
-
-    checks <- subset(private$.checks, which_checks)
-    if (nrow(checks)) {
-      if (!is.null(unfix_ids)) {
-        checks$ids[match(checks$ids, ids, 0)] <-
-          unfix_ids[match(checks$ids, ids, 0)]
-      }
-      pri <- get_private(ps)
-      pri$.checks <- checks
-    }
-  }
-
   if (length(private$.tag_properties)) {
     new_props <- list()
     for (i in c("linked", "required", "unique")) {
@@ -298,13 +242,12 @@
   if (missing(x)) {
     return(private$.value)
   } else {
-
     x <- un_null_list(x)
     if (length(x)) {
       .check(self,
              id = names(x), value_check = x,
              support_check = private$.isupports, dep_check = self$deps,
-             tag_check = self$tag_properties, custom_check = self$checks
+             tag_check = self$tag_properties
       )
     }
 
@@ -323,7 +266,7 @@
 
     tryCatch(.check(self, id = names(vals), value_check = vals,
                     support_check = private$.isupports,
-                    dep_check = self$deps, custom_check = self$checks),
+                    dep_check = self$deps),
              error = function(e) {
                stop("Transformation results in values outside of supports.")
              })

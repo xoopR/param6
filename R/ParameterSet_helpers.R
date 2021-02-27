@@ -42,10 +42,10 @@
   values
 }
 
-.check <- function(self, supports = TRUE, custom = TRUE, deps = TRUE,
+.check <- function(self, supports = TRUE, deps = TRUE,
                    tags = TRUE, id = NULL, error_on_fail = TRUE,
                    value_check = NULL, support_check = NULL, dep_check = NULL,
-                   custom_check = NULL, tag_check = NULL) {
+                   tag_check = NULL) {
   x <- TRUE
 
   # 1. Containedness checks
@@ -73,15 +73,6 @@
 
   if (!x) {
     return(FALSE)
-  }
-
-  # 3. Custom checks
-  if (custom && !is.null(custom_check)) {
-    x <- .check_custom(self, value_check, custom_check, id, error_on_fail)
-  }
-
-  if (!x) {
-    return(FALSE)
   } else {
     return(TRUE)
   }
@@ -95,9 +86,12 @@
     }
     if (length(ids)) {
       value <- .get_values(self, get_private(self), values, ids,
-                           inc_null = FALSE)
+                           inc_null = FALSE, simplify = FALSE)
 
       set <- support_dictionary$get(names(supports)[[i]])
+      if (!is.null(set$power) && set$power == "n") {
+        value <- lapply(value, as.Tuple)
+      }
       if (!set$contains(value, all = TRUE)) {
         return(.return_fail(
           msg = sprintf("%s does not lie in %s.", value, as.character(set)),
@@ -121,11 +115,17 @@
       on_value <- .get_values(self, get_private(self), values, on,
                               inc_null = FALSE)
       if (length(id_value)) {
-        ok <- fun(on_value)
+        ok <- fun(on_value, id_value, values)
         if (!ok) {
+          if (checkmate::testCharacter(attr(cnd, "value"))) {
+            msg <- sprintf("Dependency of '%s %s %s' failed.",
+                          id, attr(cnd, "type"), on)
+          } else {
+            msg <- sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
+                          attr(cnd, "type"), string_as_set(attr(cnd, "value")))
+          }
           return(.return_fail(
-            msg = sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
-                          attr(cnd, "type"), string_as_set(attr(cnd, "value"))),
+            msg = msg,
             error_on_fail
           ))
         }
@@ -137,12 +137,11 @@
 }
 
 .check_tags <- function(self, values, tags, id, error_on_fail) {
-
   if (length(tags)) {
     # required tag
     if (length(tags$required)) {
       vals <- .get_field(self, values, NULL, tags = tags[["required"]])
-      nok <- checkmate::testList(vals, any.missing = FALSE)
+      nok <- !checkmate::testList(vals, any.missing = FALSE)
       if (nok) {
         return(.return_fail(
           msg = "Not all required parameters are set.",
@@ -177,7 +176,7 @@
     if (length(tags$unique)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags = tags[["unique"]],
-                          inc_null = FALSE
+                          inc_null = FALSE, simplify = FALSE
       )
       nok <- any(vapply(vals, function(i) any(duplicated(i)), logical(1)))
       if (nok) {
@@ -185,30 +184,6 @@
             msg = "One or more unique parameters are duplicated.",
             error_on_fail
           ))
-      }
-    }
-  }
-
-  return(TRUE)
-}
-
-# REMOVE ALL CUSTOM CHECKS FOR DEPS - ADD LENGTH TO DEPS
-.check_custom <- function(self, values, checks, id, error_on_fail) {
-  if (!is.null(checks) && nrow(checks)) {
-    if (!is.null(id)) {
-      ids <- NULL
-      checks <- subset(checks, grepl(paste0(id, collapse = "|"), ids))
-    }
-
-    # `for` instead of `vapply` allows early breaking
-    for (i in seq_along(checks$fun)) {
-      .y <- checks$fun[[i]]
-      ivalues <- .get_values(self, get_private(self), values, checks$ids[[i]],
-                             checks$tags[[i]])
-      ok <- as.function(list(x = ivalues, self = self, .y))()
-      if (!ok) {
-        return(.return_fail(sprintf("Check on '%s' failed.", deparse(.y)),
-                            error_on_fail))
       }
     }
   }
@@ -240,19 +215,21 @@ assert_condition <- function(id, support, cond) {
 
   val <- attr(cond, "value")
 
-  if (attr(cond, "type") %in% c("==", ">=", "<=", ">", "<", "%in%")) {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", # nolint
-                   val, id, as.character(support))
-  } else {
-    msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", # nolint
-                   val, id, as.character(support))
+  if (!checkmate::testCharacter(val)) {
+    if (attr(cond, "type") %in% c("==", ">=", "<=", ">", "<", "%in%")) {
+      msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", # nolint
+                     val, id, as.character(support))
+    } else {
+      msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", # nolint
+                     val, id, as.character(support))
+    }
+
+    if (!(testContains(support, val))) {
+      stop(msg)
+    }
   }
 
-  if (!(testContains(support, val))) {
-    stop(msg)
-  } else {
-    invisible(val)
-  }
+  invisible(cond)
 }
 
 .return_fail <- function(msg, error_on_fail) {
