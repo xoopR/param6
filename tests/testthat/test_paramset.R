@@ -60,9 +60,9 @@ test_that("ParamSet actives - values", {
   expect_equal(p$values, list(a = 1, d = 2))
   expect_silent(p$values$a <- 2)
   expect_equal(p$values$a, 2)
-  expect_error(p$values$a <- 3, "3 does not")
+  expect_error(p$values$a <- 3, "does not")
   expect_equal(p$values$a, 2)
-  expect_error(p$values <- list(a = 3, d = 1), "3 does not")
+  expect_error(p$values <- list(a = 3, d = 1), "does not")
   expect_equal(p$values, list(a = 2, d = 2))
   expect_silent(p$values <- list(a = 1))
   expect_equal(p$values, list(a = 1))
@@ -90,6 +90,22 @@ test_that("ParamSet actives - values", {
            error_on_fail = FALSE, value_check = list(b = 1, d = 1),
            tag_check = p$tag_properties)))
   expect_error({p$values <- list(a = 1, b = 1, d = 1)}, "Multiple linked") # nolint
+
+
+  prms <- list(
+    prm("b", "naturals", 1),
+    prm("d", "naturals", 2)
+  )
+  p <- ParameterSet$new(prms)
+  expect_error({p$values <- list(b = 0.5, d = 0.5)}, "One or") # nolint
+
+  prms <- list(
+    prm("a", "nnaturals", 1)
+  )
+  p <- ParameterSet$new(prms)
+  expect_silent({p$values$a <- 2}) # nolint
+  expect_silent({p$values <- list(a = c(1, 2))}) # nolint
+  expect_error({p$values <- list(a = c(1, 0.5))}, "does not lie") # nolint
 })
 
 test_that("ParamSet actives - tag properties", {
@@ -113,7 +129,7 @@ test_that("ParamSet actives - tag properties", {
   )
   p <- ParameterSet$new(prms, tag_properties = list(unique = "t1"))
   expect_silent({p$values$a <- 2}) # nolint
-  expect_silent({p$values <- list(a = c(1, 2), b = c(1, 2))}) # nolint
+  expect_silent({p$values <- list(a = c(1, 2))}) # nolint
   expect_error({p$values <- list(a = c(2, 2))}, "duplicated") # nolint
 })
 

@@ -91,12 +91,29 @@
       set <- support_dictionary$get(names(supports)[[i]])
       if (!is.null(set$power) && set$power == "n") {
         value <- lapply(value, as.Tuple)
-      }
-      if (!set$contains(value, all = TRUE)) {
-        return(.return_fail(
-          msg = sprintf("%s does not lie in %s.", value, as.character(set)),
-          error_on_fail
-        ))
+        len <- vapply(value, function(.x) .x$length, integer(1))
+        ulen <- unique(len)
+        # loop enforced by set6 "n" exponents requiring same length,
+        # will try and fix in set6 asap
+        for (j in ulen) {
+          jvalue <- value[len %in% ulen]
+          if (!set$contains(jvalue, all = TRUE)) {
+            return(.return_fail(
+              msg = sprintf(
+                "One or more of %s does not lie in %s.",
+                string_as_set(vapply(jvalue, as.character, character(1))),
+                as.character(set)), error_on_fail
+            ))
+          }
+        }
+      } else {
+        if (!set$contains(value, all = TRUE)) {
+          return(.return_fail(
+            msg = sprintf("One or more of %s does not lie in %s.",
+                          string_as_set(value), as.character(set)),
+            error_on_fail
+          ))
+        }
       }
     }
   }
@@ -119,10 +136,10 @@
         if (!ok) {
           if (checkmate::testCharacter(attr(cnd, "value"))) {
             msg <- sprintf("Dependency of '%s %s %s' failed.",
-                          id, attr(cnd, "type"), on)
+                           id, attr(cnd, "type"), on)
           } else {
             msg <- sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
-                          attr(cnd, "type"), string_as_set(attr(cnd, "value")))
+                           attr(cnd, "type"), string_as_set(attr(cnd, "value")))
           }
           return(.return_fail(
             msg = msg,
@@ -164,12 +181,12 @@
         nok <- length(vals) > length(tags[["linked"]])
       }
 
-        if (nok) {
-          return(.return_fail(
-            msg = "Multiple linked parameters are set.",
-            error_on_fail
-          ))
-        }
+      if (nok) {
+        return(.return_fail(
+          msg = "Multiple linked parameters are set.",
+          error_on_fail
+        ))
+      }
     }
 
     # unique tag
@@ -180,10 +197,10 @@
       )
       nok <- any(vapply(vals, function(i) any(duplicated(i)), logical(1)))
       if (nok) {
-          return(.return_fail(
-            msg = "One or more unique parameters are duplicated.",
-            error_on_fail
-          ))
+        return(.return_fail(
+          msg = "One or more unique parameters are duplicated.",
+          error_on_fail
+        ))
       }
     }
   }
