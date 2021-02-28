@@ -1,7 +1,7 @@
 Package: param6
 Title: A Fast and Lightweight R6 Parameter Interface
 Description: param6 makes use of {set6} alongside the S3 and R6 paradigms to provide a fast and lightweight interface for parameters and parameter sets.
-Version: 0.1.0.9000
+Version: 0.1.0
 Authors@R:
   person(given = "Raphael",
              family = "Sonabend",
@@ -9,6 +9,10 @@ Authors@R:
              email = "raphael.sonabend.15@ucl.ac.uk",
              comment = c(ORCID = "0000-0001-9225-4654"))
 License: MIT + file LICENSE
+URL: https://xoopR.github.io/param6/, https://github.com/xoopR/param6/
+BugReports: https://github.com/xoopR/param6/issues
+VignetteBuilder:
+    knitr
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
@@ -19,4 +23,5 @@ Imports:
   set6,
   R6
 Suggests:
+  knitr,
   testthat
