@@ -82,6 +82,10 @@ test_that("get", {
   expect_equal(d_typed$get("b"), 2)
   expect_equal(d_typed$get(letters[1:2]), c(1, 2))
   expect_error(d_typed$get("c"), "subset of")
+
+  d <- Dictionary$new(list(a = Set$new(1), b = 2))
+  expect_equal(d$get("a"), Set$new(1))
+  expect_equal(d$get("b"), 2)
 })
 
 test_that("get_list", {
@@ -91,6 +95,9 @@ test_that("get_list", {
   expect_equal(d_untyped$get_list("a"), list(a = 1))
   expect_equal(d_untyped$get_list(c("a", "b")), list(a = 1, b = 2))
   expect_equal(d_untyped[c("a", "b")], list(a = 1, b = 2))
+
+  d <- Dictionary$new(list(a = Set$new(1), b = 2))
+  expect_equal(d$get_list(c("a", "b")), list(a = Set$new(1), b = 2))
 })
 
 test_that("has", {

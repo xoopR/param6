@@ -123,11 +123,15 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
   if (length(x$deps) || length(x$trafo)) {
     warning("Dependencies and trafos are lost in coercion.")
   }
+
+  vals <- expand_list(x$ids, x$values)
+  tags <- expand_list(x$ids, x$tags)
+
   dt <- data.table::data.table(
     Id = x$ids,
     Support = x$supports,
-    Value = expand_list(x$ids, x$values),
-    Tags = expand_list(x$ids, x$tags)
+    Value = vals[match(names(vals), x$ids)],
+    Tags = tags[match(names(tags), x$ids)]
   )
   if (sort) {
     Id <- NULL # binding fix
