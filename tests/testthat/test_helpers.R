@@ -17,17 +17,21 @@ test_that("assert_no_cycles", {
                "Cycles detected")
 })
 
-test_that("assert_condition", {
-  expect_silent(assert_condition("a", Set$new(1), cnd(1, "eq")))
-  expect_silent(assert_condition("a", Set$new(1, 2, 3), cnd(c(1,2), "any")))
+test_that("cnd", {
+  expect_warning(cnd("eq", 1, "a"))
+})
 
-  expect_error(assert_condition("a", Set$new(1), cnd(2, "eq")),
+test_that("assert_condition", {
+  expect_silent(assert_condition("a", Set$new(1), cnd("eq", 1)))
+  expect_silent(assert_condition("a", Set$new(1, 2, 3), cnd("any", c(1,2))))
+
+  expect_error(assert_condition("a", Set$new(1), cnd("eq", 2)),
                "Condition is not possible")
-  expect_error(assert_condition("a", Set$new(1, 2, 3), cnd(c(1, 4), "any")),
+  expect_error(assert_condition("a", Set$new(1, 2, 3), cnd("any", c(1, 4))),
                "Condition is not possible")
-  expect_error(assert_condition("a", Set$new(1), cnd(2, "neq")),
+  expect_error(assert_condition("a", Set$new(1), cnd("neq", 2)),
                "Condition is redundant")
-  expect_error(assert_condition("a", Set$new(1, 2, 3), cnd(c(1, 4), "nany")),
+  expect_error(assert_condition("a", Set$new(1, 2, 3), cnd("nany", c(1, 4))),
                "Condition is redundant")
 })
 
@@ -79,8 +83,8 @@ test_that("as_named_list", {
 })
 
 test_that("cnd", {
-  expect_error(cnd(1, "a"), "must be one")
-  expect_s3_class(cnd(1, "eq"), "cnd")
+  expect_error(cnd("a", 1), "must be one")
+  expect_s3_class(cnd("eq", 1), "cnd")
 })
 
 

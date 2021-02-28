@@ -78,7 +78,7 @@ test_that("ParamSet actives - values", {
            error_on_fail = FALSE, value_check = list(a = 3),
            support_check = get_private(p)$.isupports)))
 
-  p$add_dep("b", "a", cnd(1, "eq"))
+  p$add_dep("b", "a", cnd("eq", 1))
   expect_false(expect_warning(
     .check(p, supports = FALSE, deps = TRUE, tags = FALSE,
            error_on_fail = FALSE, value_check = list(b = 1, a = 3),
@@ -252,15 +252,6 @@ test_that("trafo", {
   })
   expect_equal(p$get_values(inc_null = FALSE), list(a = exp(1), b = exp(2)))
 
-  prms <- list(
-    prm("a", Set$new(1, exp(1)), exp(1), tags = "t1"),
-    prm("b", "reals", exp(2), tags = "t1"),
-    prm("d", "reals", tags = "t2")
-  )
-  p2 <- ParameterSet$new(prms)
-
-  expect_equal(expect_warning(as.data.table(p$transform())), as.data.table(p2))
-
   p <- ParameterSet$new(
   list(prm(id = "a", 2, support = Reals$new(), tags = "t1"),
        prm(id = "b", 3, support = Reals$new(), tags = "t1"),
@@ -314,10 +305,10 @@ test_that("add_dep", {
     prm("d", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_error(p$add_dep("a", "b", cnd(1, "eq")), "failed")
-  expect_error(p$add_dep("a", "a", cnd(1, "eq")), "themselves")
-  expect_silent(p$add_dep("b", "a", cnd(1, "eq")))
-  expect_error(p$add_dep("b", "a", cnd(1, "eq")), "already depends")
+  expect_error(p$add_dep("a", "b", cnd("eq", 1)), "failed")
+  expect_error(p$add_dep("a", "a", cnd("eq", 1)), "themselves")
+  expect_silent(p$add_dep("b", "a", cnd("eq", 1)))
+  expect_error(p$add_dep("b", "a", cnd("eq", 1)), "already depends")
   p$values$b <- 3
   expect_error({ p$values$a <- NULL }, "failed") # nolint
 
@@ -329,9 +320,9 @@ test_that("add_dep", {
     prm("Pre2__par2", "reals", 3, tags = "t2")
   )
   p2 <- ParameterSet$new(prms)
-  expect_error(p2$add_dep("par1", "par2", cnd(1:2, "any")), "Dependency of")
-  expect_silent(p2$add_dep("par1", "par2", cnd(3, "eq")))
-  expect_error(p2$add_dep("Pre1", "Pre2", cnd(3, "eq")), "subset of")
+  expect_error(p2$add_dep("par1", "par2", cnd("any", 1:2)), "Dependency of")
+  expect_silent(p2$add_dep("par1", "par2", cnd("eq", 3)))
+  expect_error(p2$add_dep("Pre1", "Pre2", cnd("eq", 3)), "subset of")
 
   prms <- list(
     prm("a", "nreals", 1, tags = "t1"),
@@ -339,11 +330,21 @@ test_that("add_dep", {
     prm("d", "nreals", 3, tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  p$add_dep("a", "b", cnd("b", "lt"))
+  p$add_dep("a", "b", cnd("lt", id = "b"))
   expect_error({p$values$a <- 2}, "a < b") # nolint
-  p$add_dep("a", "d", cnd("d", "len"))
+  p$add_dep("a", "d", cnd("len", id = "d"))
   expect_error({p$values$d <- c(1, 2)}, "a len d") # nolint
-})
+  expect_error(p$add_dep("a", "d", cnd("len", id = "b")), "element of set")
+
+  prms <- list(
+    prm("a", "nreals", 1:2, tags = "t1"),
+    prm("b", "nreals", 2, tags = "t1"),
+    prm("d", "nreals", 3, tags = "t2")
+  )
+  p <- ParameterSet$new(prms)
+  p$add_dep("b", "a", cnd("len", 2))
+  expect_error({p$values$a <- 1}, "b on 'a") # nolint
+t})
 
 test_that("c", {
   prms <- list(
@@ -373,10 +374,10 @@ test_that("c", {
     prm("e", "reals")
   )
   p <- ParameterSet$new(prms)
-  p$add_dep("a", "b", cnd(1, "neq"))
+  p$add_dep("a", "b", cnd("neq", 1))
 
   p1 <- ParameterSet$new(list(prm("a", "reals", 2), prm("b", "reals", 2)))
-  p1$add_dep("a", "b", cnd(1, "neq"))
+  p1$add_dep("a", "b", cnd("neq", 1))
   p2 <- ParameterSet$new(list(prm("d", "reals"), prm("e", "reals")))
   p2$trafo <- function(x, self) {
     x$d <- 2
@@ -454,13 +455,13 @@ test_that("extract - deps", {
     prm("d", "reals", 2, tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  p$add_dep("b", "a", cnd(1, "eq"))
-  p$add_dep("a", "d", cnd(0, "gt"))
+  p$add_dep("b", "a", cnd("eq", 1))
+  p$add_dep("a", "d", cnd("gt", 0))
 
   expect_equal(p$extract("a")$deps, NULL)
   expect_equal(p$extract(letters[1:2])$deps,
                data.table::data.table(id = "b", on = "a",
-                                      cond = list(cnd(1, "eq"))))
+                                      cond = list(cnd("eq", 1))))
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
@@ -469,10 +470,10 @@ test_that("extract - deps", {
     prm("Pre2__par2", "reals", 3, tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  p$add_dep("Pre1__par1", "Pre1__par2", cnd(3, "eq"))
+  p$add_dep("Pre1__par1", "Pre1__par2", cnd("eq", 3))
   expect_equal(p$extract(prefix = "Pre1")$deps,
                data.table::data.table(id = "par1", on = "par2",
-                                      cond = list(cnd(3, "eq"))))
+                                      cond = list(cnd("eq", 3))))
 
 })
 
@@ -483,7 +484,7 @@ test_that("deep clone", {
     prm("d", "reals", 2, tags = "t2")
   )
   p <- pset(prms)
-  p$add_dep("a", "b", cnd(1.5, "eq"))
+  p$add_dep("a", "b", cnd("eq", 1.5))
   p2 <- p$clone(deep = TRUE)
   p2$values$d <- 3
   expect_true(p$values$d != p2$values$d)

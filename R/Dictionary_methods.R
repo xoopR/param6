@@ -36,7 +36,7 @@
             x <- x$clone(deep = TRUE)
          }
       } else {
-         x <- unlist(x, TRUE, FALSE)
+         x <- unlist(x)
          x <- sapply(x, function(.x) {
             if (checkmate::testR6(.x)) {
                .x$clone(deep = TRUE)
@@ -44,6 +44,9 @@
                .x
             }
          })
+         if (!checkmate::testList(x)) {
+            x <- unname(x)
+         }
       }
       return(x)
    } else {

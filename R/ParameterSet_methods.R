@@ -52,6 +52,10 @@
   checkmate::assert_subset(id, all_ids)
   checkmate::assert_subset(on, all_ids)
 
+  if (!is.null(attr(cnd, "id"))) {
+    checkmate::assert_choice(attr(cnd, "id"), on)
+  }
+
   if (id == on) {
     stop("Parameters cannot depend on themselves.")
   }
@@ -71,8 +75,6 @@
 
   support <- support_dictionary$get(support)
 
-
-
   if (is.null(self$deps)) {
     deps <- data.table(id = character(0L), on = character(0L),
                        cond = list())
@@ -89,14 +91,6 @@
   .check_deps(self, self$values, new_dt, id, TRUE)
 
   private$.deps <- new_dt
-
-  invisible(self)
-}
-
-.ParameterSet__transform <- function(self, private) { # nolint
-  if (!is.null(private$.trafo)) {
-    private$.value <- private$.trafo(self$values, self)
-  }
 
   invisible(self)
 }

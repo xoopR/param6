@@ -86,6 +86,9 @@ test_that("get", {
   d <- Dictionary$new(list(a = Set$new(1), b = 2))
   expect_equal(d$get("a"), Set$new(1))
   expect_equal(d$get("b"), 2)
+
+  d <- Dictionary$new(list(a = Set$new(1), b = Set$new(2)), types = "Set")
+  expect_equal(d$get(c("a", "b")), list(a = Set$new(1), b = Set$new(2)))
 })
 
 test_that("get_list", {
