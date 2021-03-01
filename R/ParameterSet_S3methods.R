@@ -156,6 +156,7 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
 #' the string before `"__"` in an id.
 #' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
-`[.ParameterSet` <- function(object, i = NULL, tags = NULL, prefix = NULL, ...) {
+`[.ParameterSet` <- function(object, i = NULL, tags = NULL, prefix = NULL,
+                             ...) {
   object$extract(i, tags, prefix)
 }

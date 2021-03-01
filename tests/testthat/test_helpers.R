@@ -23,7 +23,7 @@ test_that("cnd", {
 
 test_that("assert_condition", {
   expect_silent(assert_condition("a", Set$new(1), cnd("eq", 1)))
-  expect_silent(assert_condition("a", Set$new(1, 2, 3), cnd("any", c(1,2))))
+  expect_silent(assert_condition("a", Set$new(1, 2, 3), cnd("any", c(1, 2))))
 
   expect_error(assert_condition("a", Set$new(1), cnd("eq", 2)),
                "Condition is not possible")

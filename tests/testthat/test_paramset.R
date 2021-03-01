@@ -445,7 +445,7 @@ test_that("extract - no deps", {
   )
   p <- ParameterSet$new(prms)
   p$trafo <- function(x, self) list(par1 = 1)
-  expect_warning(p['par1'], "Transformations")
+  expect_warning(p["par1"], "Transformations")
 })
 
 test_that("extract - deps", {
