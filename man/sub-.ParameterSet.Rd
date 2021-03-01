@@ -7,6 +7,8 @@
 \method{[}{ParameterSet}(object, i = NULL, tags = NULL, prefix = NULL, ...)
 }
 \arguments{
+\item{object}{(\link{ParameterSet})}
+
 \item{i}{(\code{character()}) \cr
 If not \code{NULL} then specifies the parameters by id to extract. Should be
 \code{NULL} if \code{prefix} is not \code{NULL}.}
@@ -19,6 +21,8 @@ If not \code{NULL} then specifies the parameters by tag to extract. Should be
 If not \code{NULL} then extracts parameters according to their prefix and
 additionally removes the prefix from the id. A prefix is determined as
 the string before \code{"__"} in an id.}
+
+\item{...}{(\code{ANY}) \cr Other arguments, currently unused.}
 }
 \description{
 Creates a new \link{ParameterSet} by extracting the given
