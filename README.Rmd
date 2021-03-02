@@ -24,7 +24,7 @@ library(param6)
 
 ## What is param6?
 
-**param6** is an R6 parameter set interface for storing multiple parameters that may be used in other R6 (or other paradigm) objects. Key use-cases for R6 parameter sets have been seen in packages such as 
+**param6** is an R6 parameter set interface for storing multiple parameters that may be used in other R6 (or other paradigm) objects. Key use-cases for R6 parameter sets have been seen in packages such as:
 
 1. **[distr6](https://github.com/alan-turing-institute/distr6)** - In which R6 distribution objects require parameter sets in order to parametrise a given probability distribution. Parameters as objects allows efficient getting and setting of parameters, as well as composition of distributions.
 2. **[mlr3](https://github.com/mlr-org/mlr3)** - In which R6 learners require parameter sets for passing parameters to machine learning models. Storing parameter set objects allows efficient tuning over these parameters.

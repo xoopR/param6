@@ -25,7 +25,7 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 
 **param6** is an R6 parameter set interface for storing multiple
 parameters that may be used in other R6 (or other paradigm) objects. Key
-use-cases for R6 parameter sets have been seen in packages such as
+use-cases for R6 parameter sets have been seen in packages such as:
 
 1.  **[distr6](https://github.com/alan-turing-institute/distr6)** - In
     which R6 distribution objects require parameter sets in order to
