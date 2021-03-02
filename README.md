@@ -1,7 +1,7 @@
 param6
 ================
 
-<!--<img src="man/figures/logo.png" align="right" alt="" width="120" />-->
+<img src="man/figures/logo.png" align="right" alt="" width="120" />
 
 [![CRAN Status
 Badge](https://www.r-pkg.org/badges/version-ago/param6)](https://cran.r-project.org/package=param6)
