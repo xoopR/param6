@@ -1,7 +1,7 @@
 param6
 ================
 
-<img src="man/figures/logo.png" align="right" alt="" width="120" />
+<!--<img src="man/figures/logo.png" align="right" alt="" width="120" />-->
 
 [![CRAN Status
 Badge](https://www.r-pkg.org/badges/version-ago/param6)](https://cran.r-project.org/package=param6)
@@ -23,26 +23,25 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 
 ## What is param6?
 
-`param6` is an R6 parameter set interface for storing multiple
+**param6** is an R6 parameter set interface for storing multiple
 parameters that may be used in other R6 (or other paradigm) objects. Key
 use-cases for R6 parameter sets have been seen in packages such as
 
-1.  [distr6](https://github.com/alan-turing-institute/distr6) - In which
-    R6 distribution objects require parameter sets in order to
+1.  **[distr6](https://github.com/alan-turing-institute/distr6)** - In
+    which R6 distribution objects require parameter sets in order to
     parametrise a given probability distribution. Parameters as objects
     allows efficient getting and setting of parameters, as well as
     composition of distributions.
-2.  [mlr3](https://github.com/mlr-org/mlr3) - In which R6 learners
+2.  **[mlr3](https://github.com/mlr-org/mlr3)** - In which R6 learners
     require parameter sets for passing parameters to machine learning
     models. Storing parameter set objects allows efficient tuning over
     these parameters.
 
 ## Main Features
 
-For longer examples see the \[getting started vignette\]. Some main
-features/key use-cases of `param6` includes:
+Some main features/key use-cases of **param6** includes:
 
-1.  Construction of parameter sets
+-   Construction of parameter sets
 
 ``` r
 prms <- list(
@@ -56,7 +55,7 @@ ParameterSet$new(prms)
     ## 1:  a       ℝ     1     
     ## 2:  b      ℕ0
 
-1.  Tagging parameters with properties
+-   Tagging parameters with properties
 
 ``` r
 prms <- list(
@@ -71,7 +70,7 @@ ParameterSet$new(prms,
     ## 1:  a       ℝ     1   t1
     ## 2:  b    ℕ0^n         t2
 
-1.  Getting and setting parameter values
+-   Getting and setting parameter values
 
 ``` r
 prms <- list(
@@ -96,7 +95,7 @@ p$get_values(tags = "t1", simplify = FALSE)
     ## $a
     ## [1] 1
 
-1.  Transform parameters
+-   Transform parameters
 
 ``` r
 p <- ParameterSet$new(
@@ -112,50 +111,57 @@ p$get_values("a", simplify = FALSE)
     ## $a
     ## [1] 16
 
-1.  Parameter dependencies
+-   Parameter dependencies
 
 ``` r
 p <- ParameterSet$new(list(
   prm(id = "a", support = "naturals"),
   prm(id = "b", support = "naturals")
 ))
-p$add_dep("a", "b", cnd(4, "eq"))
+p$add_dep("a", "b", cnd("eq", 4))
+p$values$b <- 5
+p$values$a <- 1 # fails as b != 4
 ```
 
-    ## Error in cnd(4, "eq"): could not find function "cnd"
+    ## Error in .return_fail(msg = msg, error_on_fail): Dependency of a on 'b == {4}' failed.
 
 ``` r
-p$values$b <- 5
-p$values$a <- 1
 p$values$b <- 4
-p$values$a <- 1
+p$values$a <- 1 # now works
+p$get_values()
 ```
+
+    ## $a
+    ## [1] 4
+    ## 
+    ## $b
+    ## [1] 1
 
 ## Why param6?
 
-`param6` began as the
+**param6** began as the
 [ParameterSet](https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R)
 object in [distr6](https://github.com/alan-turing-institute/distr6).
 However this initial attempt at an R6 parameter set interface, had
 massive bottlenecks that were causing substantial problems in
-dependencies. `param6` is an abstracted parameter set interface that
+dependencies. **param6** is an abstracted parameter set interface that
 draws influence from this initial design, as well as
 [paradox](https://github.com/mlr-org/paradox) and
-[mcstate](https://github.com/mrc-ide/mcstate/). `param6` achieves faster
-run-times and smaller object-sizes than `distr6` and `paradox` by making
-the following design decisions:
+[mcstate](https://github.com/mrc-ide/mcstate/). **param6** achieves
+faster run-times and smaller object-sizes than **distr6** and
+**paradox** by making the following design decisions:
 
 -   `data.table` objects are minimised and only used when absolutely
     necessary, instead `list` objects are utilised.
 -   Symbolic representation of sets is utilised via the
     [set6](https://github.com/xoopR/set6/) package in order to store
     sets as characters, thereby reducing object sizes. Additionally,
-    `param6` includes a
+    **param6** includes a
     [support\_dictionary](https://github.com/xoopR/param6/blob/main/R/support_dictionary.R)
     which stores constructed sets that can then be accessed via a string
     representation, thereby preventing the same set needing to be
     constructed multiple times.
--   [Rcpp](https://github.com/RcppCore/Rcpp) is utilised via `set6` in
+-   [Rcpp](https://github.com/RcppCore/Rcpp) is utilised via **set6** in
     order to allow very fast containedness checks when checking values
     lie within a parameter support.
 -   S3 is embraced for simple objects, such as the
@@ -183,18 +189,18 @@ remotes::install_github("xoopR/param6")
 
 ## Future Plans
 
-The `param6` API is still experimental and may be subject to major
-changes. To understand if `param6` fulfills it’s initial use-case
-correctly, the next step will be to incorporate the package in `distr6`,
-which may involve minor or major changes to the current API. From there,
-Rcpp will be embraced more fully in `set6` and then in `param6` to
-improve package speed.
+The **param6** API is still experimental and may be subject to major
+changes. To understand if **param6** fulfills it’s initial use-case
+correctly, the next step will be to incorporate the package in
+**distr6**, which may involve minor or major changes to the current API.
+From there, Rcpp will be embraced more fully in **set6** and then in
+**param6** to improve package speed.
 
 ## Package Development and Contributing
 
-`param6` is released under the [MIT
+**param6** is released under the [MIT
 licence](https://opensource.org/licenses/MIT). We welcome and appreciate
-all \[new issues\]((<https://github.com/xoopR/param6/issues>) relating
-to bug reports, questions and suggestions. You can also [start a
+all [new issues](https://github.com/xoopR/param6/issues) relating to bug
+reports, questions and suggestions. You can also [start a
 discussion](https://github.com/xoopR/param6/discussions) for more
 extensive feedback or feature suggestion.
