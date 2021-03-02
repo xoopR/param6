@@ -39,8 +39,8 @@ use-cases for R6 parameter sets have been seen in packages such as
 
 ## Main Features
 
-For longer examples see the \[getting started vignette\]. `param6`
-currently supports:
+For longer examples see the \[getting started vignette\]. Some main
+features/key use-cases of `param6` includes:
 
 1.  Construction of parameter sets
 
