@@ -27,15 +27,15 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 parameters that may be used in other R6 (or other paradigm) objects. Key
 use-cases for R6 parameter sets have been seen in packages such as:
 
-1.  **[distr6](https://github.com/alan-turing-institute/distr6)** - In
-    which R6 distribution objects require parameter sets in order to
+1.  **[distr6](https://CRAN.R-project.org/package=distr6)** - In which
+    R6 distribution objects require parameter sets in order to
     parametrise a given probability distribution. Parameters as objects
     allows efficient getting and setting of parameters, as well as
     composition of distributions.
-2.  **[mlr3](https://github.com/mlr-org/mlr3)** - In which R6 learners
-    require parameter sets for passing parameters to machine learning
-    models. Storing parameter set objects allows efficient tuning over
-    these parameters.
+2.  **[mlr3](https://CRAN.R-project.org/package=mlr3)** - In which R6
+    learners require parameter sets for passing parameters to machine
+    learning models. Storing parameter set objects allows efficient
+    tuning over these parameters.
 
 ## Main Features
 
@@ -141,7 +141,7 @@ p$get_values()
 
 **param6** began as the
 [ParameterSet](https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R)
-object in [distr6](https://github.com/alan-turing-institute/distr6).
+object in **[distr6](https://CRAN.R-project.org/package=distr6)**.
 However this initial attempt at an R6 parameter set interface, had
 massive bottlenecks that were causing substantial problems in
 dependencies. **param6** is an abstracted parameter set interface that
@@ -152,18 +152,19 @@ making the following design decisions:
 -   `data.table` objects are minimised and only used when absolutely
     necessary, instead `list` objects are utilised.
 -   Symbolic representation of sets is utilised via the
-    [set6](https://github.com/xoopR/set6/) package in order to store
-    sets as characters, thereby reducing object sizes. Additionally,
-    **param6** includes a
-    [support\_dictionary](https://github.com/xoopR/param6/blob/main/R/support_dictionary.R)
+    **[set6](https://CRAN.R-project.org/package=set6)** package in order
+    to store sets as characters, thereby reducing object sizes.
+    Additionally, **param6** includes a
+    [support\_dictionary](https://xoopr.github.io/param6/reference/support_dictionary.html)
     which stores constructed sets that can then be accessed via a string
     representation, thereby preventing the same set needing to be
     constructed multiple times.
--   [Rcpp](https://github.com/RcppCore/Rcpp) is utilised via **set6** in
-    order to allow very fast containedness checks when checking values
-    lie within a parameter support.
+-   **[Rcpp](https://CRAN.R-project.org/package=Rcpp)** is utilised via
+    **[set6](https://CRAN.R-project.org/package=set6)** in order to
+    allow very fast containedness checks when checking values lie within
+    a parameter support.
 -   S3 is embraced for simple objects, such as the
-    [prm](https://github.com/xoopR/param6/blob/main/R/prm.R) object in
+    [prm](https://xoopr.github.io/param6/reference/prm.html) object in
     order to increase speed in construction times.
 -   Parameters are grouped internally by their supports, and not
     individually, allowing for a further increase in efficiency of both
@@ -173,7 +174,8 @@ making the following design decisions:
 
 ## Installation
 
-For the latest release on CRAN, install with
+For the latest release on
+[CRAN](https://CRAN.R-project.org/package=param6), install with
 
 ``` r
 install.packages("param6")
@@ -190,8 +192,10 @@ remotes::install_github("xoopR/param6")
 The **param6** API is still experimental and may be subject to major
 changes. To understand if **param6** fulfills it’s initial use-case
 correctly, the next step will be to incorporate the package in
-**distr6**, which may involve minor or major changes to the current API.
-From there, Rcpp will be embraced more fully in **set6** and then in
+**[distr6](https://CRAN.R-project.org/package=distr6)**, which may
+involve minor or major changes to the current API. From there, Rcpp will
+be embraced more fully in
+**[set6](https://CRAN.R-project.org/package=set6)** and then in
 **param6** to improve package speed.
 
 ## Package Development and Contributing
@@ -205,8 +209,9 @@ extensive feedback or feature suggestion.
 
 ## Acknowledgements
 
-As well as building on the work of **distr6**, the designs and some
-method names of **param6** are based on the work of
-**[paradox](https://github.com/mlr-org/paradox)**. Additionally, some
-design decisions were based on designs in
-**[mcstate](https://github.com/mrc-ide/mcstate/)**.
+As well as building on the work of
+**[distr6](https://CRAN.R-project.org/package=distr6)**, the designs and
+some method names of **param6** are based on the work of
+**[paradox](https://CRAN.R-project.org/package=paradox)**. Additionally,
+some decisions were based on designs in
+**[mcstate](https://github.com/mrc-ide/mcstate)**.
