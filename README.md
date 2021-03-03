@@ -145,11 +145,9 @@ object in [distr6](https://github.com/alan-turing-institute/distr6).
 However this initial attempt at an R6 parameter set interface, had
 massive bottlenecks that were causing substantial problems in
 dependencies. **param6** is an abstracted parameter set interface that
-draws influence from this initial design, as well as
-[paradox](https://github.com/mlr-org/paradox) and
-[mcstate](https://github.com/mrc-ide/mcstate/). **param6** achieves
-faster run-times and smaller object-sizes than **distr6** and
-**paradox** by making the following design decisions:
+draws influence from this initial design. **param6** achieves faster
+run-times and smaller object-sizes than other parameter set packages by
+making the following design decisions:
 
 -   `data.table` objects are minimised and only used when absolutely
     necessary, instead `list` objects are utilised.
@@ -204,3 +202,11 @@ all [new issues](https://github.com/xoopR/param6/issues) relating to bug
 reports, questions and suggestions. You can also [start a
 discussion](https://github.com/xoopR/param6/discussions) for more
 extensive feedback or feature suggestion.
+
+## Acknowledgements
+
+As well as building on the work of **distr6**, the designs and some
+method names of **param6** are based on the work of
+**[paradox](https://github.com/mlr-org/paradox)**. Additionally, some
+design decisions were based on designs in
+**[mcstate](https://github.com/mrc-ide/mcstate/)**.

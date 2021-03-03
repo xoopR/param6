@@ -97,7 +97,7 @@ p$get_values()
 
 ## Why param6?
 
-**param6** began as the [ParameterSet](https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R) object in [distr6](https://github.com/alan-turing-institute/distr6). However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. **param6** is an abstracted parameter set interface that draws influence from this initial design, as well as [paradox](https://github.com/mlr-org/paradox) and [mcstate](https://github.com/mrc-ide/mcstate/). **param6** achieves faster run-times and smaller object-sizes than **distr6** and **paradox** by making the following design decisions:
+**param6** began as the [ParameterSet](https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R) object in [distr6](https://github.com/alan-turing-institute/distr6). However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. **param6** is an abstracted parameter set interface that draws influence from this initial design. **param6** achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:
 
 * `data.table` objects are minimised and only used when absolutely necessary, instead `list` objects are utilised.
 * Symbolic representation of sets is utilised via the [set6](https://github.com/xoopR/set6/) package in order to store sets as characters, thereby reducing object sizes. Additionally, **param6** includes a [support_dictionary](https://github.com/xoopR/param6/blob/main/R/support_dictionary.R) which stores constructed sets that can then be accessed via a string representation, thereby preventing the same set needing to be constructed multiple times.
@@ -126,3 +126,7 @@ To understand if **param6** fulfills it's initial use-case correctly, the next s
 ## Package Development and Contributing
 
 **param6** is released under the [MIT licence](https://opensource.org/licenses/MIT). We welcome and appreciate all [new issues](https://github.com/xoopR/param6/issues) relating to bug reports, questions and suggestions. You can also [start a discussion](https://github.com/xoopR/param6/discussions) for more extensive feedback or feature suggestion.
+
+## Acknowledgements
+
+As well as building on the work of **distr6**, the designs and some method names of **param6** are based on the work of **[paradox](https://github.com/mlr-org/paradox)**. Additionally, some decisions were based on designs in **[mcstate](https://github.com/mrc-ide/mcstate/)**.
