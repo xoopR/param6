@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Concatenate ParameterSet Objects — c.ParameterSet • param6</title>
+<title>Create a ParameterSet Condition — cnd • param6</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="Concatenate ParameterSet Objects — c.ParameterSet" />
-<meta property="og:description" content="Concatenate multiple ParameterSet objects into a single
-ParameterSet." />
+<meta property="og:title" content="Create a ParameterSet Condition — cnd" />
+<meta property="og:description" content="Function to create a condition for ParameterSet dependencies
+for use in the $deps public method." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -120,37 +120,73 @@ ParameterSet." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Concatenate ParameterSet Objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/ParameterSet_S3methods.R'><code>R/ParameterSet_S3methods.R</code></a></small>
-    <div class="hidden name"><code>c.ParameterSet.Rd</code></div>
+    <h1>Create a ParameterSet Condition</h1>
+    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/cnd.R'><code>R/cnd.R</code></a></small>
+    <div class="hidden name"><code>cnd.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Concatenate multiple <a href='ParameterSet.html'>ParameterSet</a> objects into a single
-<a href='ParameterSet.html'>ParameterSet</a>.</p>
+    <p>Function to create a condition for <a href='ParameterSet.html'>ParameterSet</a> dependencies
+for use in the <code>$deps</code> public method.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for ParameterSet</span>
-<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>...</span>, pss <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>cnd</span><span class='op'>(</span><span class='va'>type</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>(<a href='ParameterSet.html'>ParameterSet</a>s) <br /> <a href='ParameterSet.html'>ParameterSet</a> objects to concatenate.</p></td>
+      <th>type</th>
+      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character(1)</a></code>) <br />
+The condition <code>type</code> determines the type of dependency to create, options
+are given in details.</p></td>
     </tr>
     <tr>
-      <th>pss</th>
-      <td><p>(<code><a href='https://rdrr.io/r/base/list.html'>list()</a></code>) <br /> Alternatively pass a list of <a href='ParameterSet.html'>ParameterSet</a>
-objects.</p></td>
+      <th>value</th>
+      <td><p>(<code>ANY</code>) <br />
+If <code>id</code> is <code>NULL</code> then <code>value</code> should be a value in the support of the
+parameter that the condition is testing, that will be passed to the condition
+determined by <code>type</code>.</p></td>
+    </tr>
+    <tr>
+      <th>id</th>
+      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character(1)</a></code>) <br />
+If <code>value</code> is <code>NULL</code> then <code>id</code> should be the same as the id that the
+condition is testing, and the condition then takes the currently set value
+of the id in its argument.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Concatenates ids, tags, tag properties and dependencies,
-but not transformations.</p>
+    <p>This function should never be used outside of creating a condition for
+a dependency in a <a href='ParameterSet.html'>ParameterSet</a>. Currently the following conditions are
+supported based on the <code>type</code> argument, we refer to the parameter depended on
+as in the independent parameter, and the other as the dependent:</p><ul>
+<li><p><code>"eq"</code> - If <code>value</code> is not <code>NULL</code> then checks if the independent parameter
+equals <code>value</code>, otherwise checks if the independent and dependent parameter
+are equal.</p></li>
+<li><p><code>"neq"</code> - If <code>value</code> is not <code>NULL</code> then checks if the independent parameter
+does not equal <code>value</code>, otherwise checks if the independent and dependent
+parameter are not equal.</p></li>
+<li><p><code>"gt"/"lt"</code> - If <code>value</code> is not <code>NULL</code> then checks if the independent
+parameter is greater/less than <code>value</code>, otherwise checks if the independent
+parameter is greater/less than the dependent parameter.</p></li>
+<li><p><code>"geq"/"leq"</code> - If <code>value</code> is not <code>NULL</code> then checks if the independent
+parameter is greater/less than or equal to <code>value</code>, otherwise checks if the
+independent parameter is greater/less than or equal to the dependent
+parameter.</p></li>
+<li><p><code>"any"</code> - If <code>value</code> is not <code>NULL</code> then checks if the independent parameter
+equals any of <code>value</code>, otherwise checks if the independent parameter equals
+any of dependent parameter.</p></li>
+<li><p><code>"nany"</code> - If <code>value</code> is not <code>NULL</code> then checks if the independent
+parameter does not equal any of <code>value</code>, otherwise checks if the independent
+parameter does not equal any of dependent parameter.</p></li>
+<li><p><code>"len"</code> - If <code>value</code> is not <code>NULL</code> then checks if the length of the
+independent parameter equals <code>value</code>, otherwise checks if the independent
+and dependent parameter are the same length.</p></li>
+</ul>
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -8,6 +8,13 @@
 
 <title>Parameter Set — ParameterSet • param6</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -49,6 +56,7 @@ Tagging parameters, which may enable further properties
 Storing subsets of parameters under prefixes
 
 " />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -80,7 +88,7 @@ Storing subsets of parameters under prefixes
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -95,9 +103,17 @@ Storing subsets of parameters under prefixes
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/xoopR/param6/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -112,7 +128,7 @@ Storing subsets of parameters under prefixes
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Parameter Set</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/ParameterSet.R'><code>R/ParameterSet.R</code></a></small>
     <div class="hidden name"><code>ParameterSet.Rd</code></div>
     </div>
 
@@ -191,7 +207,6 @@ infinite recursion, see examples at end.</p></dd>
 <li><p><a href='#method-print'><code>ParameterSet$print()</code></a></p></li>
 <li><p><a href='#method-get_values'><code>ParameterSet$get_values()</code></a></p></li>
 <li><p><a href='#method-add_dep'><code>ParameterSet$add_dep()</code></a></p></li>
-<li><p><a href='#method-transform'><code>ParameterSet$transform()</code></a></p></li>
 <li><p><a href='#method-rep'><code>ParameterSet$rep()</code></a></p></li>
 <li><p><a href='#method-extract'><code>ParameterSet$extract()</code></a></p></li>
 <li><p><a href='#method-clone'><code>ParameterSet$clone()</code></a></p></li>
@@ -249,8 +264,8 @@ alphabetically by id.</p></dd>
 
 <p><hr>
 <a id="method-get_values"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>get_values()</code></h3>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p>Gets values from the <code>ParameterSet</code> with options to filter
+by specific IDs and tags, and also to transform the values.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>
   id <span class='op'>=</span> <span class='cn'>NULL</span>,
   tags <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -259,17 +274,89 @@ alphabetically by id.</p></dd>
   simplify <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre><p></div></p>
 
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>id</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not NULL then returns values for given <code>ids</code>.</p></dd>
+
+<dt><code>tags</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not NULL then returns values for given <code>tags</code>.</p></dd>
+
+<dt><code>transform</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/logical.html'>logical(1)</a></code>) <br />
+If <code>TRUE</code> (default) and <code>$trafo</code> is not <code>NULL</code> then runs the set
+transformation function before returning the values.</p></dd>
+
+<dt><code>inc_null</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/logical.html'>logical(1)</a></code>) <br />
+If <code>TRUE</code> (default) then returns values for all ids even if <code>NULL</code>.</p></dd>
+
+<dt><code>simplify</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/logical.html'>logical(1)</a></code>) <br />
+If <code>TRUE</code> (default) then unlists scalar values, otherwise always
+returns a list.</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Examples</h4>
+<p><div class="r example copy"></p><pre><span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"reals"</span>, <span class='fl'>1</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"b"</span>, <span class='st'>"reals"</span>, <span class='fl'>1.5</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"d"</span>, <span class='st'>"reals"</span>, tags <span class='op'>=</span> <span class='st'>"t2"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='va'>trafo</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>self</span><span class='op'>)</span> <span class='op'>{</span>
+ <span class='va'>x</span><span class='op'>$</span><span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>a</span><span class='op'>)</span>
+ <span class='va'>x</span>
+<span class='op'>}</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>inc_null <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>id <span class='op'>=</span> <span class='st'>"a"</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>
+</pre><p></div></p>
+
 <p><hr>
 <a id="method-add_dep"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>add_dep()</code></h3>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p>Gets values from the <code>ParameterSet</code> with options to filter
+by specific IDs and tags, and also to transform the values.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>add_dep</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>on</span>, <span class='va'>cnd</span><span class='op'>)</span></pre><p></div></p>
 
-<p><hr>
-<a id="method-transform"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/transform.html'>transform()</a></code></h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>id</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character(1)</a></code>) <br />
+The dependent variable for the condition that depends on the given
+variable, <code>on</code>, being a particular value. Should be in <code>self$ids</code>.</p></dd>
 
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>transform</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
+<dt><code>on</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character(1)</a></code>) <br />
+The independent variable for the condition that is depended on by the
+given variable, <code>id</code>. Should be in <code>self$ids</code>.</p></dd>
+
+<dt><code>cnd</code></dt><dd><p>(<code><a href='cnd.html'>cnd(1)</a></code>) <br />
+The condition defined by <a href='cnd.html'>cnd</a> which determines how <code>id</code> depends on <code>on</code>.</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Examples</h4>
+<p><div class="r example copy"></p><pre># not run as errors
+\dontrun{
+# Dependency on specific value
+prms &lt;- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p &lt;- ParameterSet$new(prms)
+p$add_dep("a", "b", cnd("eq", 2))
+# 'a' can only be set if 'b' equals 2
+p$values$a &lt;- 1
+p$values &lt;- list(a = 1, b = 2)
+
+# Dependency on variable value
+prms &lt;- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p &lt;- ParameterSet$new(prms)
+p$add_dep("a", "b", cnd("eq", id = "b"))
+# 'a' can only be set if it equals 'b'
+p$values$a &lt;- 2
+p$values &lt;- list(a = 2, b = 2)
+}
+</pre><p></div></p>
 
 <p><hr>
 <a id="method-rep"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/rep.html'>rep()</a></code></h3>
@@ -298,9 +385,50 @@ should be equal to <code>times</code>.</p></dd>
 </dl><p></div></p>
 <p><hr>
 <a id="method-extract"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>extract()</code></h3>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p>Creates a new <code>ParameterSet</code> by extracting the given
+parameters.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>id <span class='op'>=</span> <span class='cn'>NULL</span>, tags <span class='op'>=</span> <span class='cn'>NULL</span>, prefix <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>id</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not <code>NULL</code> then specifies the parameters by id to extract. Should be
+<code>NULL</code> if <code>prefix</code> is not <code>NULL</code>.</p></dd>
+
+<dt><code>tags</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not <code>NULL</code> then specifies the parameters by tag to extract. Should be
+<code>NULL</code> if <code>prefix</code> is not <code>NULL</code>.</p></dd>
+
+<dt><code>prefix</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not <code>NULL</code> then extracts parameters according to their prefix and
+additionally removes the prefix from the id. A prefix is determined as
+the string before <code>"__"</code> in an id.</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Examples</h4>
+<p><div class="r example copy"></p><pre><span class='co'># extract by id</span>
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"reals"</span>, <span class='cn'>NULL</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"b"</span>, <span class='st'>"reals"</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span><span class='st'>"a"</span><span class='op'>)</span>
+<span class='co'># equivalently</span>
+<span class='va'>p</span><span class='op'>[</span><span class='st'>"a"</span><span class='op'>]</span>
+
+<span class='co'># extract by prefix</span>
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre1__par1"</span>, <span class='va'><a href='https://xoopR.github.io/set6/reference/Set.html'>Set</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>, <span class='fl'>1</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre1__par2"</span>, <span class='st'>"reals"</span>, <span class='fl'>3</span>, tags <span class='op'>=</span> <span class='st'>"t2"</span><span class='op'>)</span>,
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre2__par1"</span>, <span class='va'><a href='https://xoopR.github.io/set6/reference/Set.html'>Set</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>, <span class='fl'>1</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre2__par2"</span>, <span class='st'>"reals"</span>, <span class='fl'>3</span>, tags <span class='op'>=</span> <span class='st'>"t2"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>prefix <span class='op'>=</span> <span class='st'>"Pre1"</span><span class='op'>)</span>
+<span class='co'># equivalently</span>
+<span class='va'>p</span><span class='op'>[</span>prefix <span class='op'>=</span> <span class='st'>"Pre1"</span><span class='op'>]</span>
+</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
@@ -397,7 +525,108 @@ should be equal to <code>times</code>.</p></dd>
 </div><div class='output co'>#&gt;    Id Support Value Tags
 #&gt; 1:  a     {1}     1   t1
 #&gt; 2:  b       ℝ   1.5   t1
-#&gt; 3:  d       ℝ     2   t2</div></pre>
+#&gt; 3:  d       ℝ     2   t2</div><div class='input'>
+<span class='co'>## ------------------------------------------------</span>
+<span class='co'>## Method `ParameterSet$get_values`</span>
+<span class='co'>## ------------------------------------------------</span>
+
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"reals"</span>, <span class='fl'>1</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"b"</span>, <span class='st'>"reals"</span>, <span class='fl'>1.5</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"d"</span>, <span class='st'>"reals"</span>, tags <span class='op'>=</span> <span class='st'>"t2"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='va'>trafo</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>self</span><span class='op'>)</span> <span class='op'>{</span>
+ <span class='va'>x</span><span class='op'>$</span><span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>a</span><span class='op'>)</span>
+ <span class='va'>x</span>
+<span class='op'>}</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $a
+#&gt; [1] 2.718282
+#&gt; 
+#&gt; $b
+#&gt; [1] 1.5
+#&gt; 
+#&gt; $d
+#&gt; NULL
+#&gt; </div><div class='input'><span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>inc_null <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $a
+#&gt; [1] 2.718282
+#&gt; 
+#&gt; $b
+#&gt; [1] 1.5
+#&gt; </div><div class='input'><span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>id <span class='op'>=</span> <span class='st'>"a"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 2.718282</div><div class='input'><span class='va'>p</span><span class='op'>$</span><span class='fu'>get_values</span><span class='op'>(</span>tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $a
+#&gt; [1] 2.718282
+#&gt; 
+#&gt; $b
+#&gt; [1] 1.5
+#&gt; </div><div class='input'>
+<span class='co'>## ------------------------------------------------</span>
+<span class='co'>## Method `ParameterSet$add_dep`</span>
+<span class='co'>## ------------------------------------------------</span>
+
+<span class='co'># not run as errors</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># Dependency on specific value</span>
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"reals"</span>, <span class='cn'>NULL</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"b"</span>, <span class='st'>"reals"</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>add_dep</span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='fu'><a href='cnd.html'>cnd</a></span><span class='op'>(</span><span class='st'>"eq"</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='co'># 'a' can only be set if 'b' equals 2</span>
+<span class='va'>p</span><span class='op'>$</span><span class='va'>values</span><span class='op'>$</span><span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
+<span class='va'>p</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>a <span class='op'>=</span> <span class='fl'>1</span>, b <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+
+<span class='co'># Dependency on variable value</span>
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"reals"</span>, <span class='cn'>NULL</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"b"</span>, <span class='st'>"reals"</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>add_dep</span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='fu'><a href='cnd.html'>cnd</a></span><span class='op'>(</span><span class='st'>"eq"</span>, id <span class='op'>=</span> <span class='st'>"b"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='co'># 'a' can only be set if it equals 'b'</span>
+<span class='va'>p</span><span class='op'>$</span><span class='va'>values</span><span class='op'>$</span><span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
+<span class='va'>p</span><span class='op'>$</span><span class='va'>values</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>a <span class='op'>=</span> <span class='fl'>2</span>, b <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='co'>## ------------------------------------------------</span>
+<span class='co'>## Method `ParameterSet$extract`</span>
+<span class='co'>## ------------------------------------------------</span>
+
+<span class='co'># extract by id</span>
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"reals"</span>, <span class='cn'>NULL</span><span class='op'>)</span>,
+ <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"b"</span>, <span class='st'>"reals"</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span><span class='st'>"a"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;    Id Support Value Tags
+#&gt; 1:  a       ℝ           </div><div class='input'><span class='co'># equivalently</span>
+<span class='va'>p</span><span class='op'>[</span><span class='st'>"a"</span><span class='op'>]</span>
+</div><div class='output co'>#&gt;    Id Support Value Tags
+#&gt; 1:  a       ℝ           </div><div class='input'>
+<span class='co'># extract by prefix</span>
+<span class='va'>prms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre1__par1"</span>, <span class='va'><a href='https://xoopR.github.io/set6/reference/Set.html'>Set</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>, <span class='fl'>1</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre1__par2"</span>, <span class='st'>"reals"</span>, <span class='fl'>3</span>, tags <span class='op'>=</span> <span class='st'>"t2"</span><span class='op'>)</span>,
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre2__par1"</span>, <span class='va'><a href='https://xoopR.github.io/set6/reference/Set.html'>Set</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>, <span class='fl'>1</span>, tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>,
+  <span class='fu'><a href='prm.html'>prm</a></span><span class='op'>(</span><span class='st'>"Pre2__par2"</span>, <span class='st'>"reals"</span>, <span class='fl'>3</span>, tags <span class='op'>=</span> <span class='st'>"t2"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>prms</span><span class='op'>)</span>
+<span class='va'>p</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>tags <span class='op'>=</span> <span class='st'>"t1"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;            Id Support Value Tags
+#&gt; 1: Pre1__par1     {1}     1   t1
+#&gt; 2: Pre2__par1     {1}     1   t1</div><div class='input'><span class='va'>p</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>prefix <span class='op'>=</span> <span class='st'>"Pre1"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;      Id Support Value Tags
+#&gt; 1: par1     {1}     1   t1
+#&gt; 2: par2       ℝ     3   t2</div><div class='input'><span class='co'># equivalently</span>
+<span class='va'>p</span><span class='op'>[</span>prefix <span class='op'>=</span> <span class='st'>"Pre1"</span><span class='op'>]</span>
+</div><div class='output co'>#&gt;      Id Support Value Tags
+#&gt; 1: par1     {1}     1   t1
+#&gt; 2: par2       ℝ     3   t2</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

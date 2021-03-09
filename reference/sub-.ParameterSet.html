@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Concatenate ParameterSet Objects — c.ParameterSet • param6</title>
+<title>Extract a sub-ParameterSet by Parameters — [.ParameterSet • param6</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="Concatenate ParameterSet Objects — c.ParameterSet" />
-<meta property="og:description" content="Concatenate multiple ParameterSet objects into a single
-ParameterSet." />
+<meta property="og:title" content="Extract a sub-ParameterSet by Parameters — [.ParameterSet" />
+<meta property="og:description" content="Creates a new ParameterSet by extracting the given
+parameters. S3 method for the $extract public method." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -120,37 +120,51 @@ ParameterSet." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Concatenate ParameterSet Objects</h1>
+    <h1>Extract a sub-ParameterSet by Parameters</h1>
     <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/ParameterSet_S3methods.R'><code>R/ParameterSet_S3methods.R</code></a></small>
-    <div class="hidden name"><code>c.ParameterSet.Rd</code></div>
+    <div class="hidden name"><code>sub-.ParameterSet.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Concatenate multiple <a href='ParameterSet.html'>ParameterSet</a> objects into a single
-<a href='ParameterSet.html'>ParameterSet</a>.</p>
+    <p>Creates a new <a href='ParameterSet.html'>ParameterSet</a> by extracting the given
+parameters. S3 method for the <code>$extract</code> public method.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for ParameterSet</span>
-<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>...</span>, pss <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"># S3 method for ParameterSet
+[(object, i = NULL, tags = NULL, prefix = NULL, ...)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>(<a href='ParameterSet.html'>ParameterSet</a>s) <br /> <a href='ParameterSet.html'>ParameterSet</a> objects to concatenate.</p></td>
+      <th>object</th>
+      <td><p>(<a href='ParameterSet.html'>ParameterSet</a>)</p></td>
     </tr>
     <tr>
-      <th>pss</th>
-      <td><p>(<code><a href='https://rdrr.io/r/base/list.html'>list()</a></code>) <br /> Alternatively pass a list of <a href='ParameterSet.html'>ParameterSet</a>
-objects.</p></td>
+      <th>i</th>
+      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not <code>NULL</code> then specifies the parameters by id to extract. Should be
+<code>NULL</code> if <code>prefix</code> is not <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>tags</th>
+      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not <code>NULL</code> then specifies the parameters by tag to extract. Should be
+<code>NULL</code> if <code>prefix</code> is not <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>prefix</th>
+      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
+If not <code>NULL</code> then extracts parameters according to their prefix and
+additionally removes the prefix from the id. A prefix is determined as
+the string before <code>"__"</code> in an id.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>(<code>ANY</code>) <br /> Other arguments, currently unused.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Concatenates ids, tags, tag properties and dependencies,
-but not transformations.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
