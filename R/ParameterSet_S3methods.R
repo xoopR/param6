@@ -123,11 +123,15 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
   if (length(x$deps) || length(x$trafo)) {
     warning("Dependencies and trafos are lost in coercion.")
   }
+
+  vals <- expand_list(x$ids, x$values)
+  tags <- expand_list(x$ids, x$tags)
+
   dt <- data.table::data.table(
     Id = x$ids,
     Support = x$supports,
-    Value = expand_list(x$ids, x$values),
-    Tags = expand_list(x$ids, x$tags)
+    Value = vals[match(names(vals), x$ids)],
+    Tags = tags[match(names(tags), x$ids)]
   )
   if (sort) {
     Id <- NULL # binding fix
@@ -136,8 +140,23 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
   dt
 }
 
-# FIXME - DOCUMENT
+#' @title Extract a sub-ParameterSet by Parameters
+#' @description Creates a new [ParameterSet] by extracting the given
+#' parameters. S3 method for the `$extract` public method.
+#' @param object ([ParameterSet])
+#' @param i (`character()`) \cr
+#' If not `NULL` then specifies the parameters by id to extract. Should be
+#' `NULL` if `prefix` is not `NULL`.
+#' @param tags (`character()`) \cr
+#' If not `NULL` then specifies the parameters by tag to extract. Should be
+#' `NULL` if `prefix` is not `NULL`.
+#' @param prefix (`character()`) \cr
+#' If not `NULL` then extracts parameters according to their prefix and
+#' additionally removes the prefix from the id. A prefix is determined as
+#' the string before `"__"` in an id.
+#' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
-`[.ParameterSet` <- function(object, i, tags = NULL, prefix = NULL, ...) {
+`[.ParameterSet` <- function(object, i = NULL, tags = NULL, prefix = NULL,
+                             ...) {
   object$extract(i, tags, prefix)
 }

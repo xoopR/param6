@@ -32,8 +32,21 @@
       x <- private$.items[checkmate::assert_subset(x, self$keys)]
       if (length(x) == 1) {
          x <- x[[1]]
+         if (checkmate::testR6(x)) {
+            x <- x$clone(deep = TRUE)
+         }
       } else {
-         x <- unlist(x, TRUE, FALSE)
+         x <- unlist(x)
+         x <- sapply(x, function(.x) {
+            if (checkmate::testR6(.x)) {
+               .x$clone(deep = TRUE)
+            } else {
+               .x
+            }
+         })
+         if (!checkmate::testList(x)) {
+            x <- unname(x)
+         }
       }
       return(x)
    } else {
@@ -42,7 +55,14 @@
 }
 
 .Dictionary__get_list <- function(self, private, x) { # nolint
-   private$.items[checkmate::assert_subset(x, self$keys)]
+   lapply(private$.items[checkmate::assert_subset(x, self$keys)],
+          function(.x) {
+             if (checkmate::testR6(.x)) {
+                .x$clone(deep = TRUE)
+             } else {
+                .x
+             }
+          })
 }
 
 .Dictionary__has <- function(self, private, x) { # nolint

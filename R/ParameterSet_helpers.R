@@ -134,7 +134,7 @@
       if (length(id_value)) {
         ok <- fun(on_value, id_value, values)
         if (!ok) {
-          if (checkmate::testCharacter(attr(cnd, "value"))) {
+          if (!is.null(attr(cnd, "id"))) {
             msg <- sprintf("Dependency of '%s %s %s' failed.",
                            id, attr(cnd, "type"), on)
           } else {
@@ -229,16 +229,18 @@ assert_no_cycles <- function(lookup) {
 }
 
 assert_condition <- function(id, support, cond) {
-
-  val <- attr(cond, "value")
-
-  if (!checkmate::testCharacter(val)) {
+  if (is.null(attr(cond, "id"))) {
+    val <- attr(cond, "value")
     if (attr(cond, "type") %in% c("==", ">=", "<=", ">", "<", "%in%")) {
       msg <- sprintf("%s does not lie in support of %s (%s). Condition is not possible.", # nolint
                      val, id, as.character(support))
-    } else {
+    } else if (attr(cond, "type") != "len") {
       msg <- sprintf("%s does not lie in support of %s (%s). Condition is redundant.", # nolint
                      val, id, as.character(support))
+    }
+
+    if (!is.null(support$power) && support$power == "n") {
+      val <- as.Tuple(val)
     }
 
     if (!(testContains(support, val))) {

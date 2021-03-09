@@ -75,21 +75,78 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' p
     print = function(sort = TRUE) .ParameterSet__print(self, private, sort),
 
-    # FIXME - DOCUMENT
+    #' @description Gets values from the `ParameterSet` with options to filter
+    #' by specific IDs and tags, and also to transform the values.
+    #' @param id (`character()`) \cr
+    #' If not NULL then returns values for given `ids`.
+    #' @param tags (`character()`) \cr
+    #' If not NULL then returns values for given `tags`.
+    #' @param transform (`logical(1)`) \cr
+    #' If `TRUE` (default) and `$trafo` is not `NULL` then runs the set
+    #' transformation function before returning the values.
+    #' @param inc_null (`logical(1)`) \cr
+    #' If `TRUE` (default) then returns values for all ids even if `NULL`.
+    #' @param simplify (`logical(1)`) \cr
+    #' If `TRUE` (default) then unlists scalar values, otherwise always
+    #' returns a list.
+    #' @examples
+    #' prms <- list(
+    #'  prm("a", "reals", 1, tags = "t1"),
+    #'  prm("b", "reals", 1.5, tags = "t1"),
+    #'  prm("d", "reals", tags = "t2")
+    #' )
+    #' p <- ParameterSet$new(prms)
+    #' p$trafo <- function(x, self) {
+    #'  x$a <- exp(x$a)
+    #'  x
+    #' }
+    #' p$get_values()
+    #' p$get_values(inc_null = FALSE)
+    #' p$get_values(id = "a")
+    #' p$get_values(tags = "t1")
     get_values = function(id = NULL, tags = NULL, transform = TRUE,
                           inc_null = TRUE, simplify = TRUE) {
       .ParameterSet__get_values(self, private, id, tags, transform, inc_null,
                                 simplify)
     },
 
-    # FIXME - DOCUMENT
+    #' @description Gets values from the `ParameterSet` with options to filter
+    #' by specific IDs and tags, and also to transform the values.
+    #' @param id (`character(1)`) \cr
+    #' The dependent variable for the condition that depends on the given
+    #' variable, `on`, being a particular value. Should be in `self$ids`.
+    #' @param on (`character(1)`) \cr
+    #' The independent variable for the condition that is depended on by the
+    #' given variable, `id`. Should be in `self$ids`.
+    #' @param cnd (`cnd(1)`) \cr
+    #' The condition defined by [cnd] which determines how `id` depends on `on`.
+    #' @examples
+    #' # not run as errors
+    #' \dontrun{
+    #' # Dependency on specific value
+    #' prms <- list(
+    #'  prm("a", "reals", NULL),
+    #'  prm("b", "reals", 1)
+    #' )
+    #' p <- ParameterSet$new(prms)
+    #' p$add_dep("a", "b", cnd("eq", 2))
+    #' # 'a' can only be set if 'b' equals 2
+    #' p$values$a <- 1
+    #' p$values <- list(a = 1, b = 2)
+    #'
+    #' # Dependency on variable value
+    #' prms <- list(
+    #'  prm("a", "reals", NULL),
+    #'  prm("b", "reals", 1)
+    #' )
+    #' p <- ParameterSet$new(prms)
+    #' p$add_dep("a", "b", cnd("eq", id = "b"))
+    #' # 'a' can only be set if it equals 'b'
+    #' p$values$a <- 2
+    #' p$values <- list(a = 2, b = 2)
+    #' }
     add_dep = function(id, on, cnd) {
       .ParameterSet__add_dep(self, private, id, on, cnd)
-    },
-
-    # FIXME - DOCUMENT
-    transform = function() {
-      .ParameterSet__transform(self, private)
     },
 
     #' @description Replicate the `ParameterSet` with identical parameters.
@@ -114,7 +171,41 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .ParameterSet__rep(self, private, times, prefix)
     },
 
-    # FIXME - DOCUMENT
+    #' @description Creates a new `ParameterSet` by extracting the given
+    #' parameters.
+    #' @param id (`character()`) \cr
+    #' If not `NULL` then specifies the parameters by id to extract. Should be
+    #' `NULL` if `prefix` is not `NULL`.
+    #' @param tags (`character()`) \cr
+    #' If not `NULL` then specifies the parameters by tag to extract. Should be
+    #' `NULL` if `prefix` is not `NULL`.
+    #' @param prefix (`character()`) \cr
+    #' If not `NULL` then extracts parameters according to their prefix and
+    #' additionally removes the prefix from the id. A prefix is determined as
+    #' the string before `"__"` in an id.
+    #' @examples
+    #' # extract by id
+    #' prms <- list(
+    #'  prm("a", "reals", NULL),
+    #'  prm("b", "reals", 1)
+    #' )
+    #' p <- ParameterSet$new(prms)
+    #' p$extract("a")
+    #' # equivalently
+    #' p["a"]
+    #'
+    #' # extract by prefix
+    #' prms <- list(
+    #'   prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+    #'   prm("Pre1__par2", "reals", 3, tags = "t2"),
+    #'   prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+    #'   prm("Pre2__par2", "reals", 3, tags = "t2")
+    #' )
+    #' p <- ParameterSet$new(prms)
+    #' p$extract(tags = "t1")
+    #' p$extract(prefix = "Pre1")
+    #' # equivalently
+    #' p[prefix = "Pre1"]
     extract = function(id = NULL, tags = NULL, prefix = NULL) {
       .ParameterSet__extract(self, private, id, tags, prefix)
     }

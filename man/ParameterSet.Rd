@@ -74,6 +74,81 @@ p <- ParameterSet$new(prms)
 p$print()
 print(p)
 p
+
+## ------------------------------------------------
+## Method `ParameterSet$get_values`
+## ------------------------------------------------
+
+prms <- list(
+ prm("a", "reals", 1, tags = "t1"),
+ prm("b", "reals", 1.5, tags = "t1"),
+ prm("d", "reals", tags = "t2")
+)
+p <- ParameterSet$new(prms)
+p$trafo <- function(x, self) {
+ x$a <- exp(x$a)
+ x
+}
+p$get_values()
+p$get_values(inc_null = FALSE)
+p$get_values(id = "a")
+p$get_values(tags = "t1")
+
+## ------------------------------------------------
+## Method `ParameterSet$add_dep`
+## ------------------------------------------------
+
+# not run as errors
+\dontrun{
+# Dependency on specific value
+prms <- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p <- ParameterSet$new(prms)
+p$add_dep("a", "b", cnd("eq", 2))
+# 'a' can only be set if 'b' equals 2
+p$values$a <- 1
+p$values <- list(a = 1, b = 2)
+
+# Dependency on variable value
+prms <- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p <- ParameterSet$new(prms)
+p$add_dep("a", "b", cnd("eq", id = "b"))
+# 'a' can only be set if it equals 'b'
+p$values$a <- 2
+p$values <- list(a = 2, b = 2)
+}
+
+## ------------------------------------------------
+## Method `ParameterSet$extract`
+## ------------------------------------------------
+
+# extract by id
+prms <- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p <- ParameterSet$new(prms)
+p$extract("a")
+# equivalently
+p["a"]
+
+# extract by prefix
+prms <- list(
+  prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+  prm("Pre1__par2", "reals", 3, tags = "t2"),
+  prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+  prm("Pre2__par2", "reals", 3, tags = "t2")
+)
+p <- ParameterSet$new(prms)
+p$extract(tags = "t1")
+p$extract(prefix = "Pre1")
+# equivalently
+p[prefix = "Pre1"]
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -134,7 +209,6 @@ infinite recursion, see examples at end.}
 \item \href{#method-print}{\code{ParameterSet$print()}}
 \item \href{#method-get_values}{\code{ParameterSet$get_values()}}
 \item \href{#method-add_dep}{\code{ParameterSet$add_dep()}}
-\item \href{#method-transform}{\code{ParameterSet$transform()}}
 \item \href{#method-rep}{\code{ParameterSet$rep()}}
 \item \href{#method-extract}{\code{ParameterSet$extract()}}
 \item \href{#method-clone}{\code{ParameterSet$clone()}}
@@ -217,6 +291,8 @@ p
 \if{html}{\out{<a id="method-get_values"></a>}}
 \if{latex}{\out{\hypertarget{method-get_values}{}}}
 \subsection{Method \code{get_values()}}{
+Gets values from the \code{ParameterSet} with options to filter
+by specific IDs and tags, and also to transform the values.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$get_values(
   id = NULL,
@@ -227,22 +303,105 @@ p
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id}}{(\code{character()}) \cr
+If not NULL then returns values for given \code{ids}.}
+
+\item{\code{tags}}{(\code{character()}) \cr
+If not NULL then returns values for given \code{tags}.}
+
+\item{\code{transform}}{(\code{logical(1)}) \cr
+If \code{TRUE} (default) and \verb{$trafo} is not \code{NULL} then runs the set
+transformation function before returning the values.}
+
+\item{\code{inc_null}}{(\code{logical(1)}) \cr
+If \code{TRUE} (default) then returns values for all ids even if \code{NULL}.}
+
+\item{\code{simplify}}{(\code{logical(1)}) \cr
+If \code{TRUE} (default) then unlists scalar values, otherwise always
+returns a list.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{prms <- list(
+ prm("a", "reals", 1, tags = "t1"),
+ prm("b", "reals", 1.5, tags = "t1"),
+ prm("d", "reals", tags = "t2")
+)
+p <- ParameterSet$new(prms)
+p$trafo <- function(x, self) {
+ x$a <- exp(x$a)
+ x
+}
+p$get_values()
+p$get_values(inc_null = FALSE)
+p$get_values(id = "a")
+p$get_values(tags = "t1")
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-add_dep"></a>}}
 \if{latex}{\out{\hypertarget{method-add_dep}{}}}
 \subsection{Method \code{add_dep()}}{
+Gets values from the \code{ParameterSet} with options to filter
+by specific IDs and tags, and also to transform the values.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$add_dep(id, on, cnd)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id}}{(\code{character(1)}) \cr
+The dependent variable for the condition that depends on the given
+variable, \code{on}, being a particular value. Should be in \code{self$ids}.}
+
+\item{\code{on}}{(\code{character(1)}) \cr
+The independent variable for the condition that is depended on by the
+given variable, \code{id}. Should be in \code{self$ids}.}
+
+\item{\code{cnd}}{(\code{cnd(1)}) \cr
+The condition defined by \link{cnd} which determines how \code{id} depends on \code{on}.}
 }
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-transform"></a>}}
-\if{latex}{\out{\hypertarget{method-transform}{}}}
-\subsection{Method \code{transform()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$transform()}\if{html}{\out{</div>}}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{# not run as errors
+\dontrun{
+# Dependency on specific value
+prms <- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p <- ParameterSet$new(prms)
+p$add_dep("a", "b", cnd("eq", 2))
+# 'a' can only be set if 'b' equals 2
+p$values$a <- 1
+p$values <- list(a = 1, b = 2)
+
+# Dependency on variable value
+prms <- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p <- ParameterSet$new(prms)
+p$add_dep("a", "b", cnd("eq", id = "b"))
+# 'a' can only be set if it equals 'b'
+p$values$a <- 2
+p$values <- list(a = 2, b = 2)
+}
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -284,8 +443,57 @@ should be equal to \code{times}.}
 \if{html}{\out{<a id="method-extract"></a>}}
 \if{latex}{\out{\hypertarget{method-extract}{}}}
 \subsection{Method \code{extract()}}{
+Creates a new \code{ParameterSet} by extracting the given
+parameters.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$extract(id = NULL, tags = NULL, prefix = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id}}{(\code{character()}) \cr
+If not \code{NULL} then specifies the parameters by id to extract. Should be
+\code{NULL} if \code{prefix} is not \code{NULL}.}
+
+\item{\code{tags}}{(\code{character()}) \cr
+If not \code{NULL} then specifies the parameters by tag to extract. Should be
+\code{NULL} if \code{prefix} is not \code{NULL}.}
+
+\item{\code{prefix}}{(\code{character()}) \cr
+If not \code{NULL} then extracts parameters according to their prefix and
+additionally removes the prefix from the id. A prefix is determined as
+the string before \code{"__"} in an id.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{# extract by id
+prms <- list(
+ prm("a", "reals", NULL),
+ prm("b", "reals", 1)
+)
+p <- ParameterSet$new(prms)
+p$extract("a")
+# equivalently
+p["a"]
+
+# extract by prefix
+prms <- list(
+  prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
+  prm("Pre1__par2", "reals", 3, tags = "t2"),
+  prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
+  prm("Pre2__par2", "reals", 3, tags = "t2")
+)
+p <- ParameterSet$new(prms)
+p$extract(tags = "t1")
+p$extract(prefix = "Pre1")
+# equivalently
+p[prefix = "Pre1"]
+}
+\if{html}{\out{</div>}}
+
 }
 
 }

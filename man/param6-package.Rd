@@ -6,7 +6,16 @@
 \alias{param6-package}
 \title{param6: A Fast and Lightweight R6 Parameter Interface}
 \description{
-param6 makes use of {set6} alongside the S3 and R6 paradigms to provide a fast and lightweight interface for parameters and parameter sets.
+By making use of {set6}, alongside the S3 and R6 paradigms, this package provides a fast and lightweight R6 interface for parameters and parameter sets.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://xoopR.github.io/param6/}
+  \item \url{https://github.com/xoopR/param6/}
+  \item Report bugs at \url{https://github.com/xoopR/param6/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Raphael Sonabend \email{raphael.sonabend.15@ucl.ac.uk} (\href{https://orcid.org/0000-0001-9225-4654}{ORCID})
