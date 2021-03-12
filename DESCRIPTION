@@ -6,7 +6,7 @@ Authors@R:
   person(given = "Raphael",
              family = "Sonabend",
              role = c("aut","cre"),
-             email = "raphael.sonabend.15@ucl.ac.uk",
+             email = "raphaelsonabend@gmail.com",
              comment = c(ORCID = "0000-0001-9225-4654"))
 License: MIT + file LICENSE
 URL: https://xoopR.github.io/param6/, https://github.com/xoopR/param6/
@@ -18,7 +18,7 @@ RoxygenNote: 7.1.1
 Imports:
   checkmate,
   data.table,
-  set6,
+  set6 (>= 0.2.0),
   R6
 Suggests:
   testthat
