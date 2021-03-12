@@ -1,6 +1,7 @@
 ^LICENSE\.md
 ^inst/data-raw$
 ^tic\.R$
+cran-comments\.md
 .ignore
 .editorconfig
 .gitignore
