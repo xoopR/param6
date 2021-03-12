@@ -6,6 +6,8 @@
 \alias{param6-package}
 \title{param6: A Fast and Lightweight R6 Parameter Interface}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 By making use of {set6}, alongside the S3 and R6 paradigms, this package provides a fast and lightweight R6 interface for parameters and parameter sets.
 }
 \seealso{
@@ -18,6 +20,6 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Raphael Sonabend \email{raphael.sonabend.15@ucl.ac.uk} (\href{https://orcid.org/0000-0001-9225-4654}{ORCID})
+\strong{Maintainer}: Raphael Sonabend \email{raphaelsonabend@gmail.com} (\href{https://orcid.org/0000-0001-9225-4654}{ORCID})
 
 }
