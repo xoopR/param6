@@ -98,8 +98,7 @@ p$get_values(tags = "t1")
 ## Method `ParameterSet$add_dep`
 ## ------------------------------------------------
 
-# not run as errors
-\dontrun{
+\donttest{
 # Dependency on specific value
 prms <- list(
  prm("a", "reals", NULL),
@@ -375,8 +374,7 @@ The condition defined by \link{cnd} which determines how \code{id} depends on \c
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{# not run as errors
-\dontrun{
+\preformatted{\donttest{
 # Dependency on specific value
 prms <- list(
  prm("a", "reals", NULL),

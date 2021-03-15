@@ -89,12 +89,12 @@ Dictionary <- R6Class("Dictionary",
 
     #' @description Prints dictionary.
     #' @param n (`integer(1)`) \cr
-    #' Number of items to print on either side of elipsis.
+    #' Number of items to print on either side of ellipsis.
     print = function(n = 2) .Dictionary__print(self, private, n),
 
     #' @description Summarises dictionary.
     #' @param n (`integer(1)`) \cr
-    #' Number of items to print on either side of elipsis.
+    #' Number of items to print on either side of ellipsis.
     summary = function(n = 2) .Dictionary__summary(self, private, n),
 
     #' @description Merges another dictionary, or list of dictionaries, into

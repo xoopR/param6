@@ -121,8 +121,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' @param cnd (`cnd(1)`) \cr
     #' The condition defined by [cnd] which determines how `id` depends on `on`.
     #' @examples
-    #' # not run as errors
-    #' \dontrun{
+    #' \donttest{
     #' # Dependency on specific value
     #' prms <- list(
     #'  prm("a", "reals", NULL),

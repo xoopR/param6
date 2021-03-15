@@ -229,7 +229,7 @@ Prints dictionary.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{(\code{integer(1)}) \cr
-Number of items to print on either side of elipsis.}
+Number of items to print on either side of ellipsis.}
 }
 \if{html}{\out{</div>}}
 }
@@ -247,7 +247,7 @@ Summarises dictionary.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{(\code{integer(1)}) \cr
-Number of items to print on either side of elipsis.}
+Number of items to print on either side of ellipsis.}
 }
 \if{html}{\out{</div>}}
 }
