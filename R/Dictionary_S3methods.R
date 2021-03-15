@@ -1,22 +1,40 @@
-# FIXME - DOCUMENT
+#' @title Extract an element from a Dictionary
+#' @description This is simply a wrapper around `[Dictionary]$get_list(i)`
+#' @param object ([Dictionary])
+#' @param i (`character()`) \cr
+#' Keys of items to get.
 #' @export
 `[.Dictionary` <- function(object, i) {
   object$get_list(i)
 }
 
-# FIXME - DOCUMENT
+#' @title Get length of a Dictionary
+#' @description This is simply a wrapper around `[Dictionary]$length` to get the
+#' number of elements in a [Dictionary].
+#' @param x ([Dictionary])
 #' @export
 length.Dictionary <- function(x) {
   x$length
 }
 
-# FIXME - DOCUMENT
+#' @title Summarise a Dictionary
+#' @description This is simply a wrapper around `[Dictionary]$summary(n)`.
+#' @param object ([Dictionary])
+#' @param n (`integer(1)`) \cr
+#' Number of items to print on either side of ellipsis.
+#' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 summary.Dictionary <- function(object, n = 2, ...) {
   object$summary(n = n)
 }
 
-# FIXME - DOCUMENT
+#' @title Create a string representation of a Dictionary
+#' @description Creates a string representation of a [Dictionary] used in
+#' printing.
+#' @param x ([Dictionary])
+#' @param n (`integer(1)`) \cr
+#' Number of items to print on either side of ellipsis.
+#' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.character.Dictionary <- function(x, n = 2, ...) { # nolint
   keys <- x$keys
@@ -35,7 +53,10 @@ as.character.Dictionary <- function(x, n = 2, ...) { # nolint
   return(paste0("{", string, "}"))
 }
 
-# FIXME - DOCUMENT
+#' @title Concatenate multiple Dictionary objects
+#' @description Creates a new [Dictionary] from the elements of provided
+#' [Dictionary] objects, first checks keys are unique.
+#' @param ... ([Dictionary]) \cr Dictionaries to concatenate.
 #' @export
 c.Dictionary <- function(...) {
   x <- list(...)
