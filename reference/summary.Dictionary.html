@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>param6: A Fast and Lightweight R6 Parameter Interface — param6-package • param6</title>
+<title>Summarise a Dictionary — summary.Dictionary • param6</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="param6: A Fast and Lightweight R6 Parameter Interface — param6-package" />
-<meta property="og:description" content="
-By making use of 'set6', alongside the S3 and R6 paradigms, this package provides a fast and lightweight R6 interface for parameters and parameter sets." />
+<meta property="og:title" content="Summarise a Dictionary — summary.Dictionary" />
+<meta property="og:description" content="This is simply a wrapper around [Dictionary]$summary(n)." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -120,30 +119,36 @@ By making use of 'set6', alongside the S3 and R6 paradigms, this package provide
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>param6: A Fast and Lightweight R6 Parameter Interface</h1>
-    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/zzz.R'><code>R/zzz.R</code></a></small>
-    <div class="hidden name"><code>param6-package.Rd</code></div>
+    <h1>Summarise a Dictionary</h1>
+    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/Dictionary_S3methods.R'><code>R/Dictionary_S3methods.R</code></a></small>
+    <div class="hidden name"><code>summary.Dictionary.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><img src='figures/logo.png' align='right' alt='logo' width='120' /></p>
-<p>By making use of 'set6', alongside the S3 and R6 paradigms, this package provides a fast and lightweight R6 interface for parameters and parameter sets.</p>
+    <p>This is simply a wrapper around <code>[Dictionary]$summary(n)</code>.</p>
     </div>
 
+    <pre class="usage"><span class='co'># S3 method for Dictionary</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>object</span>, n <span class='op'>=</span> <span class='fl'>2</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>object</th>
+      <td><p>(<a href='Dictionary.html'>Dictionary</a>)</p></td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td><p>(<code><a href='https://rdrr.io/r/base/integer.html'>integer(1)</a></code>) <br />
+Number of items to print on either side of ellipsis.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>(<code>ANY</code>) <br /> Other arguments, currently unused.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p>Useful links:</p><ul>
-<li><p><a href='https://xoopR.github.io/param6/'>https://xoopR.github.io/param6/</a></p></li>
-<li><p><a href='https://github.com/xoopR/param6/'>https://github.com/xoopR/param6/</a></p></li>
-<li><p>Report bugs at <a href='https://github.com/xoopR/param6/issues'>https://github.com/xoopR/param6/issues</a></p></li>
-</ul>
-
-</div>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
-
-    <p><strong>Maintainer</strong>: Raphael Sonabend <a href='mailto:raphaelsonabend@gmail.com'>raphaelsonabend@gmail.com</a> (<a href='https://orcid.org/0000-0001-9225-4654'>ORCID</a>)</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
