@@ -11,6 +11,8 @@
 
 \item{n}{(\code{integer(1)}) \cr
 Number of items to print on either side of ellipsis.}
+
+\item{...}{(\code{ANY}) \cr Other arguments, currently unused.}
 }
 \description{
 This is simply a wrapper around \verb{[Dictionary]$summary(n)}.

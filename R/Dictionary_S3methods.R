@@ -22,6 +22,7 @@ length.Dictionary <- function(x) {
 #' @param object ([Dictionary])
 #' @param n (`integer(1)`) \cr
 #' Number of items to print on either side of ellipsis.
+#' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 summary.Dictionary <- function(object, n = 2, ...) {
   object$summary(n = n)
@@ -33,6 +34,7 @@ summary.Dictionary <- function(object, n = 2, ...) {
 #' @param x ([Dictionary])
 #' @param n (`integer(1)`) \cr
 #' Number of items to print on either side of ellipsis.
+#' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.character.Dictionary <- function(x, n = 2, ...) { # nolint
   keys <- x$keys
