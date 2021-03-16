@@ -27,18 +27,18 @@
    invisible(self)
 }
 
-.Dictionary__get <- function(self, private, x) { # nolint
+.Dictionary__get <- function(self, private, x, clone = TRUE) { # nolint
    if (length(private$.types) == 1 || length(x) == 1) {
       x <- private$.items[checkmate::assert_subset(x, self$keys)]
       if (length(x) == 1) {
          x <- x[[1]]
-         if (checkmate::testR6(x)) {
+         if (checkmate::testR6(x) && clone) {
             x <- x$clone(deep = TRUE)
          }
       } else {
          x <- unlist(x)
          x <- sapply(x, function(.x) {
-            if (checkmate::testR6(.x)) {
+            if (checkmate::testR6(.x) && clone) {
                .x$clone(deep = TRUE)
             } else {
                .x
@@ -54,10 +54,10 @@
    }
 }
 
-.Dictionary__get_list <- function(self, private, x) { # nolint
+.Dictionary__get_list <- function(self, private, x, clone = TRUE) { # nolint
    lapply(private$.items[checkmate::assert_subset(x, self$keys)],
           function(.x) {
-             if (checkmate::testR6(.x)) {
+             if (checkmate::testR6(.x) && clone) {
                 .x$clone(deep = TRUE)
              } else {
                 .x
