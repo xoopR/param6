@@ -7,7 +7,7 @@ on:
 name: R-CMD-check / codecov
 
 jobs:
-  R-CMD-check:
+  check-covr:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
