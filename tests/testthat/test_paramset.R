@@ -404,6 +404,20 @@ test_that("extract - no deps", {
   expect_error(p$extract(), "One argument")
 
   prms <- list(
+    prm("Pre1__par1", Set$new(1), 1),
+    prm("Pre1__par2", "reals", 3),
+    prm("Pre2__par1", Set$new(1), 1),
+    prm("Pre2__par2", "reals", 3)
+  )
+  p3 <- ParameterSet$new(prms)
+  prms <- list(
+    prm("par1", Set$new(1), 1),
+    prm("par2", "reals", 3)
+  )
+  p4 <- ParameterSet$new(prms)
+  expect_equal(p3$extract(prefix = "Pre1"), p4)
+
+  prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2")
   )

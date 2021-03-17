@@ -149,7 +149,7 @@ item is requested then returns the (unlisted) item, or if multiple items
 are requested as the dictionary is typed, then the unlisted items are
 returned.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Dictionary$get(keys)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Dictionary$get(keys, clone = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -157,6 +157,9 @@ returned.
 \describe{
 \item{\code{keys}}{(\code{character()}) \cr
 Keys of items to get.}
+
+\item{\code{clone}}{(\code{logical(1)}) \cr
+If \code{TRUE} (default) then deep clones R6 objects if requested.}
 }
 \if{html}{\out{</div>}}
 }
@@ -167,7 +170,7 @@ Keys of items to get.}
 \subsection{Method \code{get_list()}}{
 Gets the given items from the dictionary as list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Dictionary$get_list(keys)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Dictionary$get_list(keys, clone = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -175,6 +178,9 @@ Gets the given items from the dictionary as list.
 \describe{
 \item{\code{keys}}{(\code{character()}) \cr
 Keys of items to get.}
+
+\item{\code{clone}}{(\code{logical(1)}) \cr
+If \code{TRUE} (default) then deep clones R6 objects if requested.}
 }
 \if{html}{\out{</div>}}
 }

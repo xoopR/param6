@@ -69,12 +69,20 @@ Dictionary <- R6Class("Dictionary",
     #' returned.
     #' @param keys (`character()`) \cr
     #' Keys of items to get.
-    get = function(keys) .Dictionary__get(self, private, keys),
+    #' @param clone (`logical(1)`) \cr
+    #' If `TRUE` (default) then deep clones R6 objects if requested.
+    get = function(keys, clone = TRUE) {
+      .Dictionary__get(self, private, keys, clone)
+    },
 
     #' @description Gets the given items from the dictionary as list.
     #' @param keys (`character()`) \cr
     #' Keys of items to get.
-    get_list = function(keys) .Dictionary__get_list(self, private, keys),
+    #' @param clone (`logical(1)`) \cr
+    #' If `TRUE` (default) then deep clones R6 objects if requested.
+    get_list = function(keys, clone = TRUE) {
+      .Dictionary__get_list(self, private, keys, clone)
+    },
 
     #' @description Checks if the given key is in the list, returns a logical.
     #' @param key (`character(1)`) \cr

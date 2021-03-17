@@ -155,9 +155,13 @@
                                 inc_null = FALSE))
   values <- unname(.get_field(self, private$.value, id = ids))
 
-  tag <- unname(.get_field(self, private$.tags, id = ids))
-  if (!is.null(prefix)) {
-    unfix_tags <- unprefix(tag)
+  if (length(private$.tags)) {
+    tag <- unname(.get_field(self, private$.tags, id = ids))
+    if (!is.null(prefix)) {
+      unfix_tags <- unprefix(tag)
+    }
+  } else {
+    tag <- unfix_tags <- rep(list(NULL), length(values))
   }
 
   if (length(unfix_ids)) {
