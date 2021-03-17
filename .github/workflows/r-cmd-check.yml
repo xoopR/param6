@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: "0 4 * * *"
 
-name: R-CMD-check
+name: R-CMD-check / codecov
 
 jobs:
   R-CMD-check:
@@ -63,6 +63,7 @@ jobs:
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
+          remotes::install_cran("covr")
         shell: Rscript {0}
 
       - name: Install self
@@ -83,3 +84,7 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
+          
+      - name: Test coverage
+        run: covr::codecov()
+        shell: Rscript {0}
