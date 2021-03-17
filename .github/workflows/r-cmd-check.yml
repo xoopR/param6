@@ -60,10 +60,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c("remotes"))
+          install.packages("remotes")
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
-          remotes::install_cran("covr")
         shell: Rscript {0}
 
       - name: Install self
@@ -85,6 +84,12 @@ jobs:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
           
+      - name: Install covr
+        if: ${{ github.event_name == 'pull_request' && runner.os == 'Linux' && ${{ matrix.config.r }} == 'release'}}
+        run: install.packages('covr')
+        shell: Rscript {0}
+
       - name: Test coverage
+        if: ${{ github.event_name == 'pull_request' && runner.os == 'Linux' && ${{ matrix.config.r }} == 'release'}}
         run: covr::codecov()
         shell: Rscript {0}
