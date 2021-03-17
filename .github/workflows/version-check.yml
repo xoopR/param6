@@ -39,4 +39,5 @@ jobs:
       - name: Compare versions
         run: |
           Rscript -e "if (commandArgs(TRUE)[1] <= commandArgs(TRUE)[2]) stop('Package version has not been updated.')" ${{ env.NEW_VERSION }} ${{ env.OLD_VERSION }}
+          Rscript -e "if (!grepl('^[0-9]*\\.[0-9]*\\.[0-9]*$', commandArgs(TRUE)[1])) stop('Package version must be format major.minor.patch.')" ${{ env.NEW_VERSION }}
           
