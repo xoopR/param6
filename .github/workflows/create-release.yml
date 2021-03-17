@@ -28,7 +28,7 @@ jobs:
           tag_name: v${{ env.PACKAGE_VERSION }}
           release_name: ${{ env.PACKAGE_NAME }} ${{ env.PACKAGE_VERSION }}
           body: |
-            https://github.com/mlr-org/mlr3extralearners/blob/main/NEWS.md
+            https://github.com/xoopR/param6/blob/main/NEWS.md
           draft: false
           prerelease: false
  
