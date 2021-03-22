@@ -56,7 +56,7 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
       stop("'suppport' given as character but does not exist in support_dictionary.") # nolint
     }
     str_support <- support
-    support <- support_dictionary$get(str_support)
+    support <- support_dictionary$get(str_support, clone = FALSE)
   # if Set, check to see if exists in dictionary otherwise add and return string
   } else if (checkmate::test_class(support, "Set")) {
     str_support <- as.character(support)
