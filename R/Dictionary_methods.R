@@ -27,7 +27,7 @@
    invisible(self)
 }
 
-.Dictionary__get <- function(self, private, x, clone = TRUE) { # nolint
+.Dictionary__get <- function(self, private, x, clone) { # nolint
    if (length(private$.types) == 1 || length(x) == 1) {
       x <- private$.items[checkmate::assert_subset(x, self$keys)]
       if (length(x) == 1) {
@@ -54,7 +54,7 @@
    }
 }
 
-.Dictionary__get_list <- function(self, private, x, clone = TRUE) { # nolint
+.Dictionary__get_list <- function(self, private, x, clone) { # nolint
    lapply(private$.items[checkmate::assert_subset(x, self$keys)],
           function(.x) {
              if (checkmate::testR6(.x) && clone) {

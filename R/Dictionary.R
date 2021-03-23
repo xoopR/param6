@@ -71,7 +71,7 @@ Dictionary <- R6Class("Dictionary",
     #' Keys of items to get.
     #' @param clone (`logical(1)`) \cr
     #' If `TRUE` (default) then deep clones R6 objects if requested.
-    get = function(keys, clone = TRUE) {
+    get = function(keys, clone = FALSE) {
       .Dictionary__get(self, private, keys, clone)
     },
 
@@ -80,7 +80,7 @@ Dictionary <- R6Class("Dictionary",
     #' Keys of items to get.
     #' @param clone (`logical(1)`) \cr
     #' If `TRUE` (default) then deep clones R6 objects if requested.
-    get_list = function(keys, clone = TRUE) {
+    get_list = function(keys, clone = FALSE) {
       .Dictionary__get_list(self, private, keys, clone)
     },
 
