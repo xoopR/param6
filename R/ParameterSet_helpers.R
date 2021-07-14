@@ -170,9 +170,7 @@
     # linked tag
     if (length(tags$linked)) {
       vals <- .get_values(self, get_private(self), values, NULL,
-                          tags = tags[["linked"]],
-                          inc_null = FALSE
-      )
+                          tags[["linked"]], FALSE, inc_null = FALSE)
       if (any(grepl("__", names(vals), fixed = TRUE))) {
         nok <- any(vapply(get_prefix(names(vals)), function(i) {
           length(vals[grepl(i, names(vals))]) > length(tags[["linked"]])

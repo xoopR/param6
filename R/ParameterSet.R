@@ -294,18 +294,45 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
 #' @title Convenience Function for Constructing a ParameterSet
 #' @description See [ParameterSet] for full details.
+#' @param `...` ([prm]) \cr [prm] objects.
 #' @param prms (`list()`) \cr List of [prm] objects.
 #' @template param_tag_properties
+#' @param deps (`list()`) \cr List of lists where each element is passed to
+#'  `$add_dep`. See examples.
+#' @param trafo (`function()`) \cr Passed to `$trafo`. See examples.
 #' @examples
 #' library(set6)
 #'
+#' # simple example
 #' prms <- list(
 #'  prm("a", Set$new(1), 1, tags = "t1"),
 #'  prm("b", "reals", 1.5, tags = "t1"),
 #'  prm("d", "reals", 2, tags = "t2")
 #' )
-#' p <- pset(prms)
+#' p <- pset(prms = prms)
+#'
+#' # with properties, deps, trafo
+#' p <- pset(
+#'  prm("a", Set$new(1), 1, tags = "t1"),
+#'  prm("b", "reals", 1.5, tags = "t1"),
+#'  prm("d", "reals", 2, tags = "t2"),
+#'  tag_properties = list(required = "t2"),
+#'  deps = list(
+#'    list(id = "a", on = "b", cnd = cnd("eq", 1.5))
+#'  ),
+#'  trafo = function(x, self) return(x)
+#' )
 #' @export
-pset <- function(prms, tag_properties = NULL) {
-  ParameterSet$new(prms, tag_properties)
+pset <- function(..., prms = list(...), tag_properties = NULL, deps = NULL,
+                 trafo = NULL) {
+  ps <- ParameterSet$new(prms, tag_properties)
+  if (!is.null(deps)) {
+    checkmate::assert_list(deps)
+    lapply(deps, function(x) ps$add_dep(x$id, x$on, x$cnd))
+  }
+  if (!is.null(trafo)) {
+    checkmate::assert_function(trafo)
+    ps$trafo <- trafo
+  }
+  ps
 }

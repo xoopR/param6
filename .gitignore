@@ -39,7 +39,6 @@ vignettes/*.pdf
 .Renviron
 
 .Rproj.user
-R/.DS_Store
 
-.DS_Store
+*.DS_Store
 docs/

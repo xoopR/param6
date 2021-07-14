@@ -210,6 +210,14 @@ test_that("get_values", {
                list(Pre1__par1 = 1, Pre1__par2 = 2, Pre2__par1 = 1,
                     Pre2__par2 = NULL))
   expect_equal(p$get_values("par1"), list(Pre1__par1 = 1, Pre2__par1 = 1))
+
+  p <- pset(
+      prm("elements", "universal", 1),
+      prm("probs", Interval$new(0, 1)^"n", 1)
+    )
+  p$values <- list(elements = c(1, 0), probs = c(0.4, 0.9))
+  expect_equal(p$values, list(elements = c(1, 0), probs = c(0.4, 0.9)))
+  expect_equal(p$get_values(), list(elements = c(1, 0), probs = c(0.4, 0.9)))
 })
 
 test_that("trafo", {
@@ -264,6 +272,24 @@ test_that("trafo", {
     out
   }
   p$get_values()
+
+
+  p = pset(
+    prm("prob", Interval$new(0, 1), 0.5, "probs"),
+    prm("qprob", Interval$new(0, 1), tags = "probs"),
+    tag_properties = list(linked = "probs"),
+    trafo = function(x, self) {
+      if (is.null(x$prob)) {
+        x$prob <- 1 - x$qprob
+      }
+      if (is.null(x$qprob)) {
+        x$qprob <- 1 - x$prob
+      }
+      x
+    }
+  )
+  p$values$prob = 0.2
+  expect_equal(p$get_values(), list(prob = 0.2, qprob = 0.8))
 })
 
 test_that("rep", {

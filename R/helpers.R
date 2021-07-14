@@ -54,8 +54,9 @@ expand_list <- function(names, named_var) {
 
   x <- vector("list", length(names))
   names(x) <- names
-  x[names(x) %in% names(named_var)] <- named_var
-  return(x)
+  mtc <- match(names(x), names(named_var))
+  x[mtc[!is.na(mtc)]] <- named_var
+  x
 }
 
 get_private <- function(x) {
