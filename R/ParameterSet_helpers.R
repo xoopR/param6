@@ -51,7 +51,15 @@
 
   # 1. Containedness checks
   if (supports && length(self)) {
-    x <- .check_supports(self, value_check, support_check, id, error_on_fail)
+    imm_rm <- NULL
+    if ("immutable" %in% self$tag_properties) {
+      imm_rm <- names(self$get_values(
+        tags = self$tag_properties["immutable"],
+        simplify = FALSE
+      ))
+    }
+    x <- .check_supports(self, value_check[names(value_check) %nin% imm_rm],
+                         support_check, id, error_on_fail)
   }
 
   if (!x) {
@@ -154,34 +162,27 @@
   return(TRUE)
 }
 
-.check_tags <- function(self, values, tags, id, error_on_fail, ex_tags = NULL) {
+.check_tags <- function(self, values, tags, id, error_on_fail) {
   if (length(tags)) {
-    # immutable tag
-    if ("immutable" %nin% ex_tags && length(tags$immutable)) {
-      vals <- .get_field(self, values, NULL, tags[["immutable"]])
-      if (length(vals)) {
-        return(.return_fail(
-          msg = "Immutable parameters cannot be updated after construction.",
-          error_on_fail
-        ))
-      }
-    }
-
     # required tag
-    if ("required" %nin% ex_tags && length(tags$required)) {
+    if (length(tags$required)) {
       vals <- .get_field(self, values, NULL, tags = tags[["required"]])
       null_vals <- vals[vapply(vals, is.null, logical(1))]
 
-      if (length(tags$linked)) {
-        vals <- .get_values(self, get_private(self), values, NULL,
-          tags[["linked"]], FALSE,
-          inc_null = TRUE,
-          simplify = FALSE
-        )
-        null_vals <- null_vals[names(null_vals) %nin% names(vals)]
-        nok <- length(null_vals)
+      if (length(null_vals)) {
+        if (length(tags$linked)) {
+          vals <- .get_values(self, get_private(self), values, NULL,
+            tags[["linked"]], FALSE,
+            inc_null = TRUE,
+            simplify = FALSE
+          )
+          null_vals <- null_vals[names(null_vals) %nin% names(vals)]
+          nok <- length(null_vals)
+        } else {
+          nok <- TRUE
+        }
       } else {
-        nok <- TRUE
+        nok <- FALSE
       }
 
       if (nok) {
@@ -193,7 +194,7 @@
     }
 
     # linked tag
-    if ("linked" %nin% ex_tags && length(tags$linked)) {
+    if (length(tags$linked)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags[["linked"]], FALSE, inc_null = FALSE,
                           simplify = FALSE)
@@ -214,7 +215,7 @@
     }
 
     # unique tag
-    if ("unique" %nin% ex_tags && length(tags$unique)) {
+    if (length(tags$unique)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags = tags[["unique"]],
                           inc_null = FALSE, simplify = FALSE)
@@ -312,7 +313,7 @@ assert_condition <- function(id, support, cond) {
     checkmate::assert_subset(unlist(prop), utags)
     checkmate::assert_subset(names(prop),
                              c("required", "linked", "unique", "immutable"))
-    .check_tags(self, self$values, prop, NULL, TRUE, "immutable")
+    .check_tags(self, self$values, prop, NULL, TRUE)
   }
 
   invisible(prop)

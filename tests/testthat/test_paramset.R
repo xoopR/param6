@@ -50,9 +50,32 @@ test_that("ParamSet actives - not values or tag propeties", {
 })
 
 test_that("immutable parameters are immutable", {
-  prms <- pset(prm("a", "reals", tags = "immutable"))
-  expect_error({prms$values$a <- NULL}, "Immutable parameters cannot")
-  expect_error({prms$values$a <- 2}, "Immutable parameters cannot")
+  prms <- pset(
+    prm("a", "reals", 1, tags = "immutable"),
+    prm("b", "reals", 2)
+  )
+  expect_equal(get_private(prms)$.immutable, list(a = 1))
+  prms$values$a <- NULL
+  expect_equal(prms$values, list(b = 2, a = 1))
+  prms$values$a <- 2
+  expect_equal(prms$values, list(b = 2, a = 1))
+  prms$values$b <- 2
+  expect_equal(prms$values, list(b = 2, a = 1))
+})
+
+test_that("don't check immutable parameters", {
+   prms <- pset(
+     prm("a", "logicals", TRUE, tags = "immutable")
+   )
+   prms$values$a <- 1
+   expect_equal(prms$values$a, TRUE)
+})
+
+test_that("can't set unknown parameters", {
+   prms <- pset(
+     prm("a", "logicals", TRUE, tags = "immutable")
+   )
+   expect_error({prms$values$b <- 1}, "You can't")
 })
 
 test_that("ParamSet actives - values", {
@@ -131,7 +154,6 @@ test_that("ParamSet actives - tag properties", {
   expect_equal(p$tag_properties, list(linked = "t1", required = "t2"))
   expect_silent({p$tag_properties <- NULL}) # nolint
   expect_silent({p$tag_properties$required <- "t2"}) # nolint
-  expect_error({p$tag_properties <- list(required = "t1", linked = "t1")}) # nolint
   expect_error({p$tag_properties <- list(required = "t3")}) # nolint
   expect_error({p$tag_properties <- list(linked = "t2")}) # nolint
 

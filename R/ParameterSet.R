@@ -282,6 +282,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .tag_properties = NULL,
     .trafo = NULL,
     .deps = NULL,
+    .immutable = list(),
     deep_clone = function(name, value) {
       switch(name,
              ".deps" = {

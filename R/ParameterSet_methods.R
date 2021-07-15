@@ -25,10 +25,17 @@
       private$.tag_properties <-
         .assert_tag_properties(tag_properties, unique(unlist(tag_list)), self)
 
+      if ("immutable" %in% private$.tag_properties) {
+        private$.immutable <- self$get_values(
+          tags = self$tag_properties["immutable"], simplify = FALSE
+        )
+      }
+
       if (any(duplicated(c(private$.id, unique(unlist(private$.tags)))))) {
         stop("ids and tags must have different names.")
       }
     }
+
   }
 
   invisible(self)
@@ -237,15 +244,23 @@
 }
 
 .ParameterSet__values <- function(self, private, x) { # nolint
+
   if (missing(x)) {
     return(private$.value)
   } else {
     x <- un_null_list(x)
+    bad_nms <- names(x) %nin% self$ids
+    if (any(bad_nms)) {
+      stop(
+        sprintf("You can't set ids that don't exist in the parameter set: %s",
+                string_as_set(names(x)[bad_nms]))
+      )
+    }
     if (length(x)) {
       .check(self,
-             id = names(x), value_check = x,
-             support_check = private$.isupports, dep_check = self$deps,
-             tag_check = self$tag_properties
+        id = names(x), value_check = x,
+        support_check = private$.isupports, dep_check = self$deps,
+        tag_check = self$tag_properties
       )
     } else if (!is.null(self$tag_properties) &&
                 "required" %in% names(self$tag_properties)) {
@@ -255,6 +270,8 @@
       stop("Immutable parameters cannot be updated after construction")
     }
 
+    x[match(names(private$.immutable), names(x))] <- private$.immutable
+    x <- c(x, private$.immutable[names(private$.immutable) %nin% names(x)])
     private$.value <- x
     invisible(self)
   }
