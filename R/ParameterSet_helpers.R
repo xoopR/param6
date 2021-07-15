@@ -46,6 +46,7 @@
                    tags = TRUE, id = NULL, error_on_fail = TRUE,
                    value_check = NULL, support_check = NULL, dep_check = NULL,
                    tag_check = NULL) {
+
   x <- TRUE
 
   # 1. Containedness checks
@@ -158,7 +159,20 @@
     # required tag
     if (length(tags$required)) {
       vals <- .get_field(self, values, NULL, tags = tags[["required"]])
-      nok <- !checkmate::testList(vals, any.missing = FALSE)
+      null_vals <- vals[vapply(vals, is.null, logical(1))]
+
+      if (length(tags$linked)) {
+        vals <- .get_values(self, get_private(self), values, NULL,
+          tags[["linked"]], FALSE,
+          inc_null = TRUE,
+          simplify = FALSE
+        )
+        null_vals <- null_vals[names(null_vals) %nin% names(vals)]
+        nok <- length(null_vals)
+      } else {
+        nok <- TRUE
+      }
+
       if (nok) {
         return(.return_fail(
           msg = "Not all required parameters are set.",
@@ -170,7 +184,8 @@
     # linked tag
     if (length(tags$linked)) {
       vals <- .get_values(self, get_private(self), values, NULL,
-                          tags[["linked"]], FALSE, inc_null = FALSE)
+                          tags[["linked"]], FALSE, inc_null = FALSE,
+                          simplify = FALSE)
       if (any(grepl("__", names(vals), fixed = TRUE))) {
         nok <- any(vapply(get_prefix(names(vals)), function(i) {
           length(vals[grepl(i, names(vals))]) > length(tags[["linked"]])
@@ -191,8 +206,7 @@
     if (length(tags$unique)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags = tags[["unique"]],
-                          inc_null = FALSE, simplify = FALSE
-      )
+                          inc_null = FALSE, simplify = FALSE)
       nok <- any(vapply(vals, function(i) any(duplicated(i)), logical(1)))
       if (nok) {
         return(.return_fail(
@@ -259,6 +273,28 @@ assert_condition <- function(id, support, cond) {
 }
 
 .assert_tag_properties <- function(prop, utags, self) {
+  add_tag_prop <- function(what) {
+    if (what %in% utags) {
+      if (is.null(prop)) {
+        prop <- list(what)
+        names(prop) <- what
+      } else {
+        if (is.null(prop[[what]])) {
+          prop[[what]] <- what
+        } else {
+          if (what %nin% prop[[what]]) {
+            prop[[what]] <- c(prop[[what]], what)
+          }
+        }
+      }
+    }
+    prop
+  }
+
+  prop <- add_tag_prop("required")
+  prop <- add_tag_prop("linked")
+  prop <- add_tag_prop("unique")
+
   if (!is.null(prop)) {
     checkmate::assert_list(prop, names = "unique")
     checkmate::assert_subset(unlist(prop), utags)
