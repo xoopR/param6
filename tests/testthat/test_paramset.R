@@ -106,6 +106,12 @@ test_that("ParamSet actives - values", {
   expect_silent({p$values$a <- 2}) # nolint
   expect_silent({p$values <- list(a = c(1, 2))}) # nolint
   expect_error({p$values <- list(a = c(1, 0.5))}, "does not lie") # nolint
+
+  p <- pset(
+    prm("prob", Interval$new(0, 1), 0.5, "required"),
+    prm("qprob", Interval$new(0, 1))
+  )
+  expect_error({p$values$prob <- NULL}, "Not all required")
 })
 
 test_that("ParamSet actives - tag properties", {
@@ -131,6 +137,17 @@ test_that("ParamSet actives - tag properties", {
   expect_silent({p$values$a <- 2}) # nolint
   expect_silent({p$values <- list(a = c(1, 2))}) # nolint
   expect_error({p$values <- list(a = c(2, 2))}, "duplicated") # nolint
+
+  p <- pset(
+    prm("prob", Interval$new(0, 1), 0.5, c("linked", "required")),
+    prm("qprob", Interval$new(0, 1), tags = c("linked", "required"))
+  )
+  expect_error({p$values$qprob <- 0.1}, "Multiple linked")
+  expect_error({p$values$prob <- NULL}, "Not all required")
+  p$values <- list(prob = NULL, qprob = 0.1)
+  expect_error({p$values$prob <- 0.1}, "Multiple linked")
+  expect_error({p$values$qprob <- NULL}, "Not all required")
+  expect_equal(p$values, list(qprob = 0.1))
 })
 
 test_that("as.data.table.ParameterSet and print", {
@@ -518,12 +535,11 @@ test_that("extract - deps", {
 })
 
 test_that("deep clone", {
-  prms <- list(
+  p <- pset(
     prm("a", Set$new(1), 1, tags = "t1"),
     prm("b", "reals", 1.5, tags = "t1"),
     prm("d", "reals", 2, tags = "t2")
   )
-  p <- pset(prms)
   p$add_dep("a", "b", cnd("eq", 1.5))
   p2 <- p$clone(deep = TRUE)
   p2$values$d <- 3

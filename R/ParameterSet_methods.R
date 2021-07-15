@@ -247,6 +247,9 @@
              support_check = private$.isupports, dep_check = self$deps,
              tag_check = self$tag_properties
       )
+    } else if (!is.null(self$tag_properties) &&
+                "required" %in% names(self$tag_properties)) {
+      stop("Not all required parameters are set")
     }
 
     private$.value <- x

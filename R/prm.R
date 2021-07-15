@@ -79,8 +79,6 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
 
   if (!is.null(value) && .check) {
     assert_contains(support, value)
-  } else if (is.null(value) && "required" %in% tags) {
-    stop("Parameter is required but value is NULL.")
   }
 
   param <- list(id = id, support = str_support, value = value, tags = tags)

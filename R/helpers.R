@@ -52,10 +52,13 @@ expand_list <- function(names, named_var) {
   checkmate::assert_character(names)
   checkmate::assert_list(named_var)
 
-  x <- vector("list", length(names))
-  names(x) <- names
-  mtc <- match(names(x), names(named_var))
-  x[mtc[!is.na(mtc)]] <- named_var
+  mtc <- match(names(named_var), names)
+  if (any(is.na(mtc))) {
+    stop("ids in 'names' not in 'named_var'")
+  }
+
+  x <- setNames(vector("list", length(names)), names)
+  x[mtc] <- named_var
   x
 }
 
@@ -102,4 +105,9 @@ get_prefix <- function(x, split = "__") {
 
 unique_nlist <- function(x) {
   x[!duplicated(names(x))]
+}
+
+
+drop_null <- function(x) {
+  x[!vapply(x, is.null, logical(1))]
 }
