@@ -49,6 +49,12 @@ test_that("ParamSet actives - not values or tag propeties", {
                                 d = Reals$new()))
 })
 
+test_that("immutable parameters are immutable", {
+  prms <- pset(prm("a", "reals", tags = "immutable"))
+  expect_error({prms$values$a <- NULL}, "Immutable parameters cannot")
+  expect_error({prms$values$a <- 2}, "Immutable parameters cannot")
+})
+
 test_that("ParamSet actives - values", {
   prms <- list(
     prm("a", Set$new(1, 2), 1),
@@ -139,8 +145,9 @@ test_that("ParamSet actives - tag properties", {
   expect_error({p$values <- list(a = c(2, 2))}, "duplicated") # nolint
 
   p <- pset(
-    prm("prob", Interval$new(0, 1), 0.5, c("linked", "required")),
-    prm("qprob", Interval$new(0, 1), tags = c("linked", "required"))
+    prm("prob", Interval$new(0, 1), 0.5, "probs"),
+    prm("qprob", Interval$new(0, 1), tags = "probs"),
+    tag_properties = list(required = "probs", linked = "probs")
   )
   expect_error({p$values$qprob <- 0.1}, "Multiple linked")
   expect_error({p$values$prob <- NULL}, "Not all required")

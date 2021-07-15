@@ -231,3 +231,8 @@ test_that("deep clone", {
   expect_equal(length(d1), length(d3))
   expect_false(length(d1) == length(d2))
 })
+
+
+test_that("can get logicals", {
+  support_dictionary$get("logicals")
+})

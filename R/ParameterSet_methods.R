@@ -201,7 +201,7 @@
 
   if (length(private$.tag_properties)) {
     new_props <- list()
-    for (i in c("linked", "required", "unique")) {
+    for (i in c("linked", "required", "unique", "immutable")) {
       if (length(private$.tag_properties[[i]])) {
       new_props[[i]] <-
         unprefix(
@@ -250,6 +250,9 @@
     } else if (!is.null(self$tag_properties) &&
                 "required" %in% names(self$tag_properties)) {
       stop("Not all required parameters are set")
+    } else if (!is.null(self$tag_properties) &&
+                "immutable" %in% names(self$tag_properties)) {
+      stop("Immutable parameters cannot be updated after construction")
     }
 
     private$.value <- x

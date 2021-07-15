@@ -237,11 +237,14 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' If `x` is not missing then used to tag properties. Currently properties
     #' can either be: \cr
     #' i) 'required' - parameters with this tag must have set (non-NULL)
-    #' values;\cr
+    #' values; if a parameter is both 'required' and 'linked' then exactly
+    #' one parameter in the 'linked' tag must be tagged;\cr
     #' ii) 'linked' - parameters with 'linked' tags are dependent on one another
     #' and only one can be set (non-NULL at a time);\cr
     #' iii) 'unique' - parameters with this tag must have no duplicated
-    #' elements, therefore this tag only makes sense for vector parameters.
+    #' elements, therefore this tag only makes sense for vector parameters;\cr
+    #' iv) 'immutable' - parameters with this tag cannot be updated after
+    #' construction.
     tag_properties = function(x) {
       .ParameterSet__tag_properties(self, private, x)
     },

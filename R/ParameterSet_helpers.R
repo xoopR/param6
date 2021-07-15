@@ -154,10 +154,21 @@
   return(TRUE)
 }
 
-.check_tags <- function(self, values, tags, id, error_on_fail) {
+.check_tags <- function(self, values, tags, id, error_on_fail, ex_tags = NULL) {
   if (length(tags)) {
+    # immutable tag
+    if ("immutable" %nin% ex_tags && length(tags$immutable)) {
+      vals <- .get_field(self, values, NULL, tags[["immutable"]])
+      if (length(vals)) {
+        return(.return_fail(
+          msg = "Immutable parameters cannot be updated after construction.",
+          error_on_fail
+        ))
+      }
+    }
+
     # required tag
-    if (length(tags$required)) {
+    if ("required" %nin% ex_tags && length(tags$required)) {
       vals <- .get_field(self, values, NULL, tags = tags[["required"]])
       null_vals <- vals[vapply(vals, is.null, logical(1))]
 
@@ -182,7 +193,7 @@
     }
 
     # linked tag
-    if (length(tags$linked)) {
+    if ("linked" %nin% ex_tags && length(tags$linked)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags[["linked"]], FALSE, inc_null = FALSE,
                           simplify = FALSE)
@@ -203,7 +214,7 @@
     }
 
     # unique tag
-    if (length(tags$unique)) {
+    if ("unique" %nin% ex_tags && length(tags$unique)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags = tags[["unique"]],
                           inc_null = FALSE, simplify = FALSE)
@@ -294,16 +305,14 @@ assert_condition <- function(id, support, cond) {
   prop <- add_tag_prop("required")
   prop <- add_tag_prop("linked")
   prop <- add_tag_prop("unique")
+  prop <- add_tag_prop("immutable")
 
   if (!is.null(prop)) {
     checkmate::assert_list(prop, names = "unique")
     checkmate::assert_subset(unlist(prop), utags)
     checkmate::assert_subset(names(prop),
-                             c("required", "linked", "unique"))
-    if (!is.null(prop$linked) && !is.null(prop$required)) {
-      checkmate::assert_character(c(prop$linked, prop$required), unique = TRUE)
-    }
-    .check_tags(self, self$values, prop, NULL, TRUE)
+                             c("required", "linked", "unique", "immutable"))
+    .check_tags(self, self$values, prop, NULL, TRUE, "immutable")
   }
 
   invisible(prop)

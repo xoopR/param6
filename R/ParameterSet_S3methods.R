@@ -89,8 +89,12 @@ c.ParameterSet <- function(..., pss = list(...)) {
       tprop$linked <- unique(unlist(lin_props))
     }
     un_props <- props[names(props) %in% "unique"]
-    if (length(lin_props)) {
+    if (length(un_props)) {
       tprop$unique <- unique(unlist(un_props))
+    }
+    im_props <- props[names(props) %in% "immutable"]
+    if (length(im_props)) {
+      tprop$immutable <- unique(unlist(im_props))
     }
     if (any(duplicated(unlist(tprop)))) {
       stop("Cannot merge inconsistent tag properties.")

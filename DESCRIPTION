@@ -18,7 +18,7 @@ RoxygenNote: 7.1.1
 Imports:
   checkmate,
   data.table,
-  set6 (>= 0.2.0),
+  set6 (>= 0.2.2),
   R6
 Suggests:
   testthat
