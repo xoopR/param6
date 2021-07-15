@@ -73,7 +73,7 @@ c.ParameterSet <- function(..., pss = list(...)) {
 
   prms <- unlist(lapply(pss, as.prm), FALSE)
 
-  if (any(!is.null(unlist(lapply(pss, "[[", "trafo"))))) {
+  if (any(!is.null(unlist(lapply(pss, function(x) get_private(x)$.trafo))))) {
     warning("Transformations are lost in concatenation.")
   }
 
@@ -124,7 +124,7 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
-  if (length(x$deps) || length(x$trafo)) {
+  if (length(x$deps) || length(get_private(x)$.trafo)) {
     warning("Dependencies and trafos are lost in coercion.")
   }
 

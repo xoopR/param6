@@ -257,7 +257,7 @@
       )
     }
     if (length(x)) {
-      .check(self,
+      .check(self, private,
         id = names(x), value_check = x,
         support_check = private$.isupports, dep_check = self$deps,
         tag_check = self$tag_properties
@@ -278,21 +278,30 @@
 }
 
 .ParameterSet__trafo <- function(self, private, x) { # nolint
+
   if (missing(x)) {
-    private$.trafo
+    traf <- private$.trafo
+    if (!is.null(traf)) {
+      traf
+    } else {
+      function(x, self) x
+    }
   } else {
     checkmate::assert_function(x, args = c("x", "self"), TRUE)
     vals <- x(self$values, self)
     checkmate::assert_list(vals)
 
-    tryCatch(.check(self, id = names(vals), value_check = vals,
+    otrafo <- private$.trafo
+    private$.trafo <- x
+
+    tryCatch(.check(self, private, id = names(vals), value_check = vals,
                     support_check = private$.isupports,
-                    dep_check = self$deps),
+                    dep_check = self$deps, transform = FALSE),
              error = function(e) {
+               private$.trafo <- otrafo
                stop("Transformation results in values outside of supports.")
              })
 
-    private$.trafo <- x
     invisible(self)
   }
 }

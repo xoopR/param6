@@ -101,20 +101,21 @@ test_that("ParamSet actives - values", {
   expect_equal(p$values, list(b = 1))
 
   p$values$a <- 1
+  pri <- get_private(p)
 
   expect_false(expect_warning(
-    .check(p, supports = TRUE, deps = FALSE, tags = FALSE,
+    .check(p, pri, supports = TRUE, deps = FALSE, tags = FALSE,
            error_on_fail = FALSE, value_check = list(a = 3),
            support_check = get_private(p)$.isupports)))
 
   p$add_dep("b", "a", cnd("eq", 1))
   expect_false(expect_warning(
-    .check(p, supports = FALSE, deps = TRUE, tags = FALSE,
+    .check(p, pri, supports = FALSE, deps = TRUE, tags = FALSE,
            error_on_fail = FALSE, value_check = list(b = 1, a = 3),
            dep_check = p$deps)))
 
   expect_false(expect_warning(
-    .check(p, supports = FALSE, deps = FALSE, tags = TRUE,
+    .check(p, pri, supports = FALSE, deps = FALSE, tags = TRUE,
            id = c("b", "d"),
            error_on_fail = FALSE, value_check = list(b = 1, d = 1),
            tag_check = p$tag_properties)))
@@ -210,7 +211,7 @@ test_that("as.ParameterSet.data.table", {
                                               Reals$new()),
                                Value = list(1, NULL, 2),
                                Tags = list(c("t1", "t2"), NULL, NULL))
-  expect_equal(as.ParameterSet(dt), ParameterSet$new(prms))
+  expect_equal_ps(as.ParameterSet(dt), ParameterSet$new(prms))
 
   prms <- list(
     prm("a", "naturals", 1, c("t1", "t2")),
@@ -221,7 +222,7 @@ test_that("as.ParameterSet.data.table", {
                                Support = list("naturals", "reals", "reals"),
                                Value = list(1, NULL, 2),
                                Tags = list(c("t1", "t2"), NULL, NULL))
-  expect_equal(as.ParameterSet(dt), ParameterSet$new(prms))
+  expect_equal_ps(as.ParameterSet(dt), ParameterSet$new(prms))
 })
 
 test_that("get_values", {
@@ -273,7 +274,8 @@ test_that("trafo", {
     prm("d", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_equal(p$trafo, NULL)
+  expect_equal(deparse(p$trafo), deparse(function(x, self) x))
+  expect_equal(get_private(p)$.trafo, NULL)
   expect_error({p$trafo <- "a"}, "function") # nolint
   expect_error({p$trafo <- function(x, self) "a"}, "list") # nolint
   expect_silent({
@@ -357,7 +359,7 @@ test_that("rep", {
     tag_properties = list(required = "t1", linked = "t2")
   )
 
-  expect_equal(p1$rep(2, "Pre"), p2)
+  expect_equal_ps(p1$rep(2, "Pre"), p2)
   expect_error(p1$rep(3, letters[1:2]), "either be")
 
   prms <- list(
@@ -366,7 +368,7 @@ test_that("rep", {
   )
   p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1",
                                                      linked = "t2"))
-  expect_equal(rep(p1, 2, "Pre"), p2)
+  expect_equal_ps(rep(p1, 2, "Pre"), p2)
   expect_equal(length(p1), 2)
 })
 
@@ -455,7 +457,7 @@ test_that("c", {
     x$d <- 2
     x
   }
-  expect_equal(expect_warning(c(p1, p2), "Transformations"), p)
+  expect_equal_ps(expect_warning(c(p1, p2), "Transformations"), p)
 })
 
 test_that("extract - no deps", {
@@ -472,7 +474,7 @@ test_that("extract - no deps", {
     prm("par2", "reals", 3, tags = "t2")
   )
   p2 <- ParameterSet$new(prms)
-  expect_equal(p$extract(prefix = "Pre1"), p2)
+  expect_equal_ps(p$extract(prefix = "Pre1"), p2)
   expect_error(p$extract(), "One argument")
 
   prms <- list(
@@ -487,28 +489,28 @@ test_that("extract - no deps", {
     prm("par2", "reals", 3)
   )
   p4 <- ParameterSet$new(prms)
-  expect_equal(p3$extract(prefix = "Pre1"), p4)
+  expect_equal_ps(p3$extract(prefix = "Pre1"), p4)
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2")
   )
   p2 <- ParameterSet$new(prms)
-  expect_equal(p$extract("Pre1"), p2)
+  expect_equal_ps(p$extract("Pre1"), p2)
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre2__par1", Set$new(1), 1, tags = "t1")
   )
   p2 <- ParameterSet$new(prms)
-  expect_equal(p$extract("par1"), p2)
+  expect_equal_ps(p$extract("par1"), p2)
   expect_warning(p$extract("par1", prefix = "A"), "argument ignored")
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1")
   )
   p2 <- ParameterSet$new(prms)
-  expect_equal(p$extract("Pre1__par1"), p2)
+  expect_equal_ps(p$extract("Pre1__par1"), p2)
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
@@ -523,7 +525,7 @@ test_that("extract - no deps", {
     prm("par2", "reals", 3, tags = "t2")
   )
   p2 <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
-  expect_equal(p$extract(prefix = "Pre1"), p2)
+  expect_equal_ps(p$extract(prefix = "Pre1"), p2)
 
   prms <- list(
     prm("par1", Set$new(1)),
@@ -577,4 +579,41 @@ test_that("deep clone", {
   p3 <- p
   p3$values$d <- 3
   expect_true(p$values$d == p3$values$d)
+})
+
+
+test_that("transformations error when expected and don't otherwise", {
+  trafo <-  function(x, self) {
+      size <- ifelse(is.null(x$size), self$values$size, x$size)
+      if (!is.null(x$successes)) {
+        x$failures <- size - x$successes
+      } else if (!is.null(x$failures)) {
+        x$successes <- size - x$failures
+      }
+      x
+    }
+
+  p <- pset(
+    prm("size", "naturals", 50),
+    prm("successes", Set$new(0:50, class = "integer")),
+    prm("failures", Set$new(0:50, class = "integer"), 45),
+    prm("draws", Set$new(0:50, class = "integer"), 10, tags = "required"),
+    deps = list(
+      list(id = "successes", on = "size", cnd = cnd("leq", id = "size")),
+      list(id = "failures", on = "size", cnd = cnd("leq", id = "size"))
+    ),
+    trafo = trafo
+  )
+  p$values <- list(size = 40, failures = 2, draws = 5)
+  expect_equal(p$values, list(size = 40, failures = 2, draws = 5))
+  expect_error(p$values$failures <- 60, "One or more")
+  expect_equal(p$trafo, trafo)
+
+  trafo_bad <-  function(x, self) {
+      x$failures <- Inf
+      x
+  }
+
+  expect_error(p$trafo <- trafo_bad, "Transformation results")
+  expect_equal(p$trafo, trafo)
 })

@@ -29,7 +29,7 @@
 #  However as above I am unsure if these methods are ever needed.
 .ParameterSet__remove <- function(self, private, ...) { # nolint
     if (!is.null(private$.trafo)) {
-       warning("Rransformations are not included in extraction.")
+       warning("Transformations are not included in extraction.")
     }
 
     pars <- unlist(list(...))

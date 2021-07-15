@@ -27,8 +27,8 @@
   values <- .get_field(self, values, id = id, tags = tags,
                        inc_null = inc_null)
 
-  if (transform && !is.null(private$.trafo)) {
-    values <- private$.trafo(values, self)
+  if (transform) {
+    values <- self$trafo(values, self)
   }
 
   if (simplify) {
@@ -42,12 +42,19 @@
   values
 }
 
-.check <- function(self, supports = TRUE, deps = TRUE,
+.check <- function(self, private, supports = TRUE, deps = TRUE,
                    tags = TRUE, id = NULL, error_on_fail = TRUE,
                    value_check = NULL, support_check = NULL, dep_check = NULL,
-                   tag_check = NULL) {
+                   tag_check = NULL, transform = TRUE) {
 
   x <- TRUE
+
+  if (transform) {
+    trafo_value_check <- self$trafo(value_check)
+  } else {
+    trafo_value_check <- value_check
+  }
+
 
   # 1. Containedness checks
   if (supports && length(self)) {
@@ -55,11 +62,14 @@
     if ("immutable" %in% self$tag_properties) {
       imm_rm <- names(self$get_values(
         tags = self$tag_properties["immutable"],
-        simplify = FALSE
+        simplify = FALSE,
+        transform = FALSE
       ))
     }
-    x <- .check_supports(self, value_check[names(value_check) %nin% imm_rm],
-                         support_check, id, error_on_fail)
+    x <- .check_supports(
+      self,
+      trafo_value_check[names(trafo_value_check) %nin% imm_rm],
+      support_check, id, error_on_fail)
   }
 
   if (!x) {
@@ -68,7 +78,7 @@
 
   # 2. Dependencies
   if (deps && !is.null(dep_check)) {
-    x <- .check_deps(self, value_check, dep_check, id, error_on_fail)
+    x <- .check_deps(self, trafo_value_check, dep_check, id, error_on_fail)
   }
 
   if (!x) {
@@ -95,7 +105,8 @@
     }
     if (length(ids)) {
       value <- .get_values(self, get_private(self), values, ids,
-                           inc_null = FALSE, simplify = FALSE)
+                           inc_null = FALSE, simplify = FALSE,
+                           transform = FALSE)
 
       set <- support_dictionary$get(names(supports)[[i]])
       if (!is.null(set$power) && set$power == "n") {
@@ -137,9 +148,9 @@
       cnd <- deps[i, 3][[1]][[1]]
       fun <- eval(cnd)
       id_value <- .get_values(self, get_private(self), values, id,
-                              inc_null = FALSE)
+                              transform = FALSE, inc_null = FALSE)
       on_value <- .get_values(self, get_private(self), values, on,
-                              inc_null = FALSE)
+                              transform = FALSE, inc_null = FALSE)
       if (length(id_value)) {
         ok <- fun(on_value, id_value, values)
         if (!ok) {
@@ -172,9 +183,10 @@
       if (length(null_vals)) {
         if (length(tags$linked)) {
           vals <- .get_values(self, get_private(self), values, NULL,
-            tags[["linked"]], FALSE,
+            tags[["linked"]],
             inc_null = TRUE,
-            simplify = FALSE
+            simplify = FALSE,
+            transform = FALSE
           )
           null_vals <- null_vals[names(null_vals) %nin% names(vals)]
           nok <- length(null_vals)
@@ -218,7 +230,8 @@
     if (length(tags$unique)) {
       vals <- .get_values(self, get_private(self), values, NULL,
                           tags = tags[["unique"]],
-                          inc_null = FALSE, simplify = FALSE)
+                          inc_null = FALSE, simplify = FALSE,
+                          transform = FALSE)
       nok <- any(vapply(vals, function(i) any(duplicated(i)), logical(1)))
       if (nok) {
         return(.return_fail(
