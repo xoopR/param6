@@ -1,4 +1,6 @@
-.get_field <- function(self, x, id = NULL, tags = NULL, inc_null = TRUE) {
+.filter_field <- function(self, x, id = NULL, tags = NULL, inc_null = TRUE,
+                          simplify = FALSE) {
+
   if (inc_null) {
     x <- expand_list(self$ids, x)
   }
@@ -11,11 +13,19 @@
   }
 
   if (!is.null(id)) {
-    idx <- x[grepl(paste0(id, collapse = "|"), names(x))]
+    idx <- x[intersect(id, unprefix(names(x)))]
   }
 
   if (!is.null(tags) || !is.null(id)) {
     x <- unique_nlist(c(idx, tagx))
+  }
+
+  if (simplify) {
+    if (length(x) == 0) {
+      x <- NULL
+    } else if (length(x) == 1) {
+      x <- x[[1]]
+    }
   }
 
   x
@@ -24,22 +34,11 @@
 .get_values <- function(self, private, values, id = NULL, tags = NULL,
                         transform = TRUE, inc_null = TRUE, simplify = TRUE) {
 
-  values <- .get_field(self, values, id = id, tags = tags,
-                       inc_null = inc_null)
-
   if (transform) {
-    values <- self$trafo(values, self)
+    values <- self$trafo(self$values, self)
   }
 
-  if (simplify) {
-    if (length(values) == 0) {
-      values <- NULL
-    } else if (length(values) == 1) {
-      values <- values[[1]]
-    }
-  }
-
-  values
+  .filter_field(self, values, id, tags, inc_null, simplify)
 }
 
 .check <- function(self, private, supports = TRUE, deps = TRUE,
@@ -50,7 +49,7 @@
   x <- TRUE
 
   if (transform) {
-    trafo_value_check <- self$trafo(value_check)
+    trafo_value_check <- self$trafo(value_check, self)
   } else {
     trafo_value_check <- value_check
   }
@@ -100,33 +99,17 @@
 .check_supports <- function(self, values, supports, id, error_on_fail) {
   for (i in seq_along(supports)) {
     ids <- supports[[i]]
+
     if (!is.null(id)) {
       ids <- intersect(id, ids)
+      values <- values[intersect(ids, names(values))]
     }
     if (length(ids)) {
-      value <- .get_values(self, get_private(self), values, ids,
-                           inc_null = FALSE, simplify = FALSE,
-                           transform = FALSE)
+      value <- unlist(.get_values(self, get_private(self), values,
+                           inc_null = FALSE, simplify = TRUE,
+                           transform = FALSE))
 
       set <- support_dictionary$get(names(supports)[[i]])
-      if (!is.null(set$power) && set$power == "n") {
-        value <- lapply(value, as.Tuple)
-        len <- vapply(value, function(.x) .x$length, integer(1))
-        ulen <- unique(len)
-        # loop enforced by set6 "n" exponents requiring same length,
-        # will try and fix in set6 asap
-        for (j in ulen) {
-          jvalue <- value[len %in% ulen]
-          if (!set$contains(jvalue, all = TRUE)) {
-            return(.return_fail(
-              msg = sprintf(
-                "One or more of %s does not lie in %s.",
-                string_as_set(vapply(jvalue, as.character, character(1))),
-                as.character(set)), error_on_fail
-            ))
-          }
-        }
-      } else {
         if (!set$contains(value, all = TRUE)) {
           return(.return_fail(
             msg = sprintf("One or more of %s does not lie in %s.",
@@ -134,10 +117,10 @@
             error_on_fail
           ))
         }
-      }
     }
   }
-  return(TRUE)
+
+  TRUE
 }
 
 .check_deps <- function(self, values, deps, id, error_on_fail) {
@@ -174,10 +157,11 @@
 }
 
 .check_tags <- function(self, values, tags, id, error_on_fail) {
+
   if (length(tags)) {
     # required tag
     if (length(tags$required)) {
-      vals <- .get_field(self, values, NULL, tags = tags[["required"]])
+      vals <- .filter_field(self, values, NULL, tags = tags[["required"]])
       null_vals <- vals[vapply(vals, is.null, logical(1))]
 
       if (length(null_vals)) {

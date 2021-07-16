@@ -43,7 +43,9 @@
 
 .ParameterSet__print <- function(self, private, sort) { # nolint
   dt <- suppressWarnings(as.data.table(self, sort = sort))
-  dt$Support <- sapply(dt$Support, function(x) x$strprint())
+  if (nrow(dt)) {
+    dt$Support <- vapply(dt$Support, function(x) x$strprint(), character(1))
+  }
   print(dt)
 }
 
@@ -150,20 +152,20 @@
   }
 
   if (!is.null(prefix)) {
-    ids <- names(.get_field(self, private$.value, prefix))
+    ids <- names(.filter_field(self, private$.value, prefix))
     unfix_ids <- unprefix(ids)
   } else {
-    ids <- names(.get_field(self, private$.value, id, tags))
+    ids <- names(.filter_field(self, private$.value, id, tags))
     unfix_ids <- NULL
   }
 
   which_ids <- paste0(ids, collapse = "|")
-  supports <- unname(.get_field(self, private$.supports, id = ids,
+  supports <- unname(.filter_field(self, private$.supports, id = ids,
                                 inc_null = FALSE))
-  values <- unname(.get_field(self, private$.value, id = ids))
+  values <- unname(.filter_field(self, private$.value, id = ids))
 
   if (length(private$.tags)) {
-    tag <- unname(.get_field(self, private$.tags, id = ids))
+    tag <- unname(.filter_field(self, private$.tags, id = ids))
     if (!is.null(prefix)) {
       unfix_tags <- unprefix(tag)
     }
@@ -269,8 +271,8 @@
                 "immutable" %in% names(self$tag_properties)) {
       stop("Immutable parameters cannot be updated after construction")
     }
-
-    x[match(names(private$.immutable), names(x))] <- private$.immutable
+    which <- intersect(names(private$.immutable), names(x))
+    x[which] <- private$.immutable[which]
     x <- c(x, private$.immutable[names(private$.immutable) %nin% names(x)])
     private$.value <- x
     invisible(self)
@@ -294,13 +296,9 @@
     otrafo <- private$.trafo
     private$.trafo <- x
 
-    tryCatch(.check(self, private, id = names(vals), value_check = vals,
-                    support_check = private$.isupports,
-                    dep_check = self$deps, transform = FALSE),
-             error = function(e) {
-               private$.trafo <- otrafo
-               stop("Transformation results in values outside of supports.")
-             })
+    .check(self, private, id = names(vals), value_check = vals,
+           support_check = private$.isupports,
+           dep_check = self$deps, transform = FALSE)
 
     invisible(self)
   }
