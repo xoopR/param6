@@ -211,31 +211,16 @@ ParameterSet <- R6::R6Class("ParameterSet",
     },
 
     getParameterValue = function(id, ...) {
-      warning("Deprecated, in the future please use $get_values() or $values")
       self$get_values(id)
     },
 
     setParameterValue = function(..., lst = list(...)) {
-      warning("Deprecated, in the future please use $values")
       self$values <- unique_nlist(c(lst, self$values))
     },
 
     parameters = function(id = NULL) {
-      warning("Deprecated, in the future please use $get_values(), $print(), or $values") # nolint
       self
-    },
-
-    addDeps = function(x, y, fun) {
-      warning("Deprecated, in the future please use $add_dep()") # nolint
-      self$add_dep(x, y, fun)
-    },
-
-    addChecks = function(fun) {
-      warning("Deprecated, in the future please use $trafo or $add_dep()") # nolint
-      self$trafo <- fun
-      invisible(self)
     }
-
   ),
 
   active = list(
