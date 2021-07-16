@@ -252,8 +252,8 @@ test_that("get_values", {
     prm("Pre2__par2", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_equal(p$get_values("Pre1"), list(Pre1__par1 = 1, Pre1__par2 = 2))
-  expect_equal(p$get_values(c("Pre1", "Pre2")),
+  expect_equal(p$get_values("Pre1__"), list(Pre1__par1 = 1, Pre1__par2 = 2))
+  expect_equal(p$get_values(c("Pre1__", "Pre2__")),
                list(Pre1__par1 = 1, Pre1__par2 = 2, Pre2__par1 = 1,
                     Pre2__par2 = NULL))
   expect_equal(p$get_values("par1"), list(Pre1__par1 = 1, Pre2__par1 = 1))
@@ -291,7 +291,7 @@ test_that("trafo", {
       x$b <- 3
       x
     }
-  }, "outside")
+  }, "One or more")
   expect_equal(p$get_values(inc_null = FALSE), list(a = 2, b = 3))
 
   prms <- list(
@@ -314,15 +314,16 @@ test_that("trafo", {
        prm(id = "d", 4, support = Reals$new()))
 )
   p$trafo <- function(x, self) {
-    out <- lapply(self$get_values(tags = "t1", transform = FALSE),
-                  function(.x) 2^.x)
+    out <- lapply(
+      self$get_values(tags = "t1", transform = FALSE),
+      function(.x) 2^.x
+    )
     out <- c(out, list(d = x$d))
     out
   }
-  p$get_values()
+  expect_equal(p$get_values(), list(a = 4, b = 8, d = 4))
 
-
-  p = pset(
+  p <- pset(
     prm("prob", Interval$new(0, 1), 0.5, "probs"),
     prm("qprob", Interval$new(0, 1), tags = "probs"),
     tag_properties = list(linked = "probs"),
@@ -336,7 +337,7 @@ test_that("trafo", {
       x
     }
   )
-  p$values$prob = 0.2
+  p$values$prob <- 0.2
   expect_equal(p$get_values(), list(prob = 0.2, qprob = 0.8))
 })
 
@@ -493,13 +494,6 @@ test_that("extract - no deps", {
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
-    prm("Pre1__par2", "reals", 3, tags = "t2")
-  )
-  p2 <- ParameterSet$new(prms)
-  expect_equal_ps(p$extract("Pre1"), p2)
-
-  prms <- list(
-    prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre2__par1", Set$new(1), 1, tags = "t1")
   )
   p2 <- ParameterSet$new(prms)
@@ -606,7 +600,7 @@ test_that("transformations error when expected and don't otherwise", {
   )
   p$values <- list(size = 40, failures = 2, draws = 5)
   expect_equal(p$values, list(size = 40, failures = 2, draws = 5))
-  expect_error(p$values$failures <- 60, "One or more")
+  expect_error(p$values$failures <- 60, "Dependency of")
   expect_equal(p$trafo, trafo)
 
   trafo_bad <-  function(x, self) {
@@ -614,6 +608,6 @@ test_that("transformations error when expected and don't otherwise", {
       x
   }
 
-  expect_error(p$trafo <- trafo_bad, "Transformation results")
+  expect_error(p$trafo <- trafo_bad, "Dependency of")
   expect_equal(p$trafo, trafo)
 })

@@ -152,7 +152,7 @@
   }
 
   if (!is.null(prefix)) {
-    ids <- names(.filter_field(self, private$.value, prefix))
+    ids <- names(.filter_field(self, private$.value, sprintf("%s__", prefix)))
     unfix_ids <- unprefix(ids)
   } else {
     ids <- names(.filter_field(self, private$.value, id, tags))
@@ -296,9 +296,13 @@
     otrafo <- private$.trafo
     private$.trafo <- x
 
-    .check(self, private, id = names(vals), value_check = vals,
-           support_check = private$.isupports,
-           dep_check = self$deps, transform = FALSE)
+    tryCatch(.check(self, private, id = names(vals), value_check = vals,
+                    support_check = private$.isupports,
+                    dep_check = self$deps, transform = FALSE),
+            error = function(e) {
+              private$.trafo <- otrafo
+              stop(e)
+            })
 
     invisible(self)
   }

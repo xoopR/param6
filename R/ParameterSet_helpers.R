@@ -13,7 +13,18 @@
   }
 
   if (!is.null(id)) {
-    idx <- x[intersect(id, unprefix(names(x)))]
+    # partial match on prefix or full match otherwise
+    mtc <- vapply(id, function(.x) {
+      if (grepl("__", .x, fixed = TRUE)) {
+        grepl(sprintf("^%s", .x), names(x))
+      } else {
+        unprefix(names(x)) %in% .x
+      }
+    }, logical(length(x)))
+    if (is.matrix(mtc)) {
+      mtc <- rowSums(mtc) > 0
+    }
+    idx <- x[mtc]
   }
 
   if (!is.null(tags) || !is.null(id)) {
