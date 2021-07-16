@@ -29,7 +29,7 @@ load_support <- function() {
         negreals = NegReals$new(),
         posreals0 = PosReals$new(zero = TRUE),
         negreals0 = NegReals$new(zero = TRUE),
-        extendedreals = ExtendedReals$new(),
+        extreals = ExtendedReals$new(),
         complex = Complex$new(),
         proportion = Interval$new(0, 1),
         nlogicals = Logicals$new()^"n",
@@ -50,7 +50,7 @@ load_support <- function() {
         nnegreals = NegReals$new()^"n",
         nposreals0 = PosReals$new(zero = TRUE)^"n",
         nnegreals0 = NegReals$new(zero = TRUE)^"n",
-        nextendedreals = ExtendedReals$new()^"n",
+        nextreals = ExtendedReals$new()^"n",
         ncomplex = Complex$new()^"n",
         nproportion = Interval$new(0, 1)^"n"
     ), types = "Set")
