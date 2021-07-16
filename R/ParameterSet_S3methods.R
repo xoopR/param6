@@ -124,6 +124,11 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
+  if (length(x$ids) == 0) {
+    return(data.table(Id = character(0), Support = list(), Value = list(),
+                      Tags = character(0)))
+  }
+
   if (length(x$deps) || length(get_private(x)$.trafo)) {
     warning("Dependencies and trafos are lost in coercion.")
   }
