@@ -135,6 +135,7 @@
 }
 
 .check_deps <- function(self, values, deps, id, error_on_fail) {
+
   if (!is.null(deps) && nrow(deps)) {
     for (i in nrow(deps)) {
       id <- deps[i, 1][[1]]
@@ -146,7 +147,7 @@
       on_value <- .get_values(self, get_private(self), values, on,
                               transform = FALSE, inc_null = FALSE)
       if (length(id_value)) {
-        ok <- fun(on_value, id_value, values)
+        ok <- fun(on_value, id_value)
         if (!ok) {
           if (!is.null(attr(cnd, "id"))) {
             msg <- sprintf("Dependency of '%s %s %s' failed.",

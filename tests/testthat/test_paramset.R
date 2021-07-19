@@ -611,3 +611,21 @@ test_that("transformations error when expected and don't otherwise", {
   expect_error(p$trafo <- trafo_bad, "Dependency of")
   expect_equal(p$trafo, trafo)
 })
+
+
+test_that("rep cnd works", {
+  p <- pset(
+    prm("elements", "universal", 1, tags = "required"),
+    prm("probs", Interval$new(0, 1)^"n", 1, tags = "required"),
+    deps = list(
+      list(id = "probs", on = "elements", cnd = cnd("len", id = "elements"))
+    )
+  )$rep(2, "A")
+  expect_error({
+    p$values$A1__elements = 1:2
+  })
+  new_p <- list(A1__elements = 1:2, A1__probs = runif(2), A2__elements = 1,
+                A2__probs = 1)
+  p$values <- new_p
+  expect_equal(p$values, new_p)
+})

@@ -93,14 +93,11 @@ env_append <- function(env, var, values) {
 }
 
 unprefix <- function(x, split = "__") {
-  start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]],
-                  integer(1)) + 2
-  substr(x, start, 1e3)
+  gsub(sprintf("[a-zA-Z]+[0-9]*%s", split), "", x)
 }
 
 get_prefix <- function(x, split = "__") {
-  vapply(x, function(.x) unlist(strsplit(.x, split, TRUE))[[1]], character(1),
-         USE.NAMES = FALSE)
+  gsub(sprintf("%s[a-zA-Z]*", split), "", x)
 }
 
 unique_nlist <- function(x) {

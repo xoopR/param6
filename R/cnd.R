@@ -43,7 +43,7 @@
 #' @export
 cnd <- function(type, value = NULL, id = NULL) {
   choice <- c("eq", "neq", "geq", "leq", "gt", "lt", "any", "nany", "len")
-  fun <- switch(type,
+  sfun <- switch(type,
     "eq" = `==`,
     "neq" = `!=`,
     "geq" = `>=`,
@@ -66,13 +66,12 @@ cnd <- function(type, value = NULL, id = NULL) {
     if (!is.null(value)) {
       warning("'id' and 'value' are non-NULL, 'value' is ignored.")
     }
-    fun <- substitute(function(on, idx, values) {
-      onx <- values[[id]]
-      !any(is.null(onx)) && all(fun(unlist(idx), unlist(onx)))
+    fun <- substitute(function(on, idx, ...) {
+      !any(is.null(on)) && all(sfun(unlist(idx), unlist(on)))
     })
   } else {
     fun <- substitute(function(x, ...)
-      !any(is.null(x)) && all(fun(unlist(x), value)))
+      !any(is.null(x)) && all(sfun(unlist(x), value)))
   }
 
   char <- switch(type,
