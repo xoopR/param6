@@ -26,26 +26,18 @@ sort_named_list <- function(lst, ...) {
 
 named_list <- function(values, names) {
   if (missing(values) && missing(names)) {
-    x <- list()
-    names <- character()
+    setNames(list(), character())
   } else {
-    x <- list(values)
+    setNames(list(values), names)
   }
-
-  names(x) <- names
-  x
 }
 
 as_named_list <- function(values, names) {
   if (missing(values) && missing(names)) {
-    x <- list()
-    names <- character()
+    setNames(list(), character())
   } else {
-    x <- as.list(values)
+    setNames(as.list(values), names)
   }
-
-  names(x) <- names
-  x
 }
 
 expand_list <- function(names, named_var) {
