@@ -622,7 +622,7 @@ test_that("rep cnd works", {
     )
   )$rep(2, "A")
   expect_error({
-    p$values$A1__elements = 1:2
+    p$values$A1__elements <- 1:2
   })
   new_p <- list(A1__elements = 1:2, A1__probs = runif(2), A2__elements = 1,
                 A2__probs = 1)
