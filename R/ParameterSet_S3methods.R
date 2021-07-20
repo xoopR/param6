@@ -71,11 +71,22 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 #' @export
 c.ParameterSet <- function(..., pss = list(...)) {
 
-  prms <- unlist(lapply(pss, as.prm), FALSE)
-
-  if (any(!is.null(unlist(lapply(pss, function(x) get_private(x)$.trafo))))) {
-    warning("Transformations are lost in concatenation.")
+  prms <- lapply(pss, as.prm)
+  nunique <- any(table(unlist(prms)[grepl("id", names(unlist(prms)))]) > 1)
+  if (nunique) {
+    if (is.null(names(pss))) {
+      stop("Ids must be unique if 'pss' is unnamed")
+    } else {
+      for (i in seq_along(prms)) {
+        prms[[i]] <- lapply(prms[[i]], function(.x) {
+          .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
+          .x
+        })
+      }
+    }
   }
+
+  trafo <- drop_null(lapply(pss, function(.x) get_private(.x)$.trafo))
 
   props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
   if (length(props)) {
@@ -103,15 +114,17 @@ c.ParameterSet <- function(..., pss = list(...)) {
     tprop <- NULL
   }
 
-  ps <- ParameterSet$new(prms, tprop)
-  private <- get_private(ps)
-
-  deps <- lapply(pss, "[[", "deps")
-  if (any(!is.null(unlist(deps)))) {
-    private$.deps <- data.table::rbindlist(deps)
+  deps <- drop_null(lapply(pss, "[[", "deps"))
+  if (!length(deps)) {
+    deps <- NULL
   }
 
-  ps
+  pset(
+    prms = unlist(prms, FALSE),
+    tag_properties = tprop,
+    deps = deps,
+    trafo = trafo
+  )
 }
 
 #' @title Coerce a ParameterSet to a data.table

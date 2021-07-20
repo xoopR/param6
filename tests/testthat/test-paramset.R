@@ -450,6 +450,10 @@ test_that("c", {
   )
   p <- ParameterSet$new(prms)
   p$add_dep("a", "b", cnd("neq", 1))
+  p$trafo <- function(x, self) {
+    x$d <- 2
+    x
+  }
 
   p1 <- ParameterSet$new(list(prm("a", "reals", 2), prm("b", "reals", 2)))
   p1$add_dep("a", "b", cnd("neq", 1))
@@ -458,7 +462,7 @@ test_that("c", {
     x$d <- 2
     x
   }
-  expect_equal_ps(expect_warning(c(p1, p2), "Transformations"), p)
+  expect_equal_ps(c(p1, p2), p)
 })
 
 test_that("extract - no deps", {
@@ -656,4 +660,23 @@ test_that("can extract with trafo, properties, deps", {
   p2 <- p$clone(deep = TRUE)$rep(2, "p")
   p_ext <- p2[prefix = "p1"]
   expect_equal_ps(p, p_ext)
+})
+
+
+test_that("concatenate named list", {
+  p <- pset(
+    prm("a", "reals", 1),
+    prm("b", "reals", 1)
+  )
+  lst <- list(a = p, b = p$clone(deep = TRUE))
+  cp <- c.ParameterSet(pss = lst)
+
+  pexp <- pset(
+    prm("a__a", "reals", 1),
+    prm("a__b", "reals", 1),
+    prm("b__a", "reals", 1),
+    prm("b__b", "reals", 1)
+  )
+
+  expect_equal_ps(cp, pexp)
 })

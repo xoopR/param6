@@ -3,8 +3,10 @@
 #---------------
 
 .ParameterSet__initialize <- function(self, private, prms, tag_properties) { # nolint
+
   if (length(prms)) {
     checkmate::assert_list(prms, "prm", any.missing = FALSE)
+    prms <- unname(prms)
 
     ids <- vapply(prms, "[[", character(1), "id")
     if (any(duplicated(ids))) {
@@ -224,13 +226,13 @@
   }
 
   ps <- as.ParameterSet(
-    unname(Map(prm,
+    Map(prm,
       id = ids,
       support = supports,
       value = values,
       tags = tag,
       .check = FALSE
-    )),
+    ),
     trafo = trafo,
     tag_properties = props
   )
@@ -303,9 +305,21 @@
       function(x, self) x
     }
   } else {
-    checkmate::assert_function(x, args = c("x", "self"), TRUE)
-    vals <- x(self$values, self)
-    checkmate::assert_list(vals)
+    if (length(x)) {
+      if (checkmate::test_list(x)) {
+        lapply(x, checkmate::assert_function, args = c("x", "self"),
+              ordered = TRUE)
+        if (length(x) == 1) {
+          x <- x[[1]]
+        }
+      } else {
+        checkmate::assert_function(x, args = c("x", "self"), TRUE)
+      }
+      vals <- checkmate::assert_list(.transform(x, self$values, self))
+    } else {
+      x <- NULL
+      vals <- list()
+    }
 
     otrafo <- private$.trafo
     private$.trafo <- x

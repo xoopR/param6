@@ -371,14 +371,18 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #' @export
 pset <- function(..., prms = list(...), tag_properties = NULL, deps = NULL,
                  trafo = NULL) {
+
   ps <- ParameterSet$new(prms, tag_properties)
+
   if (!is.null(deps)) {
     checkmate::assert_list(deps)
-    lapply(deps, function(x) ps$add_dep(x$id, x$on, x$cond))
+    lapply(deps, function(x) {
+      cnd <- if (checkmate::test_list(x$cond)) x$cond[[1]] else x$cond
+      ps$add_dep(x$id, x$on, cnd)
+    })
   }
-  if (!is.null(trafo)) {
-    checkmate::assert_function(trafo)
-    ps$trafo <- trafo
-  }
+
+  ps$trafo <- trafo
+
   ps
 }
