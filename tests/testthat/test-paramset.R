@@ -527,7 +527,7 @@ test_that("extract - no deps", {
   )
   p <- ParameterSet$new(prms)
   p$trafo <- function(x, self) list(par1 = 1)
-  expect_warning(p["par1"], "Transformations")
+  expect_warning(p["par1", keep_trafo = FALSE], "Transformations")
 })
 
 test_that("extract - deps", {
@@ -593,8 +593,8 @@ test_that("transformations error when expected and don't otherwise", {
     prm("failures", Set$new(0:50, class = "integer"), 45),
     prm("draws", Set$new(0:50, class = "integer"), 10, tags = "required"),
     deps = list(
-      list(id = "successes", on = "size", cnd = cnd("leq", id = "size")),
-      list(id = "failures", on = "size", cnd = cnd("leq", id = "size"))
+      list(id = "successes", on = "size", cond = cnd("leq", id = "size")),
+      list(id = "failures", on = "size", cond = cnd("leq", id = "size"))
     ),
     trafo = trafo
   )
@@ -618,7 +618,7 @@ test_that("rep cnd works", {
     prm("elements", "universal", 1, tags = "required"),
     prm("probs", Interval$new(0, 1)^"n", 1, tags = "required"),
     deps = list(
-      list(id = "probs", on = "elements", cnd = cnd("len", id = "elements"))
+      list(id = "probs", on = "elements", cond = cnd("len", id = "elements"))
     )
   )$rep(2, "A")
   expect_error({

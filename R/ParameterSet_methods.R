@@ -196,6 +196,10 @@
       deps <- subset(private$.deps,
                     grepl(which_ids, id) & grepl(which_ids, on))
     }
+
+    if (nrow(deps) == 0) {
+      deps <- NULL
+    }
   }
 
   props <- NULL

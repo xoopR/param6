@@ -153,19 +153,8 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
 #' @description Creates a new [ParameterSet] by extracting the given
 #' parameters. S3 method for the `$extract` public method.
 #' @param object ([ParameterSet])
-#' @param i (`character()`) \cr
-#' If not `NULL` then specifies the parameters by id to extract. Should be
-#' `NULL` if `prefix` is not `NULL`.
-#' @param tags (`character()`) \cr
-#' If not `NULL` then specifies the parameters by tag to extract. Should be
-#' `NULL` if `prefix` is not `NULL`.
-#' @param prefix (`character()`) \cr
-#' If not `NULL` then extracts parameters according to their prefix and
-#' additionally removes the prefix from the id. A prefix is determined as
-#' the string before `"__"` in an id.
-#' @param ... (`ANY`) \cr Other arguments, currently unused.
+#' @param ... (`ANY`) \cr Passed to [ParameterSet]$extract
 #' @export
-`[.ParameterSet` <- function(object, i = NULL, tags = NULL, prefix = NULL,
-                             ...) {
-  object$extract(i, tags, prefix)
+`[.ParameterSet` <- function(object, ...) {
+  object$extract(...)
 }
