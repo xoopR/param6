@@ -1,3 +1,5 @@
+library(testthat)
+
 test_that("untyped construction", {
   # empty
   expect_silent(Dictionary$new())
