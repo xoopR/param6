@@ -307,6 +307,7 @@
   } else {
     if (length(x)) {
       if (checkmate::test_list(x)) {
+        x <- x[!duplicated(x)]
         lapply(x, checkmate::assert_function, args = c("x", "self"),
               ordered = TRUE)
         if (length(x) == 1) {
