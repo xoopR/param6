@@ -149,6 +149,9 @@ p$extract(tags = "t1")
 p$extract(prefix = "Pre1")
 # equivalently
 p[prefix = "Pre1"]
+Deprecated method added for distr6 compatibility.
+Use $values/$get_values() in the future.
+Will be removed in 0.3.0.
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -173,11 +176,14 @@ If \code{x} is missing then returns tag properties if any. \cr
 If \code{x} is not missing then used to tag properties. Currently properties
 can either be: \cr
 i) 'required' - parameters with this tag must have set (non-NULL)
-values;\cr
+values; if a parameter is both 'required' and 'linked' then exactly
+one parameter in the 'linked' tag must be tagged;\cr
 ii) 'linked' - parameters with 'linked' tags are dependent on one another
 and only one can be set (non-NULL at a time);\cr
 iii) 'unique' - parameters with this tag must have no duplicated
-elements, therefore this tag only makes sense for vector parameters.}
+elements, therefore this tag only makes sense for vector parameters;\cr
+iv) 'immutable' - parameters with this tag cannot be updated after
+construction.}
 
 \item{\code{values}}{\code{list() -> self} / None -> \code{list()} \cr
 If \code{x} is missing then returns the set (non-NULL) values without
@@ -211,6 +217,10 @@ infinite recursion, see examples at end.}
 \item \href{#method-add_dep}{\code{ParameterSet$add_dep()}}
 \item \href{#method-rep}{\code{ParameterSet$rep()}}
 \item \href{#method-extract}{\code{ParameterSet$extract()}}
+\item \href{#method-getParameterValue}{\code{ParameterSet$getParameterValue()}}
+\item \href{#method-setParameterValue}{\code{ParameterSet$setParameterValue()}}
+\item \href{#method-set_values}{\code{ParameterSet$set_values()}}
+\item \href{#method-parameters}{\code{ParameterSet$parameters()}}
 \item \href{#method-clone}{\code{ParameterSet$clone()}}
 }
 }
@@ -229,12 +239,13 @@ Constructs a \code{ParameterSet} object.
 \item{\code{prms}}{(\code{list()}) \cr List of \link{prm} objects. Ids should be unique.}
 
 \item{\code{tag_properties}}{(\code{list()}) \cr
-List of tag properties. Currently support properties are: i) 'required' -
+List of tag properties. Currently supported properties are: i) 'required' -
 parameters with this tag property must be non-NULL; ii) 'linked' - only one
 parameter in a linked tag group can be non-NULL and the others should be
 NULL, this only makes sense with an associated \code{trafo}; iii) 'unique' -
 parameters with this tag must have no duplicated elements, only makes sense
-for vector parameters.}
+for vector parameters; iv) 'immutable' - parameters with this tag cannot be
+updated after construction.}
 }
 \if{html}{\out{</div>}}
 }
@@ -446,7 +457,7 @@ should be equal to \code{times}.}
 Creates a new \code{ParameterSet} by extracting the given
 parameters.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$extract(id = NULL, tags = NULL, prefix = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$extract(id = NULL, tags = NULL, prefix = NULL, keep_trafo = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -464,6 +475,10 @@ If not \code{NULL} then specifies the parameters by tag to extract. Should be
 If not \code{NULL} then extracts parameters according to their prefix and
 additionally removes the prefix from the id. A prefix is determined as
 the string before \code{"__"} in an id.}
+
+\item{\code{keep_trafo}}{(\code{logical(1)}) \cr
+If \code{TRUE} (default) then transformations are kept in extraction,
+otherwise removed with warning.}
 }
 \if{html}{\out{</div>}}
 }
@@ -491,11 +506,92 @@ p$extract(tags = "t1")
 p$extract(prefix = "Pre1")
 # equivalently
 p[prefix = "Pre1"]
+Deprecated method added for distr6 compatibility.
+Use $values/$get_values() in the future.
+Will be removed in 0.3.0.
 }
 \if{html}{\out{</div>}}
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getParameterValue"></a>}}
+\if{latex}{\out{\hypertarget{method-getParameterValue}{}}}
+\subsection{Method \code{getParameterValue()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$getParameterValue(id, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id}}{Parameter id}
+
+\item{\code{...}}{Unused
+Deprecated method added for distr6 compatibility.
+Use $set_values in the future.
+Will be removed in 0.3.0.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setParameterValue"></a>}}
+\if{latex}{\out{\hypertarget{method-setParameterValue}{}}}
+\subsection{Method \code{setParameterValue()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$setParameterValue(..., lst = list(...))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Parameter ids}
+
+\item{\code{lst}}{List of parameter ids
+Convenience function for setting multiple parameters without changing
+or accidentally removing others.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_values"></a>}}
+\if{latex}{\out{\hypertarget{method-set_values}{}}}
+\subsection{Method \code{set_values()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$set_values(..., lst = list(...))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Parameter ids}
+
+\item{\code{lst}}{List of parameter ids
+Deprecated method added for distr6 compatibility.
+Use $print/as.data.table() in the future.
+Will be removed in 0.3.0.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-parameters"></a>}}
+\if{latex}{\out{\hypertarget{method-parameters}{}}}
+\subsection{Method \code{parameters()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$parameters(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Unused}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

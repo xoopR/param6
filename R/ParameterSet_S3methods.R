@@ -23,7 +23,7 @@ as.ParameterSet.prm <- function(x, ...) { # nolint
 #' @export
 as.ParameterSet.list <- function(x, ...) { # nolint
   checkmate::assert_list(x, "prm", any.missing = FALSE)
-  ParameterSet$new(x, ...)
+  pset(prms = x, ...)
 }
 
 #' @title Length of a ParameterSet

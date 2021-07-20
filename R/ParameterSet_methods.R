@@ -138,11 +138,8 @@
   invisible(self)
 }
 
-.ParameterSet__extract <- function(self, private, id, tags, prefix) { # nolint
-
-  if (!is.null(private$.trafo)) {
-    warning("Transformations are not included in extraction.")
-  }
+.ParameterSet__extract <- function(self, private, id, tags, prefix, # nolint
+                                   keep_trafo) {
 
   if (is.null(id) && is.null(prefix) && is.null(tags)) {
     stop("One argument must be non-NULL.")
@@ -159,7 +156,6 @@
     unfix_ids <- NULL
   }
 
-  which_ids <- paste0(ids, collapse = "|")
   supports <- unname(.filter_field(self, private$.supports, id = ids,
                                 inc_null = FALSE))
   values <- unname(.filter_field(self, private$.value, id = ids))
@@ -167,61 +163,75 @@
   if (length(private$.tags)) {
     tag <- unname(.filter_field(self, private$.tags, id = ids))
     if (!is.null(prefix)) {
-      unfix_tags <- unprefix(tag)
+      unfix_tags <- lapply(tag, unprefix)
     }
   } else {
     tag <- unfix_tags <- rep(list(NULL), length(values))
   }
 
-  if (length(unfix_ids)) {
-    ps <- as.ParameterSet(
-      unname(Map(prm,
-                 id = unfix_ids,
-                 support = supports,
-                 value = values,
-                 tags = unfix_tags,
-                 .check = FALSE
-      ))
-    )
-  } else {
-    ps <- as.ParameterSet(
-      unname(Map(prm,
-                 id = ids,
-                 support = supports,
-                 value = values,
-                 tags = tag,
-                 .check = FALSE
-      ))
-    )
+  trafo <- NULL
+  if (!is.null(private$.trafo)) {
+    if (keep_trafo) {
+      trafo <- self$trafo
+    } else {
+      warning("Transformations removed in extraction.")
+    }
   }
 
+  deps <- NULL
   if (!is.null(private$.deps)) {
+    ## first check for prefixes
+    which_ids <- paste0(ids, collapse = "|")
     deps <- subset(private$.deps,
                    grepl(which_ids, id) & grepl(which_ids, on))
     if (nrow(deps)) {
+      ## remove prefix if extracting by prefix
       if (!is.null(unfix_ids)) {
         deps$id <- unfix_ids[match(deps$id, ids)]
         deps$on <- unfix_ids[match(deps$on, ids)]
       }
-      pri <- get_private(ps)
-      pri$.deps <- deps
+    ## check if no prefix but extracting
+    } else if (length(unfix_ids)) {
+      which_ids <- paste0(unfix_ids, collapse = "|")
+      deps <- subset(private$.deps,
+                    grepl(which_ids, id) & grepl(which_ids, on))
     }
   }
 
-  if (length(private$.tag_properties)) {
-    new_props <- list()
+  props <- NULL
+    if (length(private$.tag_properties)) {
+    props <- list()
     for (i in c("linked", "required", "unique", "immutable")) {
       if (length(private$.tag_properties[[i]])) {
-      new_props[[i]] <-
-        unprefix(
-          private$.tag_properties[[i]][private$.tag_properties[[i]] %in%
-                                           tag]
-        )
+        tp <- private$.tag_properties[[i]][private$.tag_properties[[i]] %in%
+                                            unlist(tag)]
+        if (!is.null(prefix)) {
+          tp <- unprefix(tp)
+        }
+        props[[i]] <- tp
       }
     }
-    ps$tag_properties <- new_props
   }
 
+
+  if (length(unfix_ids)) {
+    ids <- unfix_ids
+    tags <- unfix_tags
+  }
+
+  ps <- as.ParameterSet(
+    unname(Map(prm,
+      id = ids,
+      support = supports,
+      value = values,
+      tags = tag,
+      .check = FALSE
+    )),
+    trafo = trafo,
+    tag_properties = props
+  )
+  pri <- get_private(ps)
+  pri$.deps <- deps
 
   ps
 }

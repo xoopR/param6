@@ -629,3 +629,31 @@ test_that("rep cnd works", {
   p$values <- new_p
   expect_equal(p$values, new_p)
 })
+
+
+test_that("can extract with trafo, properties, deps", {
+  trafo_probs <- function(x, self) {
+    probs <- x[grepl("prob", names(x))]
+    qprobs <- x[grepl("qprob", names(x))]
+    c(x,
+      setNames(
+        as.list(1 - unlist(probs)),
+        gsub("prob", "qprob", names("prob"))
+      )
+    )
+  }
+  p <- pset(
+    prm("prob", Interval$new(0, 1), 0.5, tags = c("probs", "r")),
+    prm("qprob", Interval$new(0, 1), tags = c("probs", "r")),
+    prm("size", "posnaturals", 10, tags = "r"),
+    tag_properties = list(linked = "probs", required = "r"),
+    trafo = trafo_probs,
+    deps = list(
+      list(id = "prob", on = "size", cond = cnd("len", id = "size")),
+      list(id = "qprob", on = "size", cond = cnd("len", id = "size"))
+    )
+  )
+  p2 <- p$clone(deep = TRUE)$rep(2, "p")
+  p_ext <- p2[prefix = "p1"]
+  expect_equal_ps(p, p_ext)
+})

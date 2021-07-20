@@ -183,6 +183,9 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' If not `NULL` then extracts parameters according to their prefix and
     #' additionally removes the prefix from the id. A prefix is determined as
     #' the string before `"__"` in an id.
+    #' @param keep_trafo (`logical(1)`) \cr
+    #' If `TRUE` (default) then transformations are kept in extraction,
+    #' otherwise removed with warning.
     #' @examples
     #' # extract by id
     #' prms <- list(
@@ -206,19 +209,46 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' p$extract(prefix = "Pre1")
     #' # equivalently
     #' p[prefix = "Pre1"]
-    extract = function(id = NULL, tags = NULL, prefix = NULL) {
-      .ParameterSet__extract(self, private, id, tags, prefix)
+    extract = function(id = NULL, tags = NULL, prefix = NULL,
+                       keep_trafo = TRUE) {
+      .ParameterSet__extract(self, private, id, tags, prefix, keep_trafo)
     },
 
+    #' Deprecated method added for distr6 compatibility.
+    #' Use $values/$get_values() in the future.
+    #' Will be removed in 0.3.0.
+    #' @param id Parameter id
+    #' @param ... Unused
     getParameterValue = function(id, ...) {
+      warning("Deprecated. In the future please use $values/$get_values(). Will be removed in 0.3.0.") # nolint
       self$get_values(id)
     },
 
+    #' Deprecated method added for distr6 compatibility.
+    #' Use $set_values in the future.
+    #' Will be removed in 0.3.0.
+    #' @param ... Parameter ids
+    #' @param lst List of parameter ids
     setParameterValue = function(..., lst = list(...)) {
+      warning("Deprecated. In the future please use $values. Will be removed in 0.3.0.") # nolint
       self$values <- unique_nlist(c(lst, self$values))
     },
 
-    parameters = function(id = NULL) {
+    #' Convenience function for setting multiple parameters without changing
+    #' or accidentally removing others.
+    #' @param ... Parameter ids
+    #' @param lst List of parameter ids
+    set_values = function(..., lst = list(...)) {
+      self$values <- unique_nlist(c(lst, self$values))
+      invisible(self)
+    },
+
+    #' Deprecated method added for distr6 compatibility.
+    #' Use $print/as.data.table() in the future.
+    #' Will be removed in 0.3.0.
+    #' @param ... Unused
+    parameters = function(...) {
+      warning("Deprecated. In the future please use $print/as.data.table(). Will be removed in 0.3.0.") # nolint
       self
     }
   ),
@@ -334,7 +364,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
 #'  prm("d", "reals", 2, tags = "t2"),
 #'  tag_properties = list(required = "t2"),
 #'  deps = list(
-#'    list(id = "a", on = "b", cnd = cnd("eq", 1.5))
+#'    list(id = "a", on = "b", cond = cnd("eq", 1.5))
 #'  ),
 #'  trafo = function(x, self) return(x)
 #' )
@@ -344,7 +374,7 @@ pset <- function(..., prms = list(...), tag_properties = NULL, deps = NULL,
   ps <- ParameterSet$new(prms, tag_properties)
   if (!is.null(deps)) {
     checkmate::assert_list(deps)
-    lapply(deps, function(x) ps$add_dep(x$id, x$on, x$cnd))
+    lapply(deps, function(x) ps$add_dep(x$id, x$on, x$cond))
   }
   if (!is.null(trafo)) {
     checkmate::assert_function(trafo)
