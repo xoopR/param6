@@ -60,49 +60,49 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
   x
 }
 
+#' @title Concatenate Unique ParameterSet Objects
+#' @description Concatenate multiple [ParameterSet] objects with unique ids and
+#' tags into a single [ParameterSet].
+#' @details Concatenates ids, tags, tag properties and dependencies. Assumes
+#' ids and tags are unique; trafos are combined into a list.
+#' @param ... ([ParameterSet]s) \cr [ParameterSet] objects to concatenate.
+#' @param lst (`list()`) \cr Alternatively pass a list of [ParameterSet]
+#' objects.
+#' @export
+c.ParameterSet <- function(..., pss = list(...)) {
+  .combine_unique(lapply(pss, as.prm), pss)
+}
+
+
 #' @title Concatenate ParameterSet Objects
 #' @description Concatenate multiple [ParameterSet] objects into a single
 #' [ParameterSet].
 #' @details Concatenates ids, tags, tag properties and dependencies,
 #' but not transformations.
-#' @param ... ([ParameterSet]s) \cr [ParameterSet] objects to concatenate.
-#' @param pss (`list()`) \cr Alternatively pass a list of [ParameterSet]
-#' objects.
+#' @param ... ([ParameterSet]s) \cr Named [ParameterSet] objects to concatenate.
+#' @param pss (`named list()`) \cr Alternatively pass a named list of
+#' [ParameterSet] objects.
 #' @export
-c.ParameterSet <- function(..., pss = list(...)) {
+cpset <- function(..., pss = list(...)) {
 
   prms <- lapply(pss, as.prm)
+  checkmate::assert_list(prms, names = "unique")
 
   ## add prefix to ids if required
-  nunique <- any(table(unlist(prms)[grepl("id", names(unlist(prms)))]) > 1)
-  if (nunique) {
-    if (is.null(names(pss))) {
-      stop("Ids must be unique if 'pss' is unnamed")
-    } else {
-      for (i in seq_along(prms)) {
-        prms[[i]] <- lapply(prms[[i]], function(.x) {
-          .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
-          .x
-        })
+  for (i in seq_along(prms)) {
+    prms[[i]] <- lapply(prms[[i]], function(.x) {
+      .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
+      if (length(.x$tags)) {
+        .x$tags <- sprintf("%s__%s", names(prms)[[i]], .x$tags)
       }
-    }
+      .x
+    })
   }
 
-  ## add prefix to tags if required
-  nunique <- any(table(unlist(prms)[grepl("tags", names(unlist(prms)))]) > 1)
-  if (nunique) {
-    if (is.null(names(pss))) {
-      stop("Tags must be unique if 'pss' is unnamed")
-    } else {
-      for (i in seq_along(prms)) {
-        prms[[i]] <- lapply(prms[[i]], function(.x) {
-          .x$tags <- sprintf("%s__%s", names(prms)[[i]], .x$tags)
-          .x
-        })
-      }
-    }
-  }
+  .combine_unique(prms, pss)
+}
 
+.combine_unique <- function(prms, pss) {
   trafo <- drop_null(lapply(pss, function(.x) get_private(.x)$.trafo))
 
   props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)

@@ -669,7 +669,7 @@ test_that("concatenate named list", {
     prm("b", "reals", 1)
   )
   lst <- list(a = p, b = p$clone(deep = TRUE))
-  cp <- c.ParameterSet(pss = lst)
+  cp <- cpset(pss = lst)
 
   pexp <- pset(
     prm("a__a", "reals", 1),
