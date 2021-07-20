@@ -175,6 +175,11 @@
   if (!is.null(private$.trafo)) {
     if (keep_trafo) {
       trafo <- self$trafo
+      if (length(prefix) && checkmate::test_list(trafo) &&
+          grepl("__", names(trafo), fixed = TRUE)) {
+        trafo <- trafo[grepl(paste0(prefix, collapse = "|"), names(trafo))]
+        names(trafo) <- unprefix(names(trafo))
+      }
     } else {
       warning("Transformations removed in extraction.")
     }
@@ -191,6 +196,10 @@
       if (!is.null(unfix_ids)) {
         deps$id <- unfix_ids[match(deps$id, ids)]
         deps$on <- unfix_ids[match(deps$on, ids)]
+        at <- attr(deps$cond[[1]], "id")
+        if (!is.null(at)) {
+          attr(deps$cond[[1]], "id") <- unprefix(at)
+        }
       }
     ## check if no prefix but extracting
     } else if (length(unfix_ids)) {
@@ -307,10 +316,12 @@
   } else {
     if (length(x)) {
       if (checkmate::test_list(x)) {
+        x <- unlist(x, recursive = FALSE)
+        names(x) <- gsub(".", "__", names(x), fixed = TRUE)
         x <- x[!duplicated(x)]
         lapply(x, checkmate::assert_function, args = c("x", "self"),
               ordered = TRUE)
-        if (length(x) == 1) {
+        if (length(x) == 1 && is.null(names(x))) {
           x <- x[[1]]
         }
       } else {

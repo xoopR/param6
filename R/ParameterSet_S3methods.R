@@ -88,7 +88,7 @@ cpset <- function(..., pss = list(...)) {
   prms <- lapply(pss, as.prm)
   checkmate::assert_list(prms, names = "unique")
 
-  ## add prefix to ids if required
+  ## add prefix to ids and tags
   for (i in seq_along(prms)) {
     prms[[i]] <- lapply(prms[[i]], function(.x) {
       .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
@@ -99,10 +99,26 @@ cpset <- function(..., pss = list(...)) {
     })
   }
 
+  ## add prefix to deps
+  for (i in seq_along(pss)) {
+    pri <- get_private(pss[[i]])
+    deps <- pri$.deps
+    if (!is.null(deps)) {
+      deps$id <- sprintf("%s__%s", names(pss)[[i]], deps$id)
+      deps$on <- sprintf("%s__%s", names(pss)[[i]], deps$on)
+      at <- attr(deps$cond[[1]], "id")
+      if (!is.null(at)) {
+        attr(deps$cond[[1]], "id") <- sprintf("%s__%s", names(pss)[[i]], at)
+      }
+      pri$.deps <- deps
+    }
+  }
+
   .combine_unique(prms, pss)
 }
 
 .combine_unique <- function(prms, pss) {
+
   trafo <- drop_null(lapply(pss, function(.x) get_private(.x)$.trafo))
 
   props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
