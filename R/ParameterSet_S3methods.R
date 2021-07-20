@@ -72,6 +72,8 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 c.ParameterSet <- function(..., pss = list(...)) {
 
   prms <- lapply(pss, as.prm)
+
+  ## add prefix to ids if required
   nunique <- any(table(unlist(prms)[grepl("id", names(unlist(prms)))]) > 1)
   if (nunique) {
     if (is.null(names(pss))) {
@@ -80,6 +82,21 @@ c.ParameterSet <- function(..., pss = list(...)) {
       for (i in seq_along(prms)) {
         prms[[i]] <- lapply(prms[[i]], function(.x) {
           .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
+          .x
+        })
+      }
+    }
+  }
+
+  ## add prefix to tags if required
+  nunique <- any(table(unlist(prms)[grepl("tags", names(unlist(prms)))]) > 1)
+  if (nunique) {
+    if (is.null(names(pss))) {
+      stop("Tags must be unique if 'pss' is unnamed")
+    } else {
+      for (i in seq_along(prms)) {
+        prms[[i]] <- lapply(prms[[i]], function(.x) {
+          .x$tags <- sprintf("%s__%s", names(prms)[[i]], .x$tags)
           .x
         })
       }
