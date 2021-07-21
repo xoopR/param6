@@ -316,7 +316,7 @@
         x <- x[!duplicated(x)]
         lapply(x, checkmate::assert_function, args = c("x", "self"),
                ordered = TRUE)
-        if (length(x) == 1 && is.null(names(x))) {
+        if (length(x) == 1 && (is.null(names(x)) || is.na(names(x)))) {
           x <- x[[1]]
         }
       } else {

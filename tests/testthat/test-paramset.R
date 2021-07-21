@@ -274,7 +274,7 @@ test_that("trafo", {
     prm("d", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_equal(deparse(p$trafo), deparse(function(x, self) x))
+  expect_equal(p$trafo, NULL)
   expect_equal(get_private(p)$.trafo, NULL)
   expect_error({p$trafo <- "a"}, "function") # nolint
   expect_error({p$trafo <- function(x, self) "a"}, "list") # nolint

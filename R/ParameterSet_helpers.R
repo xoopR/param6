@@ -46,7 +46,7 @@
                         transform = TRUE, inc_null = TRUE, simplify = TRUE) {
 
   if (transform) {
-    values <- self$trafo(self$values, self)
+    values <- self$transform()
   }
 
   .filter_field(self, values, id, tags, inc_null, simplify)
@@ -60,7 +60,7 @@
   x <- TRUE
 
   if (transform) {
-    trafo_value_check <- self$trafo(value_check, self)
+    trafo_value_check <- self$transform(value_check)
   } else {
     trafo_value_check <- value_check
   }
