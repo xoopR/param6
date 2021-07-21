@@ -328,15 +328,3 @@ assert_condition <- function(id, support, cond) {
   invisible(prop)
 
 }
-
-
-.transform <- function(fun, x, self) {
-  if (checkmate::test_list(fun)) {
-    for (i in seq_along(fun)) {
-      x <- fun[[i]](x, self)
-    }
-  } else {
-    x <- fun(x, self)
-  }
-  x
-}

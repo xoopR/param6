@@ -617,6 +617,31 @@ test_that("transformations error when expected and don't otherwise", {
 })
 
 
+test_that("transform types", {
+  trafo_a <- function(x, self) {
+    x$a <- x$a + 1
+    x
+  }
+  trafo_b <- function(x, self) {
+    x$b <- x$b + 1
+    x
+  }
+  p <- pset(
+    prm("a", "reals", 2),
+    prm("b", "reals", 1),
+    trafo = trafo_a
+  )
+  expect_equal(p$transform(), list(a = 3, b = 1))
+
+  p$trafo <- list(trafo_a, trafo_b)
+  expect_equal(p$transform(), list(a = 3, b = 2))
+  expect_equal(p$transform(p$values), list(a = 3, b = 2))
+
+  p$trafo <- NULL
+  expect_equal(p$transform(), list(a = 2, b = 1))
+})
+
+
 test_that("rep cnd works", {
   p <- pset(
     prm("elements", "universal", 1, tags = "required"),

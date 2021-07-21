@@ -194,17 +194,28 @@ first checked internally with the \verb{$check} method before setting the new
 values. \cr
 See examples at end.}
 
-\item{\code{trafo}}{\verb{function() -> self} / None -> \verb{function()} \cr
+\item{\code{trafo}}{\verb{function()|list() -> self} / None -> \verb{function()|list()}
+\cr
 If \code{x} is missing then returns a transformation function if previously
-set, otherwise \code{NULL}. \cr
-If \code{x} is not missing then it should be a function with arguments \code{x} and
-\code{self}, which internally correspond to \code{self} being the \code{ParameterSet}
-the transformation is being added to, and \code{x <- self$values}. The
-transformation function is automatically called after a call to
+set, a list of transformation functions, otherwise \code{NULL}. \cr
+If \code{x} is not missing then it should either be:
+\itemize{
+\item a function with arguments \code{x} and \code{self}, which internally correspond
+to \code{self} being the \code{ParameterSet} the transformation is being added to,
+and \code{x <- self$values}.
+\item a list of functions like above
+}
+
+The transformation function is automatically called after a call to
 \code{self$get_values()} and is used to transform set values, it should
 therefore result in a list. If using \code{self$get_values()} within the
 transformation function, make sure to set \code{transform = FALSE} to prevent
-infinite recursion, see examples at end.}
+infinite recursion, see examples at end.
+
+It is generally safer to call the transformation with
+\verb{$transform(self$values)} as this will first check to see if \verb{$trafo}
+is a function or list. If the latter then each function in the list is
+applied, one after the other.}
 }
 \if{html}{\out{</div>}}
 }
@@ -221,6 +232,7 @@ infinite recursion, see examples at end.}
 \item \href{#method-setParameterValue}{\code{ParameterSet$setParameterValue()}}
 \item \href{#method-set_values}{\code{ParameterSet$set_values()}}
 \item \href{#method-parameters}{\code{ParameterSet$parameters()}}
+\item \href{#method-transform}{\code{ParameterSet$transform()}}
 \item \href{#method-clone}{\code{ParameterSet$clone()}}
 }
 }
@@ -591,6 +603,31 @@ Will be removed in 0.3.0.}
 \item{\code{...}}{Unused}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-transform"></a>}}
+\if{latex}{\out{\hypertarget{method-transform}{}}}
+\subsection{Method \code{transform()}}{
+Applies the internal transformation function.
+If no function has been passed to \verb{$trafo} then \code{x} is returned
+unchanged. If \verb{$trafo} is a function then \code{x} is passed directly to
+this. If \verb{$trafo} is a list then \code{x} is evaluated and passed down the
+list iteratively.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$transform(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\verb{named list(1)}) \cr
+List of values to transform.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\verb{named list(1)}
 }
 }
 \if{html}{\out{<hr>}}

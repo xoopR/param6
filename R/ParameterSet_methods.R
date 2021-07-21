@@ -307,12 +307,7 @@
 .ParameterSet__trafo <- function(self, private, x) { # nolint
 
   if (missing(x)) {
-    traf <- private$.trafo
-    if (!is.null(traf)) {
-      traf
-    } else {
-      function(x, self) x
-    }
+    private$.trafo
   } else {
     if (length(x)) {
       if (checkmate::test_list(x)) {
@@ -320,21 +315,20 @@
         names(x) <- gsub(".", "__", names(x), fixed = TRUE)
         x <- x[!duplicated(x)]
         lapply(x, checkmate::assert_function, args = c("x", "self"),
-              ordered = TRUE)
+               ordered = TRUE)
         if (length(x) == 1 && is.null(names(x))) {
           x <- x[[1]]
         }
       } else {
         checkmate::assert_function(x, args = c("x", "self"), TRUE)
       }
-      vals <- checkmate::assert_list(.transform(x, self$values, self))
     } else {
       x <- NULL
-      vals <- list()
     }
 
     otrafo <- private$.trafo
     private$.trafo <- x
+    vals <- checkmate::assert_list(self$transform(self$values))
 
     tryCatch(.check(self, private, id = names(vals), value_check = vals,
                     support_check = private$.isupports,
@@ -345,5 +339,20 @@
             })
 
     invisible(self)
+  }
+}
+
+
+.ParameterSet__transform <- function(self, private, x) { # nolint
+  trafo <- self$trafo
+  if (is.null(trafo)) {
+    x
+  } else if (checkmate::test_function(trafo)) {
+    trafo(x, self)
+  } else {
+    for (i in seq_along(trafo)) {
+      x <- trafo[[i]](x, self)
+    }
+    x
   }
 }

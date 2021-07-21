@@ -250,6 +250,18 @@ ParameterSet <- R6::R6Class("ParameterSet",
     parameters = function(...) {
       warning("Deprecated. In the future please use $print/as.data.table(). Will be removed in 0.3.0.") # nolint
       self
+    },
+
+    #' @description Applies the internal transformation function.
+    #' If no function has been passed to `$trafo` then `x` is returned
+    #' unchanged. If `$trafo` is a function then `x` is passed directly to
+    #' this. If `$trafo` is a list then `x` is evaluated and passed down the
+    #' list iteratively.
+    #' @param x (`named list(1)`) \cr
+    #' List of values to transform.
+    #' @return `named list(1)`
+    transform = function(x = self$values) {
+      .ParameterSet__transform(self, private, x)
     }
   ),
 
@@ -301,17 +313,27 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' See examples at end.
     values = function(x) .ParameterSet__values(self, private, x),
 
-    #' @field trafo `function() -> self` / None -> `function()` \cr
+    #' @field trafo `function()|list() -> self` / None -> `function()|list()`
+    #' \cr
     #' If `x` is missing then returns a transformation function if previously
-    #' set, otherwise `NULL`. \cr
-    #' If `x` is not missing then it should be a function with arguments `x` and
-    #' `self`, which internally correspond to `self` being the `ParameterSet`
-    #' the transformation is being added to, and `x <- self$values`. The
-    #' transformation function is automatically called after a call to
+    #' set, a list of transformation functions, otherwise `NULL`. \cr
+    #' If `x` is not missing then it should either be:
+    #'
+    #' * a function with arguments `x` and `self`, which internally correspond
+    #' to `self` being the `ParameterSet` the transformation is being added to,
+    #' and `x <- self$values`.
+    #' * a list of functions like above
+    #'
+    #' The transformation function is automatically called after a call to
     #' `self$get_values()` and is used to transform set values, it should
     #' therefore result in a list. If using `self$get_values()` within the
     #' transformation function, make sure to set `transform = FALSE` to prevent
     #' infinite recursion, see examples at end.
+    #'
+    #' It is generally safer to call the transformation with
+    #' `$transform(self$values)` as this will first check to see if `$trafo`
+    #' is a function or list. If the latter then each function in the list is
+    #' applied, one after the other.
     trafo = function(x) .ParameterSet__trafo(self, private, x)
     ),
 
