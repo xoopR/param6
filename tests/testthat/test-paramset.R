@@ -718,3 +718,14 @@ test_that("linked + required works as expected", {
   p$values <- list(size = 1, prob = NULL, qprob = 1)
   expect_equal(p$values, list(size = 1, qprob = 1))
 })
+
+
+test_that("can update support", {
+  p <- pset(
+    prm("a", "reals", 1),
+    prm("b", "reals", 1)
+  )
+  sup <- list(a = Interval$new(0, 5), b = Interval$new(1, 3))
+  get_private(p)$.update_support(lst = sup)
+  expect_equal(p$supports, sup)
+})

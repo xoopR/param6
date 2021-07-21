@@ -356,3 +356,24 @@
     x
   }
 }
+
+
+#---------------
+# Private Methods
+#---------------
+.ParameterSet__.update_support <- function(self, private, x) {
+  ## get sets as strings
+  strs <- vapply(x, as.character, character(1), n = Inf)
+
+  ## add to dictionary as required
+  miss <- !support_dictionary$has(strs)
+  if (any(miss)) {
+    support_dictionary$add(setNames(x[miss], strs[miss]))
+  }
+
+  ## update supports
+  private$.supports[names(x)] <- strs
+  private$.isupports <- invert_names(private$.supports)
+
+  invisible(self)
+}
