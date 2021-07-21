@@ -705,3 +705,16 @@ test_that("concatenate named list", {
 
   expect_equal_ps(cp, pexp)
 })
+
+
+test_that("linked + required works as expected", {
+  p <- pset(
+    prm("prob", Interval$new(0, 1), 1, tags = c("linked", "required")),
+    prm("qprob", Interval$new(0, 1), tags = c("linked", "required")),
+    prm("size", "posnaturals", 10, tags = "required")
+  )
+  expect_error(p$values$prob <- NULL, "Not all required")
+  expect_error(p$values <- list(size = 10, prob = NULL), "Not all required")
+  p$values <- list(size = 1, prob = NULL, qprob = 1)
+  expect_equal(p$values, list(size = 1, qprob = 1))
+})

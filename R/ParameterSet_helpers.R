@@ -178,14 +178,12 @@
 
       if (length(null_vals)) {
         if (length(tags$linked)) {
-          vals <- .get_values(self, get_private(self), values, NULL,
-            tags[["linked"]],
-            inc_null = TRUE,
-            simplify = FALSE,
-            transform = FALSE
-          )
-          null_vals <- null_vals[names(null_vals) %nin% names(vals)]
-          nok <- length(null_vals)
+          nok <- any(vapply(
+            tags$linked,
+            function(.x) all(names(self$tags)[
+              grepl(.x, self$tags)] %in% names(null_vals)),
+            logical(1)
+          ))
         } else {
           nok <- TRUE
         }
