@@ -137,6 +137,13 @@
                        names(tags), sep = "__")
   private$.tags <- tags
 
+  if (!is.null(private$.immutable)) {
+    imm <- rep(private$.immutable, times)
+    names(imm) <- paste(rep(prefix, each = length(private$.immutable)),
+                        names(imm), sep = "__")
+    private$.immutable <- imm
+  }
+
   invisible(self)
 }
 
@@ -214,12 +221,12 @@
   }
 
   props <- NULL
-    if (length(private$.tag_properties)) {
+  if (length(private$.tag_properties)) {
     props <- list()
     for (i in c("linked", "required", "unique", "immutable")) {
       if (length(private$.tag_properties[[i]])) {
         tp <- private$.tag_properties[[i]][private$.tag_properties[[i]] %in%
-                                            unlist(tag)]
+          unlist(tag)]
         if (!is.null(prefix)) {
           tp <- unprefix(tp)
         }
@@ -227,7 +234,6 @@
       }
     }
   }
-
 
   if (length(unfix_ids)) {
     ids <- unfix_ids
