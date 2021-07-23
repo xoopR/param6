@@ -109,6 +109,7 @@
 
 .check_supports <- function(self, values, supports, id, error_on_fail) {
   for (i in seq_along(supports)) {
+
     ids <- supports[[i]]
 
     if (!is.null(id)) {
