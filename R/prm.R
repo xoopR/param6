@@ -53,7 +53,7 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   # if character, check to see if exists in dictionary otherwise error
   if (checkmate::test_character(support, len = 1)) {
     if (!support_dictionary$has(support)) {
-      stop("'suppport' given as character but does not exist in support_dictionary.") # nolint
+      stop("'support' given as character but does not exist in support_dictionary.") # nolint
     }
     str_support <- support
     support <- support_dictionary$get(str_support)
@@ -78,7 +78,11 @@ prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
   }
 
   if (!is.null(value) && .check) {
-    assert_contains(support, value)
+    if (length(value) > 1) {
+      assert_contains(support, as.Tuple(value))
+    } else {
+      assert_contains(support, value)
+    }
   }
 
   param <- list(id = id, support = str_support, value = value, tags = tags)

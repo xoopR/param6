@@ -108,27 +108,40 @@
 }
 
 .check_supports <- function(self, values, supports, id, error_on_fail) {
-  for (i in seq_along(supports)) {
+  if (length(values)) {
+    for (i in seq_along(supports)) {
+      ids <- supports[[i]]
 
-    ids <- supports[[i]]
+      if (!is.null(id)) {
+        ids <- intersect(id, ids)
+        cvalues <- values[intersect(ids, names(values))]
+      }
 
-    if (!is.null(id)) {
-      ids <- intersect(id, ids)
-      values <- values[intersect(ids, names(values))]
-    }
-    if (length(ids)) {
-      value <- unlist(.get_values(self, get_private(self), values,
-                           inc_null = FALSE, simplify = TRUE,
-                           transform = FALSE))
+      if (!length(cvalues) || !length(ids)) {
+        next
+      }
+
+      value <- .get_values(self, get_private(self), cvalues,
+        inc_null = FALSE, simplify = FALSE,
+        transform = FALSE
+      )
+
+      value <- lapply(
+        value,
+        function(.x) if (length(.x) > 1) as.Tuple(.x) else .x
+      )
 
       set <- support_dictionary$get(names(supports)[[i]])
-        if (!set$contains(value, all = TRUE)) {
-          return(.return_fail(
-            msg = sprintf("One or more of %s does not lie in %s.",
-                          string_as_set(value), as.character(set)),
-            error_on_fail
-          ))
-        }
+
+      if (!set$contains(value, all = TRUE)) {
+        return(.return_fail(
+          msg = sprintf(
+            "One or more of %s does not lie in %s.",
+            string_as_set(value), as.character(set)
+          ),
+          error_on_fail
+        ))
+      }
     }
   }
 
