@@ -37,7 +37,9 @@
         stop("ids and tags must have different names.")
       }
     }
-
+  } else {
+    private$.value <- list()
+    private$.id <- list()
   }
 
   invisible(self)
