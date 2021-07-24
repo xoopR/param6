@@ -4,11 +4,11 @@
 \alias{support_dictionary}
 \title{Support Dictionary}
 \description{
-\link{Dictionary} for parameter supports
+\link[dictionar6:Dictionary]{dictionar6::Dictionary} for parameter supports
 }
 \details{
-See \link{Dictionary} for full details of how to add other \link[set6:Set]{set6::Set}
-objects as supports to this dictionary.
+See \link[dictionar6:Dictionary]{dictionar6::Dictionary} for full details of how to add other
+\link[set6:Set]{set6::Set} objects as supports to this dictionary.
 }
 \examples{
 support_dictionary$keys

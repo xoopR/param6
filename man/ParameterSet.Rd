@@ -615,7 +615,7 @@ unchanged. If \verb{$trafo} is a function then \code{x} is passed directly to
 this. If \verb{$trafo} is a list then \code{x} is evaluated and passed down the
 list iteratively.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$transform(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$transform(x = self$values)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -1,15 +1,15 @@
 #' @name support_dictionary
 #' @title Support Dictionary
-#' @description [Dictionary] for parameter supports
-#' @details See [Dictionary] for full details of how to add other [set6::Set]
-#' objects as supports to this dictionary.
+#' @description [dictionar6::Dictionary] for parameter supports
+#' @details See [dictionar6::Dictionary] for full details of how to add other
+#' [set6::Set] objects as supports to this dictionary.
 #' @examples
 #' support_dictionary$keys
 #' support_dictionary$items
 #' @export
 NULL
 load_support <- function() {
-    support_dictionary <- Dictionary$new(list(
+    support_dictionary <- dct(
         universal = Universal$new(),
         logicals = Logicals$new(),
         naturals = Naturals$new(),
@@ -52,6 +52,7 @@ load_support <- function() {
         nnegreals0 = NegReals$new(zero = TRUE)^"n",
         nextreals = ExtendedReals$new()^"n",
         ncomplex = Complex$new()^"n",
-        nproportion = Interval$new(0, 1)^"n"
-    ), types = "Set")
+        nproportion = Interval$new(0, 1)^"n",
+        types = "Set"
+    )
 }
