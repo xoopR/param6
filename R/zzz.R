@@ -1,5 +1,6 @@
 #' @import set6
 #' @import R6
+#' @import dictionar6
 #' @importFrom data.table as.data.table data.table
 "_PACKAGE"
 

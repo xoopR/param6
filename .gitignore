@@ -43,3 +43,4 @@ vignettes/*.pdf
 *.DS_Store
 docs/
 .vscode
+*/.DS_Store
