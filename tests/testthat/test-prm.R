@@ -73,7 +73,7 @@ test_that("as.prm.ParameterSet", {
   expect_equal(as.prm(as.ParameterSet(prms)), prms)
 })
 test_that("deep clone", {
-  d1 <- Dictionary$new(list(a = Set$new(1), d = 1))
+  d1 <- Dictionary$new(a = Set$new(1), d = 1)
   d2 <- d1$clone(deep = TRUE)
   d3 <- d1
   d2$add(list(b = 2))

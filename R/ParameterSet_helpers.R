@@ -115,6 +115,8 @@
       if (!is.null(id)) {
         ids <- intersect(id, ids)
         cvalues <- values[intersect(ids, names(values))]
+      } else {
+        cvalues <- values
       }
 
       if (!length(cvalues) || !length(ids)) {

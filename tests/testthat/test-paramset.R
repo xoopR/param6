@@ -604,7 +604,7 @@ test_that("transformations error when expected and don't otherwise", {
   )
   p$values <- list(size = 40, failures = 2, draws = 5)
   expect_equal(p$values, list(size = 40, failures = 2, draws = 5))
-  expect_error(p$values$failures <- 60, "Dependency of")
+  expect_error(p$values$failures <- 60, "does not lie in")
   expect_equal(p$trafo, trafo)
 
   trafo_bad <-  function(x, self) {
@@ -612,7 +612,7 @@ test_that("transformations error when expected and don't otherwise", {
       x
   }
 
-  expect_error(p$trafo <- trafo_bad, "Dependency of")
+  expect_error(p$trafo <- trafo_bad, "does not lie in")
   expect_equal(p$trafo, trafo)
 })
 

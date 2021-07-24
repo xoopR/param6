@@ -338,15 +338,15 @@ ParameterSet <- R6::R6Class("ParameterSet",
     ),
 
   private = list(
-    .id = list(),
-    .isupports = list(),
-    .supports = list(),
-    .value = list(),
-    .tags = list(),
+    .id = NULL,
+    .isupports = NULL,
+    .supports = NULL,
+    .value = NULL,
+    .tags = NULL,
     .tag_properties = NULL,
     .trafo = NULL,
     .deps = NULL,
-    .immutable = list(),
+    .immutable = NULL,
     .update_support = function(..., lst = list(...)) {
       .ParameterSet__.update_support(self, private, lst)
     },
