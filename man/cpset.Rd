@@ -4,13 +4,16 @@
 \alias{cpset}
 \title{Concatenate ParameterSet Objects}
 \usage{
-cpset(..., pss = list(...))
+cpset(..., pss = list(...), clone = TRUE)
 }
 \arguments{
 \item{...}{(\link{ParameterSet}s) \cr Named \link{ParameterSet} objects to concatenate.}
 
 \item{pss}{(\verb{named list()}) \cr Alternatively pass a named list of
 \link{ParameterSet} objects.}
+
+\item{clone}{(\code{logical(1)}) \cr If \code{TRUE} (default) parameter sets are deep
+cloned before combination, useful to prevent original sets being prefixed.}
 }
 \description{
 Concatenate multiple \link{ParameterSet} objects into a single

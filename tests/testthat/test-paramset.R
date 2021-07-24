@@ -61,11 +61,11 @@ test_that("immutable parameters are immutable", {
   )
   expect_equal(get_private(prms)$.immutable, list(a = 1))
   prms$values$a <- NULL
-  expect_equal(prms$values, list(b = 2, a = 1))
+  expect_equal(prms$values, list(a = 1, b = 2))
   prms$values$a <- 2
-  expect_equal(prms$values, list(b = 2, a = 1))
+  expect_equal(prms$values, list(a = 1, b = 2))
   prms$values$b <- 2
-  expect_equal(prms$values, list(b = 2, a = 1))
+  expect_equal(prms$values, list(a = 1, b = 2))
 })
 
 test_that("don't check immutable parameters", {
@@ -606,7 +606,7 @@ test_that("transformations error when expected and don't otherwise", {
     trafo = trafo
   )
   p$values <- list(size = 40, failures = 2, draws = 5)
-  expect_equal(p$values, list(size = 40, failures = 2, draws = 5))
+  expect_equal(p$values, list(draws = 5, failures = 2, size = 40))
   expect_error(p$values$failures <- 60, "does not lie in")
   expect_equal(p$trafo, trafo)
 
@@ -717,7 +717,7 @@ test_that("linked + required works as expected", {
   expect_error(p$values$prob <- NULL, "Not all required")
   expect_error(p$values <- list(size = 10, prob = NULL), "Not all required")
   p$values <- list(size = 1, prob = NULL, qprob = 1)
-  expect_equal(p$values, list(size = 1, qprob = 1))
+  expect_equal(p$values, list(qprob = 1, size = 1))
 })
 
 

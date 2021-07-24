@@ -21,7 +21,11 @@ string_as_set <- function(str) {
 }
 
 sort_named_list <- function(lst, ...) {
-  lst[order(names(lst), ...)]
+  if (length(lst)) {
+    lst[order(names(lst), ...)]
+  } else {
+    lst
+  }
 }
 
 named_list <- function(values, names) {

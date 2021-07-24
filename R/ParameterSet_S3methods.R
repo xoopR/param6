@@ -82,8 +82,14 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @param ... ([ParameterSet]s) \cr Named [ParameterSet] objects to concatenate.
 #' @param pss (`named list()`) \cr Alternatively pass a named list of
 #' [ParameterSet] objects.
+#' @param clone (`logical(1)`) \cr If `TRUE` (default) parameter sets are deep
+#' cloned before combination, useful to prevent original sets being prefixed.
 #' @export
-cpset <- function(..., pss = list(...)) {
+cpset <- function(..., pss = list(...), clone = TRUE) {
+
+  if (clone) {
+    pss <- lapply(pss, function(.x) .x$clone(deep = TRUE))
+  }
 
   prms <- lapply(pss, as.prm)
   checkmate::assert_list(prms, names = "unique")
@@ -106,10 +112,14 @@ cpset <- function(..., pss = list(...)) {
     if (!is.null(deps)) {
       deps$id <- sprintf("%s__%s", names(pss)[[i]], deps$id)
       deps$on <- sprintf("%s__%s", names(pss)[[i]], deps$on)
-      at <- attr(deps$cond[[1]], "id")
-      if (!is.null(at)) {
-        attr(deps$cond[[1]], "id") <- sprintf("%s__%s", names(pss)[[i]], at)
-      }
+      deps$cond <- lapply(deps$cond, function(.x) {
+        at <- attr(.x, "id")
+        if (!is.null(at)) {
+          attr(.x, "id") <- sprintf("%s__%s", names(pss)[[i]], at)
+        }
+        .x
+      })
+
       pri$.deps <- deps
     }
   }
@@ -147,7 +157,12 @@ cpset <- function(..., pss = list(...)) {
     tprop <- NULL
   }
 
-  deps <- drop_null(lapply(pss, "[[", "deps"))
+  deps <- unlist(lapply(pss, function(.x) {
+    if (!is.null(.x$deps)) {
+      apply(.x$deps, 1, as.list)
+    }
+  }), FALSE)
+  deps <- un_null_list(deps)
   if (!length(deps)) {
     deps <- NULL
   }
