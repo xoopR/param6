@@ -89,7 +89,7 @@ test_that("cnd", {
 
 
 test_that("load_support", {
-  expect_is(load_support(), "Dictionary")
+  expect_R6_class(load_support(), "Dictionary")
 })
 
 test_that("sort_named_list", {

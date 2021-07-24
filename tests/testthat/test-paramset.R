@@ -4,18 +4,18 @@ test_that("ParameterSet constructor - silent", {
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
-  expect_is(ParameterSet$new(prms), "ParameterSet")
+  expect_R6_class(ParameterSet$new(prms), "ParameterSet")
 
   prms <- list(
     prm("a", Set$new(1), 1),
     prm("b", "reals"),
     prm("d", "reals")
   )
-  expect_is(ParameterSet$new(prms), "ParameterSet")
+  expect_R6_class(ParameterSet$new(prms), "ParameterSet")
 
-  expect_is(ParameterSet$new(), "ParameterSet")
+  expect_R6_class(ParameterSet$new(), "ParameterSet")
 
-  expect_is(as.ParameterSet(prm("a", "reals")), "ParameterSet")
+  expect_R6_class(as.ParameterSet(prm("a", "reals")), "ParameterSet")
 })
 
 test_that("ParameterSet constructor - error", {
