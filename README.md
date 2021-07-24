@@ -7,8 +7,8 @@ param6
 Badge](https://www.r-pkg.org/badges/version-ago/param6)](https://cran.r-project.org/package=param6)
 [![CRAN
 Checks](https://cranchecks.info/badges/worst/param6)](https://cran.r-project.org/web/checks/check_results_param6.html)
-[![R CMD
-Check](https://github.com/xoopR/param6/actions/workflows/r-cmd-check.yml/badge.svg)](https://github.com/xoopR/param6/actions/workflows/r-cmd-check.yml)
+[![R-CMD-check /
+codecov](https://github.com/xoopR/param6/actions/workflows/check-covr.yml/badge.svg?branch=main)](https://github.com/xoopR/param6/actions/workflows/check-covr.yml)
 
 [![Repo
 Status](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/xoopR/param6)
@@ -132,10 +132,10 @@ p$get_values()
 ```
 
     ## $a
-    ## [1] 4
+    ## [1] 1
     ## 
     ## $b
-    ## [1] 1
+    ## [1] 4
 
 ## Why param6?
 
