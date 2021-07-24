@@ -45,6 +45,7 @@
 #' )
 #' @export
 prm <- function(id, support, value = NULL, tags = NULL, .check = TRUE) {
+
   checkmate::assert_character(id, len = 1)
   if (id == "c") {
     stop("'c' is a reserved id in param6.")

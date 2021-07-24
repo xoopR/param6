@@ -730,3 +730,26 @@ test_that("can update support", {
   get_private(p)$.update_support(lst = sup)
   expect_equal(as.character(p$supports), as.character(sup))
 })
+
+
+test_that("can remove a parameter", {
+  p1 <- pset(
+    prm("a", "reals", 1),
+    prm("b", "reals", 1)
+  )
+  p2 <- pset(
+    prm("a", "reals", 1)
+  )
+  p3 <- pset(
+    prm("c__a", "posreals", 1, c("required", "immutable")),
+    prm("d__b", "reals", 1),
+    trafo = list(c__a = function(x, self) x),
+    deps = list(list(id = "c__a", on = "d__b", cond = cnd("eq", 1)))
+  )
+  p4 <- pset(
+    prm("d__b", "reals", 1)
+  )
+
+  expect_equal_ps(p3$remove(prefix = "c"), p4)
+  expect_equal_ps(p1$remove("b"), p2)
+})

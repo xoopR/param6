@@ -225,6 +225,7 @@ applied, one after the other.}
 \item \href{#method-add_dep}{\code{ParameterSet$add_dep()}}
 \item \href{#method-rep}{\code{ParameterSet$rep()}}
 \item \href{#method-extract}{\code{ParameterSet$extract()}}
+\item \href{#method-remove}{\code{ParameterSet$remove()}}
 \item \href{#method-getParameterValue}{\code{ParameterSet$getParameterValue()}}
 \item \href{#method-setParameterValue}{\code{ParameterSet$setParameterValue()}}
 \item \href{#method-set_values}{\code{ParameterSet$set_values()}}
@@ -520,6 +521,30 @@ p[prefix = "Pre1"]
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-remove"></a>}}
+\if{latex}{\out{\hypertarget{method-remove}{}}}
+\subsection{Method \code{remove()}}{
+Removes the given parameters from the set.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$remove(id = NULL, prefix = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id}}{(\code{character()}) \cr
+If not \code{NULL} then specifies the parameters by id to extract. Should be
+\code{NULL} if \code{prefix} is not \code{NULL}.}
+
+\item{\code{prefix}}{(\code{character()}) \cr
+If not \code{NULL} then extracts parameters according to their prefix and
+additionally removes the prefix from the id. A prefix is determined as
+the string before \code{"__"} in an id.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getParameterValue"></a>}}

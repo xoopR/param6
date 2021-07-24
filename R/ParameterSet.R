@@ -215,6 +215,19 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .ParameterSet__extract(self, private, id, tags, prefix, keep_trafo)
     },
 
+
+    #' @description Removes the given parameters from the set.
+    #' @param id (`character()`) \cr
+    #' If not `NULL` then specifies the parameters by id to extract. Should be
+    #' `NULL` if `prefix` is not `NULL`.
+    #' @param prefix (`character()`) \cr
+    #' If not `NULL` then extracts parameters according to their prefix and
+    #' additionally removes the prefix from the id. A prefix is determined as
+    #' the string before `"__"` in an id.
+    remove = function(id = NULL, prefix = NULL) {
+      .ParameterSet__remove(self, private, id, prefix)
+    },
+
     #' @description Deprecated method added for distr6 compatibility.
     #' Use $values/$get_values() in the future.
     #' Will be removed in 0.3.0.

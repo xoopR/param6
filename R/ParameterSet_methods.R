@@ -257,6 +257,91 @@
 
   ps
 }
+
+
+# This is incomplete and needs better support for deps, trafo, checks.
+#  However as above I am unsure if these methods are ever needed.
+.ParameterSet__remove <- function(self, private, id, prefix) { # nolint
+
+  if (sum(is.null(id) + is.null(prefix)) != 1) {
+    stop("Exactly one argument must be non-NULL.")
+  }
+
+  if (!is.null(prefix)) {
+    stopifnot(length(prefix) == 1)
+    pars <- self$ids[grepl(prefix, get_prefix(self$ids))]
+  } else {
+    pars <- id
+  }
+
+  names(private)
+
+  private$.immutable[pars] <- NULL
+  if (length(private$.immutable) == 0) {
+    private$.immutable <- NULL
+  }
+  if (!is.null(private$.deps)) {
+    private$.deps <- subset(
+      private$.deps,
+      !(grepl(id, pars) | grepl(on, pars))
+    )
+    if (nrow(private$.deps) == 0) {
+      private$.deps <- NULL
+    }
+  }
+  private$.trafo[pars] <- NULL
+  if (length(private$.trafo) == 0) {
+    private$.trafo <- NULL
+  }
+  private$.tags[pars] <- NULL
+  if (length(private$.tags) == 0) {
+    private$.tags <- list()
+    private$.tag_properties <- NULL
+  }
+
+  ## TODO: Consider adding removal of tag property
+
+  private$.value[pars] <- NULL
+  if (length(private$.value) == 0) {
+    private$.value <- NULL
+  }
+  private$.supports <- private$.supports[setdiff(names(private$.supports), pars)]
+  if (length(private$.supports) == 0) {
+    private$.supports <- NULL
+  }
+
+  which <- grepl(pars, private$.isupports)
+  private$.isupports[which] <- lapply(private$.isupports[which],
+                                      function(.x) setdiff(.x, pars))
+  private$.isupports <- drop_null(private$.isupports)
+  if (length(private$.isupports) == 0) {
+    private$.isupports <- NULL
+  }
+
+  private$.id <- setdiff(private$.id, pars)
+  if (length(private$.id) == 0) {
+    private$.id <- NULL
+  }
+
+  invisible(self)
+}
+
+
+.ParameterSet__transform <- function(self, private, x) { # nolint
+  trafo <- self$trafo
+  if (is.null(trafo)) {
+    x
+  } else if (checkmate::test_function(trafo)) {
+    trafo(x, self)
+  } else {
+    for (i in seq_along(trafo)) {
+      x <- trafo[[i]](x, self)
+    }
+    x
+  }
+}
+
+
 #---------------
 # Active Bindings
 #---------------
@@ -346,21 +431,6 @@
             })
 
     invisible(self)
-  }
-}
-
-
-.ParameterSet__transform <- function(self, private, x) { # nolint
-  trafo <- self$trafo
-  if (is.null(trafo)) {
-    x
-  } else if (checkmate::test_function(trafo)) {
-    trafo(x, self)
-  } else {
-    for (i in seq_along(trafo)) {
-      x <- trafo[[i]](x, self)
-    }
-    x
   }
 }
 

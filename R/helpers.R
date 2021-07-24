@@ -98,5 +98,5 @@ unique_nlist <- function(x) {
 
 
 drop_null <- function(x) {
-  x[!vapply(x, is.null, logical(1))]
+  x[vapply(x, function(.x) length(.x) > 0, logical(1))]
 }
