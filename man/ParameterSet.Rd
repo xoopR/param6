@@ -149,9 +149,6 @@ p$extract(tags = "t1")
 p$extract(prefix = "Pre1")
 # equivalently
 p[prefix = "Pre1"]
-Deprecated method added for distr6 compatibility.
-Use $values/$get_values() in the future.
-Will be removed in 0.3.0.
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -518,9 +515,6 @@ p$extract(tags = "t1")
 p$extract(prefix = "Pre1")
 # equivalently
 p[prefix = "Pre1"]
-Deprecated method added for distr6 compatibility.
-Use $values/$get_values() in the future.
-Will be removed in 0.3.0.
 }
 \if{html}{\out{</div>}}
 
@@ -531,6 +525,9 @@ Will be removed in 0.3.0.
 \if{html}{\out{<a id="method-getParameterValue"></a>}}
 \if{latex}{\out{\hypertarget{method-getParameterValue}{}}}
 \subsection{Method \code{getParameterValue()}}{
+Deprecated method added for distr6 compatibility.
+Use $values/$get_values() in the future.
+Will be removed in 0.3.0.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$getParameterValue(id, ...)}\if{html}{\out{</div>}}
 }
@@ -540,10 +537,7 @@ Will be removed in 0.3.0.
 \describe{
 \item{\code{id}}{Parameter id}
 
-\item{\code{...}}{Unused
-Deprecated method added for distr6 compatibility.
-Use $set_values in the future.
-Will be removed in 0.3.0.}
+\item{\code{...}}{Unused}
 }
 \if{html}{\out{</div>}}
 }
@@ -552,6 +546,9 @@ Will be removed in 0.3.0.}
 \if{html}{\out{<a id="method-setParameterValue"></a>}}
 \if{latex}{\out{\hypertarget{method-setParameterValue}{}}}
 \subsection{Method \code{setParameterValue()}}{
+Deprecated method added for distr6 compatibility.
+Use $set_values in the future.
+Will be removed in 0.3.0.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$setParameterValue(..., lst = list(...))}\if{html}{\out{</div>}}
 }
@@ -561,9 +558,7 @@ Will be removed in 0.3.0.}
 \describe{
 \item{\code{...}}{Parameter ids}
 
-\item{\code{lst}}{List of parameter ids
-Convenience function for setting multiple parameters without changing
-or accidentally removing others.}
+\item{\code{lst}}{List of parameter ids}
 }
 \if{html}{\out{</div>}}
 }
@@ -572,6 +567,8 @@ or accidentally removing others.}
 \if{html}{\out{<a id="method-set_values"></a>}}
 \if{latex}{\out{\hypertarget{method-set_values}{}}}
 \subsection{Method \code{set_values()}}{
+Convenience function for setting multiple parameters
+without changing or accidentally removing others.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$set_values(..., lst = list(...))}\if{html}{\out{</div>}}
 }
@@ -581,10 +578,7 @@ or accidentally removing others.}
 \describe{
 \item{\code{...}}{Parameter ids}
 
-\item{\code{lst}}{List of parameter ids
-Deprecated method added for distr6 compatibility.
-Use $print/as.data.table() in the future.
-Will be removed in 0.3.0.}
+\item{\code{lst}}{List of parameter ids}
 }
 \if{html}{\out{</div>}}
 }
@@ -593,6 +587,9 @@ Will be removed in 0.3.0.}
 \if{html}{\out{<a id="method-parameters"></a>}}
 \if{latex}{\out{\hypertarget{method-parameters}{}}}
 \subsection{Method \code{parameters()}}{
+Deprecated method added for distr6 compatibility.
+Use $print/as.data.table() in the future.
+Will be removed in 0.3.0.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSet$parameters(...)}\if{html}{\out{</div>}}
 }

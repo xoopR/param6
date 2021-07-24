@@ -9,7 +9,7 @@
 \arguments{
 \item{...}{(\link{ParameterSet}s) \cr \link{ParameterSet} objects to concatenate.}
 
-\item{lst}{(\code{list()}) \cr Alternatively pass a list of \link{ParameterSet}
+\item{pss}{(\code{list()}) \cr Alternatively pass a list of \link{ParameterSet}
 objects.}
 }
 \description{

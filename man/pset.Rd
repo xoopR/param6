@@ -7,6 +7,8 @@
 pset(..., prms = list(...), tag_properties = NULL, deps = NULL, trafo = NULL)
 }
 \arguments{
+\item{...}{(\link{prm}) \cr \link{prm} objects.}
+
 \item{prms}{(\code{list()}) \cr List of \link{prm} objects.}
 
 \item{tag_properties}{(\code{list()}) \cr
@@ -22,8 +24,6 @@ updated after construction.}
 \verb{$add_dep}. See examples.}
 
 \item{trafo}{(\verb{function()}) \cr Passed to \verb{$trafo}. See examples.}
-
-\item{`...`}{(\link{prm}) \cr \link{prm} objects.}
 }
 \description{
 See \link{ParameterSet} for full details.

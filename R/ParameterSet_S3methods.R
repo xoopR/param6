@@ -66,7 +66,7 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 #' @details Concatenates ids, tags, tag properties and dependencies. Assumes
 #' ids and tags are unique; trafos are combined into a list.
 #' @param ... ([ParameterSet]s) \cr [ParameterSet] objects to concatenate.
-#' @param lst (`list()`) \cr Alternatively pass a list of [ParameterSet]
+#' @param pss (`list()`) \cr Alternatively pass a list of [ParameterSet]
 #' objects.
 #' @export
 c.ParameterSet <- function(..., pss = list(...)) {

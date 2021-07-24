@@ -186,6 +186,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' @param keep_trafo (`logical(1)`) \cr
     #' If `TRUE` (default) then transformations are kept in extraction,
     #' otherwise removed with warning.
+    #'
     #' @examples
     #' # extract by id
     #' prms <- list(
@@ -214,7 +215,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       .ParameterSet__extract(self, private, id, tags, prefix, keep_trafo)
     },
 
-    #' Deprecated method added for distr6 compatibility.
+    #' @description Deprecated method added for distr6 compatibility.
     #' Use $values/$get_values() in the future.
     #' Will be removed in 0.3.0.
     #' @param id Parameter id
@@ -224,7 +225,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       self$get_values(id)
     },
 
-    #' Deprecated method added for distr6 compatibility.
+    #' @description Deprecated method added for distr6 compatibility.
     #' Use $set_values in the future.
     #' Will be removed in 0.3.0.
     #' @param ... Parameter ids
@@ -234,8 +235,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
       self$values <- unique_nlist(c(lst, self$values))
     },
 
-    #' Convenience function for setting multiple parameters without changing
-    #' or accidentally removing others.
+    #' @description Convenience function for setting multiple parameters
+    #' without changing or accidentally removing others.
     #' @param ... Parameter ids
     #' @param lst List of parameter ids
     set_values = function(..., lst = list(...)) {
@@ -243,7 +244,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
       invisible(self)
     },
 
-    #' Deprecated method added for distr6 compatibility.
+    #' @description Deprecated method added for distr6 compatibility.
     #' Use $print/as.data.table() in the future.
     #' Will be removed in 0.3.0.
     #' @param ... Unused
@@ -365,7 +366,7 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
 #' @title Convenience Function for Constructing a ParameterSet
 #' @description See [ParameterSet] for full details.
-#' @param `...` ([prm]) \cr [prm] objects.
+#' @param ... ([prm]) \cr [prm] objects.
 #' @param prms (`list()`) \cr List of [prm] objects.
 #' @template param_tag_properties
 #' @param deps (`list()`) \cr List of lists where each element is passed to
