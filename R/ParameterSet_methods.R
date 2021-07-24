@@ -107,6 +107,7 @@
 }
 
 .ParameterSet__rep <- function(self, private, times, prefix) { # nolint
+
   if (length(prefix) == 1) {
     prefix <- paste0(prefix, seq_len(times))
   } else if (length(prefix) != times) {

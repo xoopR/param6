@@ -3,7 +3,7 @@ expect_equal_ps <- function(obj, expected) {
   pexp <- get_private(expected)
   expect_equal(sort(names(pobj)), sort(names(pexp)))
   lapply(names(pexp), function(x) {
-    if (x == "deep_clone") {
+    if (is.function(pexp[[x]])) {
       expect_equal(deparse(pobj[[x]]), deparse(pexp[[x]]), info = x)
     } else {
       expect_equal(pobj[[x]], pexp[[x]], info = x)

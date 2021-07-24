@@ -45,8 +45,13 @@ test_that("ParamSet actives - not values or tag propeties", {
   expect_equal(p$tags, list(a = c("t1", "t2"), b = "t2"))
   expect_equal(p$ids, c("a", "b", "d"))
   expect_equal(length(p), 3)
-  expect_equal(p$supports, list(a = Set$new(1, 2), b = Reals$new(),
-                                d = Reals$new()))
+  expect_equal(
+    lapply(p$supports, as.character),
+    lapply(list(
+      a = Set$new(1, 2), b = Reals$new(),
+      d = Reals$new()
+    ), as.character)
+  )
 })
 
 test_that("immutable parameters are immutable", {
@@ -187,7 +192,7 @@ test_that("as.data.table.ParameterSet and print", {
     prm("d", "reals", 2)
   )
   p <- ParameterSet$new(prms)
-  expect_equal(as.data.table(p),
+  expect_equal_ps(as.data.table(p),
                data.table::data.table(Id = letters[c(1, 2, 4)],
                                       Support = list(Set$new(1), Reals$new(),
                                                      Reals$new()),
@@ -723,5 +728,5 @@ test_that("can update support", {
   )
   sup <- list(a = Interval$new(0, 5), b = Interval$new(1, 3))
   get_private(p)$.update_support(lst = sup)
-  expect_equal(p$supports, sup)
+  expect_equal(as.character(p$supports), as.character(sup))
 })

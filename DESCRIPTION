@@ -11,6 +11,7 @@ Authors@R:
 License: MIT + file LICENSE
 URL: https://xoopR.github.io/param6/, https://github.com/xoopR/param6/
 BugReports: https://github.com/xoopR/param6/issues
+Config/testthat/edition: 3
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
