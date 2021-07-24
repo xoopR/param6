@@ -75,7 +75,7 @@ test_that("can't set unknown parameters", {
    prms <- pset(
      prm("a", "logicals", TRUE, tags = "immutable")
    )
-   expect_error({prms$values$b <- 1}, "You can't")
+   expect_error(prms$values$b <- 1, "You can't")
 })
 
 test_that("ParamSet actives - values", {
@@ -119,7 +119,7 @@ test_that("ParamSet actives - values", {
            id = c("b", "d"),
            error_on_fail = FALSE, value_check = list(b = 1, d = 1),
            tag_check = p$tag_properties)))
-  expect_error({p$values <- list(a = 1, b = 1, d = 1)}, "Multiple linked") # nolint
+  expect_error(p$values <- list(a = 1, b = 1, d = 1), "Multiple linked")
 
 
   prms <- list(
@@ -127,21 +127,21 @@ test_that("ParamSet actives - values", {
     prm("d", "naturals", 2)
   )
   p <- ParameterSet$new(prms)
-  expect_error({p$values <- list(b = 0.5, d = 0.5)}, "One or") # nolint
+  expect_error(p$values <- list(b = 0.5, d = 0.5), "One or")
 
   prms <- list(
     prm("a", "nnaturals", 1)
   )
   p <- ParameterSet$new(prms)
-  expect_silent({p$values$a <- 2}) # nolint
-  expect_silent({p$values <- list(a = c(1, 2))}) # nolint
-  expect_error({p$values <- list(a = c(1, 0.5))}, "does not lie") # nolint
+  expect_silent(p$values$a <- 2)
+  expect_silent(p$values <- list(a = c(1, 2)))
+  expect_error(p$values <- list(a = c(1, 0.5)), "does not lie")
 
   p <- pset(
     prm("prob", Interval$new(0, 1), 0.5, "required"),
     prm("qprob", Interval$new(0, 1))
   )
-  expect_error({p$values$prob <- NULL}, "Not all required")
+  expect_error(p$values$prob <- NULL, "Not all required")
 })
 
 test_that("ParamSet actives - tag properties", {
@@ -153,30 +153,30 @@ test_that("ParamSet actives - tag properties", {
   p <- ParameterSet$new(prms, list(linked = "t1", required = "t2"))
 
   expect_equal(p$tag_properties, list(linked = "t1", required = "t2"))
-  expect_silent({p$tag_properties <- NULL}) # nolint
-  expect_silent({p$tag_properties$required <- "t2"}) # nolint
-  expect_error({p$tag_properties <- list(required = "t3")}) # nolint
-  expect_error({p$tag_properties <- list(linked = "t2")}) # nolint
+  expect_silent(p$tag_properties <- NULL)
+  expect_silent(p$tag_properties$required <- "t2")
+  expect_error(p$tag_properties <- list(required = "t3"))
+  expect_error(p$tag_properties <- list(linked = "t2"))
 
   prms <- list(
     prm("a", "nreals", 1, tags = "t1"),
     prm("b", "nreals", 3, tags = "t2")
   )
   p <- ParameterSet$new(prms, tag_properties = list(unique = "t1"))
-  expect_silent({p$values$a <- 2}) # nolint
-  expect_silent({p$values <- list(a = c(1, 2))}) # nolint
-  expect_error({p$values <- list(a = c(2, 2))}, "duplicated") # nolint
+  expect_silent(p$values$a <- 2)
+  expect_silent(p$values <- list(a = c(1, 2)))
+  expect_error(p$values <- list(a = c(2, 2)), "duplicated")
 
   p <- pset(
     prm("prob", Interval$new(0, 1), 0.5, "probs"),
     prm("qprob", Interval$new(0, 1), tags = "probs"),
     tag_properties = list(required = "probs", linked = "probs")
   )
-  expect_error({p$values$qprob <- 0.1}, "Multiple linked")
-  expect_error({p$values$prob <- NULL}, "Not all required")
+  expect_error(p$values$qprob <- 0.1, "Multiple linked")
+  expect_error(p$values$prob <- NULL, "Not all required")
   p$values <- list(prob = NULL, qprob = 0.1)
-  expect_error({p$values$prob <- 0.1}, "Multiple linked")
-  expect_error({p$values$qprob <- NULL}, "Not all required")
+  expect_error(p$values$prob <- 0.1, "Multiple linked")
+  expect_error(p$values$qprob <- NULL, "Not all required")
   expect_equal(p$values, list(qprob = 0.1))
 })
 
@@ -276,8 +276,8 @@ test_that("trafo", {
   p <- ParameterSet$new(prms)
   expect_equal(p$trafo, NULL)
   expect_equal(get_private(p)$.trafo, NULL)
-  expect_error({p$trafo <- "a"}, "function") # nolint
-  expect_error({p$trafo <- function(x, self) "a"}, "list") # nolint
+  expect_error(p$trafo <- "a", "function")
+  expect_error(p$trafo <- function(x, self) "a", "list")
   expect_silent({
     p$trafo <- function(x, self) {
       x$a <- x$a + 1
@@ -300,12 +300,10 @@ test_that("trafo", {
     prm("d", "reals", tags = "t2")
   )
   p <- ParameterSet$new(prms)
-  expect_silent({
-    p$trafo <- function(x, self) {
-      x <- lapply(self$get_values(tags = "t1", transform = FALSE), exp)
-      x
-    }
-  })
+  p$trafo <- function(x, self) {
+    x <- lapply(self$get_values(tags = "t1", transform = FALSE), exp)
+    x
+  }
   expect_equal(p$get_values(inc_null = FALSE), list(a = exp(1), b = exp(2)))
 
   p <- ParameterSet$new(
@@ -385,7 +383,7 @@ test_that("add_dep", {
   expect_silent(p$add_dep("b", "a", cnd("eq", 1)))
   expect_error(p$add_dep("b", "a", cnd("eq", 1)), "already depends")
   p$values$b <- 3
-  expect_error({ p$values$a <- NULL }, "failed") # nolint
+  expect_error(p$values$a <- NULL, "failed")
 
 
   prms <- list(
@@ -406,9 +404,9 @@ test_that("add_dep", {
   )
   p <- ParameterSet$new(prms)
   p$add_dep("a", "b", cnd("lt", id = "b"))
-  expect_error({p$values$a <- 2}, "a < b") # nolint
+  expect_error(p$values$a <- 2, "a < b")
   p$add_dep("a", "d", cnd("len", id = "d"))
-  expect_error({p$values$d <- c(1, 2)}, "a len d") # nolint
+  expect_error(p$values$d <- c(1, 2), "a len d")
   expect_error(p$add_dep("a", "d", cnd("len", id = "b")), "element of set")
 
   prms <- list(
@@ -418,7 +416,7 @@ test_that("add_dep", {
   )
   p <- ParameterSet$new(prms)
   p$add_dep("b", "a", cnd("len", 2))
-  expect_error({p$values$a <- 1}, "b on 'a") # nolint
+  expect_error(p$values$a <- 1, "b on 'a")
 t})
 
 test_that("c", {
@@ -650,9 +648,7 @@ test_that("rep cnd works", {
       list(id = "probs", on = "elements", cond = cnd("len", id = "elements"))
     )
   )$rep(2, "A")
-  expect_error({
-    p$values$A1__elements <- 1:2
-  })
+  expect_error(p$values$A1__elements <- 1:2) # nolint
   new_p <- list(A1__elements = 1:2, A1__probs = runif(2), A2__elements = 1,
                 A2__probs = 1)
   p$values <- new_p

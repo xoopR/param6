@@ -367,7 +367,7 @@
 #---------------
 # Private Methods
 #---------------
-.ParameterSet__.update_support <- function(self, private, x) {
+.ParameterSet__.update_support <- function(self, private, x) { # nolint
   ## get sets as strings
   strs <- vapply(x, as.character, character(1), n = Inf)
 
