@@ -289,9 +289,11 @@
       private$.deps <- NULL
     }
   }
-  private$.trafo[pars] <- NULL
+  private$.trafo[c(prefix, pars)] <- NULL
   if (length(private$.trafo) == 0) {
     private$.trafo <- NULL
+  } else if (is.list(private$.trafo) && length(private$.trafo) == 1) {
+    private$.trafo <- private$.trafo[[1]]
   }
   private$.tags[pars] <- NULL
   if (length(private$.tags) == 0) {
@@ -365,7 +367,7 @@
 .ParameterSet__values <- function(self, private, x) { # nolint
 
   if (missing(x)) {
-    return(private$.value)
+    return(sort_named_list(private$.value))
   } else {
     x <- un_null_list(x)
     bad_nms <- names(x) %nin% self$ids
