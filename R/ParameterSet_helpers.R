@@ -222,7 +222,8 @@
                           simplify = FALSE)
       if (any(grepl("__", names(vals), fixed = TRUE))) {
         nok <- any(vapply(get_prefix(names(vals)), function(i) {
-          length(vals[grepl(i, names(vals))]) > length(tags[["linked"]])
+          length(vals[grepl(paste0(i, "__"), names(vals))]) >
+            length(tags[["linked"]])
         }, logical(1)))
       } else {
         nok <- length(vals) > length(tags[["linked"]])
