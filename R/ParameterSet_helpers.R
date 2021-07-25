@@ -13,17 +13,16 @@
   }
 
   if (!is.null(id)) {
-    # partial match on prefix or full match otherwise
-    mtc <- vapply(id, function(.x) {
-      if (grepl("__", .x, fixed = TRUE)) {
-        grepl(sprintf("^%s", .x), names(x))
-      } else {
-        unprefix(names(x)) %in% .x
-      }
-    }, logical(length(x)))
-    if (is.matrix(mtc)) {
-      mtc <- rowSums(mtc) > 0
-    }
+    nid <- id
+    ## match start on prefix
+    mtc <- grepl("__", id)
+    nid[mtc] <- sprintf("^%s", nid[mtc])
+
+    ## match postfix otherwise
+    nid[!mtc] <- sprintf("(__%s)|(%s)", nid[!mtc], nid[!mtc])
+
+    nid <- paste0(sprintf("(%s)", nid), collapse = "|")
+    mtc <- grepl(nid, names(x))
     idx <- x[mtc]
   }
 
