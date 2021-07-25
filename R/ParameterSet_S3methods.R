@@ -23,7 +23,7 @@ as.ParameterSet.prm <- function(x, ...) { # nolint
 #' @export
 as.ParameterSet.list <- function(x, ...) { # nolint
   checkmate::assert_list(x, "prm", any.missing = FALSE)
-  ParameterSet$new(x, ...)
+  pset(prms = x, ...)
 }
 
 #' @title Length of a ParameterSet
@@ -60,22 +60,77 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
   x
 }
 
-#' @title Concatenate ParameterSet Objects
-#' @description Concatenate multiple [ParameterSet] objects into a single
-#' [ParameterSet].
-#' @details Concatenates ids, tags, tag properties and dependencies,
-#' but not transformations.
+#' @title Concatenate Unique ParameterSet Objects
+#' @description Concatenate multiple [ParameterSet] objects with unique ids and
+#' tags into a single [ParameterSet].
+#' @details Concatenates ids, tags, tag properties and dependencies. Assumes
+#' ids and tags are unique; trafos are combined into a list.
 #' @param ... ([ParameterSet]s) \cr [ParameterSet] objects to concatenate.
 #' @param pss (`list()`) \cr Alternatively pass a list of [ParameterSet]
 #' objects.
 #' @export
 c.ParameterSet <- function(..., pss = list(...)) {
+  .combine_unique(lapply(pss, as.prm), pss)
+}
 
-  prms <- unlist(lapply(pss, as.prm), FALSE)
 
-  if (any(!is.null(unlist(lapply(pss, "[[", "trafo"))))) {
-    warning("Transformations are lost in concatenation.")
+#' @title Concatenate ParameterSet Objects
+#' @description Concatenate multiple [ParameterSet] objects into a single
+#' [ParameterSet].
+#' @details Concatenates ids, tags, tag properties and dependencies,
+#' but not transformations.
+#' @param ... ([ParameterSet]s) \cr Named [ParameterSet] objects to concatenate.
+#' @param pss (`named list()`) \cr Alternatively pass a named list of
+#' [ParameterSet] objects.
+#' @param clone (`logical(1)`) \cr If `TRUE` (default) parameter sets are deep
+#' cloned before combination, useful to prevent original sets being prefixed.
+#' @export
+cpset <- function(..., pss = list(...), clone = TRUE) {
+
+  if (clone) {
+    pss <- lapply(pss, function(.x) .x$clone(deep = TRUE))
   }
+
+  prms <- lapply(pss, as.prm)
+  checkmate::assert_list(prms, names = "unique")
+
+  ## add prefix to ids and tags
+  for (i in seq_along(prms)) {
+    prms[[i]] <- lapply(prms[[i]], function(.x) {
+      .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
+      if (length(.x$tags)) {
+        .x$tags <- sprintf("%s__%s", names(prms)[[i]], .x$tags)
+      }
+      .x
+    })
+  }
+
+  ## add prefix to deps
+  for (i in seq_along(pss)) {
+    pri <- get_private(pss[[i]])
+    deps <- pri$.deps
+    if (!is.null(deps)) {
+      deps$id <- sprintf("%s__%s", names(pss)[[i]], deps$id)
+      deps$on <- sprintf("%s__%s", names(pss)[[i]], deps$on)
+      deps$cond <- lapply(deps$cond, function(.x) {
+        at <- attr(.x, "id")
+        if (!is.null(at)) {
+          attr(.x, "id") <- sprintf("%s__%s", names(pss)[[i]], at)
+        }
+        .x
+      })
+
+      pri$.deps <- deps
+    }
+  }
+
+  .combine_unique(prms, pss)
+}
+
+.combine_unique <- function(prms, pss) {
+
+  trafo <- drop_null(lapply(pss, function(.x) get_private(.x)$.trafo))
+  trafo <- trafo[!duplicated(trafo)]
 
   props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
   if (length(props)) {
@@ -89,8 +144,12 @@ c.ParameterSet <- function(..., pss = list(...)) {
       tprop$linked <- unique(unlist(lin_props))
     }
     un_props <- props[names(props) %in% "unique"]
-    if (length(lin_props)) {
+    if (length(un_props)) {
       tprop$unique <- unique(unlist(un_props))
+    }
+    im_props <- props[names(props) %in% "immutable"]
+    if (length(im_props)) {
+      tprop$immutable <- unique(unlist(im_props))
     }
     if (any(duplicated(unlist(tprop)))) {
       stop("Cannot merge inconsistent tag properties.")
@@ -99,15 +158,22 @@ c.ParameterSet <- function(..., pss = list(...)) {
     tprop <- NULL
   }
 
-  ps <- ParameterSet$new(prms, tprop)
-  private <- get_private(ps)
-
-  deps <- lapply(pss, "[[", "deps")
-  if (any(!is.null(unlist(deps)))) {
-    private$.deps <- data.table::rbindlist(deps)
+  deps <- unlist(lapply(pss, function(.x) {
+    if (!is.null(.x$deps)) {
+      apply(.x$deps, 1, as.list)
+    }
+  }), FALSE)
+  deps <- un_null_list(deps)
+  if (!length(deps)) {
+    deps <- NULL
   }
 
-  ps
+  pset(
+    prms = unlist(prms, FALSE),
+    tag_properties = tprop,
+    deps = deps,
+    trafo = trafo
+  )
 }
 
 #' @title Coerce a ParameterSet to a data.table
@@ -120,7 +186,12 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @param ... (`ANY`) \cr Other arguments, currently unused.
 #' @export
 as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
-  if (length(x$deps) || length(x$trafo)) {
+  if (length(x$ids) == 0) {
+    return(data.table(Id = character(0), Support = list(), Value = list(),
+                      Tags = character(0)))
+  }
+
+  if (length(x$deps) || length(get_private(x)$.trafo)) {
     warning("Dependencies and trafos are lost in coercion.")
   }
 
@@ -144,19 +215,8 @@ as.data.table.ParameterSet <- function(x, sort = TRUE, ...) { # nolint
 #' @description Creates a new [ParameterSet] by extracting the given
 #' parameters. S3 method for the `$extract` public method.
 #' @param object ([ParameterSet])
-#' @param i (`character()`) \cr
-#' If not `NULL` then specifies the parameters by id to extract. Should be
-#' `NULL` if `prefix` is not `NULL`.
-#' @param tags (`character()`) \cr
-#' If not `NULL` then specifies the parameters by tag to extract. Should be
-#' `NULL` if `prefix` is not `NULL`.
-#' @param prefix (`character()`) \cr
-#' If not `NULL` then extracts parameters according to their prefix and
-#' additionally removes the prefix from the id. A prefix is determined as
-#' the string before `"__"` in an id.
-#' @param ... (`ANY`) \cr Other arguments, currently unused.
+#' @param ... (`ANY`) \cr Passed to [ParameterSet]$extract
 #' @export
-`[.ParameterSet` <- function(object, i = NULL, tags = NULL, prefix = NULL,
-                             ...) {
-  object$extract(i, tags, prefix)
+`[.ParameterSet` <- function(object, ...) {
+  object$extract(...)
 }

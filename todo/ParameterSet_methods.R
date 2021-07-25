@@ -25,27 +25,6 @@
       invisible(self)
 }
 
-# This is incomplete and needs better support for deps, trafo, checks.
-#  However as above I am unsure if these methods are ever needed.
-.ParameterSet__remove <- function(self, private, ...) { # nolint
-    if (!is.null(private$.trafo)) {
-       warning("Rransformations are not included in extraction.")
-    }
-
-    pars <- unlist(list(...))
-    private$.support[pars] <- NULL
-    private$.value[pars] <- NULL
-    private$.tags[pars] <- NULL
-    # fix for vectorised pars
-    private$.deps <- subset(private$.deps,
-                            !(grepl(id, pars) | grepl(on, pars)))
-    private$.trafo[pars] <- NULL
-    # FIXME - remove checks
-    subset(private$.checks, grepl(pars, params))
-
-    invisible(self)
-}
-
 .ParameterSet__add_check <- function(self, private, fun, ids, tags) { # nolint
   if (is.null(self$checks)) {
     checks <- data.table(ids = list(), tags = list(), fun = list())

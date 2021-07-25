@@ -4,18 +4,26 @@
 \alias{pset}
 \title{Convenience Function for Constructing a ParameterSet}
 \usage{
-pset(prms, tag_properties = NULL)
+pset(..., prms = list(...), tag_properties = NULL, deps = NULL, trafo = NULL)
 }
 \arguments{
+\item{...}{(\link{prm}) \cr \link{prm} objects.}
+
 \item{prms}{(\code{list()}) \cr List of \link{prm} objects.}
 
 \item{tag_properties}{(\code{list()}) \cr
-List of tag properties. Currently support properties are: i) 'required' -
+List of tag properties. Currently supported properties are: i) 'required' -
 parameters with this tag property must be non-NULL; ii) 'linked' - only one
 parameter in a linked tag group can be non-NULL and the others should be
 NULL, this only makes sense with an associated \code{trafo}; iii) 'unique' -
 parameters with this tag must have no duplicated elements, only makes sense
-for vector parameters.}
+for vector parameters; iv) 'immutable' - parameters with this tag cannot be
+updated after construction.}
+
+\item{deps}{(\code{list()}) \cr List of lists where each element is passed to
+\verb{$add_dep}. See examples.}
+
+\item{trafo}{(\verb{function()}) \cr Passed to \verb{$trafo}. See examples.}
 }
 \description{
 See \link{ParameterSet} for full details.
@@ -23,10 +31,23 @@ See \link{ParameterSet} for full details.
 \examples{
 library(set6)
 
+# simple example
 prms <- list(
  prm("a", Set$new(1), 1, tags = "t1"),
  prm("b", "reals", 1.5, tags = "t1"),
  prm("d", "reals", 2, tags = "t2")
 )
-p <- pset(prms)
+p <- pset(prms = prms)
+
+# with properties, deps, trafo
+p <- pset(
+ prm("a", Set$new(1), 1, tags = "t1"),
+ prm("b", "reals", 1.5, tags = "t1"),
+ prm("d", "reals", 2, tags = "t2"),
+ tag_properties = list(required = "t2"),
+ deps = list(
+   list(id = "a", on = "b", cond = cnd("eq", 1.5))
+ ),
+ trafo = function(x, self) return(x)
+)
 }

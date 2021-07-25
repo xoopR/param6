@@ -2,7 +2,7 @@
 % Please edit documentation in R/ParameterSet_S3methods.R
 \name{c.ParameterSet}
 \alias{c.ParameterSet}
-\title{Concatenate ParameterSet Objects}
+\title{Concatenate Unique ParameterSet Objects}
 \usage{
 \method{c}{ParameterSet}(..., pss = list(...))
 }
@@ -13,10 +13,10 @@
 objects.}
 }
 \description{
-Concatenate multiple \link{ParameterSet} objects into a single
-\link{ParameterSet}.
+Concatenate multiple \link{ParameterSet} objects with unique ids and
+tags into a single \link{ParameterSet}.
 }
 \details{
-Concatenates ids, tags, tag properties and dependencies,
-but not transformations.
+Concatenates ids, tags, tag properties and dependencies. Assumes
+ids and tags are unique; trafos are combined into a list.
 }

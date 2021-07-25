@@ -1,7 +1,4 @@
 assert_contains <- function(set, value, name) {
-  if (!is.null(set$power) && set$power == "n") {
-    value <- as.Tuple(value)
-  }
   if (set$contains(value, all = TRUE)) {
     invisible(value)
   } else {
@@ -21,41 +18,41 @@ string_as_set <- function(str) {
 }
 
 sort_named_list <- function(lst, ...) {
-  lst[order(names(lst), ...)]
+  if (length(lst)) {
+    lst[order(names(lst), ...)]
+  } else {
+    lst
+  }
 }
 
 named_list <- function(values, names) {
   if (missing(values) && missing(names)) {
-    x <- list()
-    names <- character()
+    setNames(list(), character())
   } else {
-    x <- list(values)
+    setNames(list(values), names)
   }
-
-  names(x) <- names
-  x
 }
 
 as_named_list <- function(values, names) {
   if (missing(values) && missing(names)) {
-    x <- list()
-    names <- character()
+    setNames(list(), character())
   } else {
-    x <- as.list(values)
+    setNames(as.list(values), names)
   }
-
-  names(x) <- names
-  x
 }
 
 expand_list <- function(names, named_var) {
   checkmate::assert_character(names)
   checkmate::assert_list(named_var)
 
-  x <- vector("list", length(names))
-  names(x) <- names
-  x[names(x) %in% names(named_var)] <- named_var
-  return(x)
+  mtc <- match(names(named_var), names)
+  if (any(is.na(mtc))) {
+    stop("ids in 'names' not in 'named_var'")
+  }
+
+  x <- setNames(vector("list", length(names)), names)
+  x[mtc] <- named_var
+  x
 }
 
 get_private <- function(x) {
@@ -88,17 +85,27 @@ env_append <- function(env, var, values) {
   !(x %in% table)
 }
 
-unprefix <- function(x, split = "__") {
-  start <- vapply(x, function(.x) regexpr("__", .x, fixed = TRUE)[[1]][[1]],
-                  integer(1)) + 2
-  substr(x, start, 1e3)
+unprefix <- function(x) {
+  gsub("([[:alnum:]]+)__(\\S*)", "\\2", x)
 }
 
-get_prefix <- function(x, split = "__") {
-  vapply(x, function(.x) unlist(strsplit(.x, split, TRUE))[[1]], character(1),
-         USE.NAMES = FALSE)
+get_prefix <- function(x) {
+  gsub("([[:alnum:]]+)__(\\S*)", "\\1", x)
 }
 
 unique_nlist <- function(x) {
   x[!duplicated(names(x))]
+}
+
+
+drop_null <- function(x) {
+  x[vapply(x, function(.x) length(.x) > 0, logical(1))]
+}
+
+
+assert_alphanum <- function(x) {
+  if (any(grepl("[^[:alnum:]]", x))) {
+    stop("'x' must be alphanumeric")
+  }
+  invisible(x)
 }

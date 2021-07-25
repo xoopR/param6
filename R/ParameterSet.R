@@ -183,6 +183,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' If not `NULL` then extracts parameters according to their prefix and
     #' additionally removes the prefix from the id. A prefix is determined as
     #' the string before `"__"` in an id.
+    #' @param keep_trafo (`logical(1)`) \cr
+    #' If `TRUE` (default) then transformations are kept in extraction,
+    #' otherwise removed with warning.
+    #'
     #' @examples
     #' # extract by id
     #' prms <- list(
@@ -206,8 +210,78 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' p$extract(prefix = "Pre1")
     #' # equivalently
     #' p[prefix = "Pre1"]
-    extract = function(id = NULL, tags = NULL, prefix = NULL) {
-      .ParameterSet__extract(self, private, id, tags, prefix)
+    extract = function(id = NULL, tags = NULL, prefix = NULL,
+                       keep_trafo = TRUE) {
+      .ParameterSet__extract(self, private, id, tags, prefix, keep_trafo)
+    },
+
+
+    #' @description Removes the given parameters from the set.
+    #' @param id (`character()`) \cr
+    #' If not `NULL` then specifies the parameters by id to extract. Should be
+    #' `NULL` if `prefix` is not `NULL`.
+    #' @param prefix (`character()`) \cr
+    #' If not `NULL` then extracts parameters according to their prefix and
+    #' additionally removes the prefix from the id. A prefix is determined as
+    #' the string before `"__"` in an id.
+    remove = function(id = NULL, prefix = NULL) {
+      .ParameterSet__remove(self, private, id, prefix)
+    },
+
+    #' @description Deprecated method added for distr6 compatibility.
+    #' Use $values/$get_values() in the future.
+    #' Will be removed in 0.3.0.
+    #' @param id Parameter id
+    #' @param ... Unused
+    getParameterValue = function(id, ...) {
+      # nocov start
+      warning("Deprecated. In the future please use $values/$get_values(). Will be removed in 0.3.0.") # nolint
+      self$get_values(id)
+      # nocov end
+    },
+
+    #' @description Deprecated method added for distr6 compatibility.
+    #' Use $set_values in the future.
+    #' Will be removed in 0.3.0.
+    #' @param ... Parameter ids
+    #' @param lst List of parameter ids
+    setParameterValue = function(..., lst = list(...)) {
+      # nocov start
+      warning("Deprecated. In the future please use $values. Will be removed in 0.3.0.") # nolint
+      self$values <- unique_nlist(c(lst, self$values))
+      # nocov end
+    },
+
+    #' @description Convenience function for setting multiple parameters
+    #' without changing or accidentally removing others.
+    #' @param ... Parameter ids
+    #' @param lst List of parameter ids
+    set_values = function(..., lst = list(...)) {
+      self$values <- unique_nlist(c(lst, self$values))
+      invisible(self)
+    },
+
+    #' @description Deprecated method added for distr6 compatibility.
+    #' Use $print/as.data.table() in the future.
+    #' Will be removed in 0.3.0.
+    #' @param ... Unused
+    parameters = function(...) {
+      # nocov start
+      warning("Deprecated. In the future please use $print/as.data.table(). Will be removed in 0.3.0.") # nolint
+      self
+      # nocov end
+    },
+
+    #' @description Applies the internal transformation function.
+    #' If no function has been passed to `$trafo` then `x` is returned
+    #' unchanged. If `$trafo` is a function then `x` is passed directly to
+    #' this. If `$trafo` is a list then `x` is evaluated and passed down the
+    #' list iteratively.
+    #' @param x (`named list(1)`) \cr
+    #' List of values to transform.
+    #' @return `named list(1)`
+    transform = function(x = self$values) {
+      .ParameterSet__transform(self, private, x)
     }
   ),
 
@@ -237,11 +311,14 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' If `x` is not missing then used to tag properties. Currently properties
     #' can either be: \cr
     #' i) 'required' - parameters with this tag must have set (non-NULL)
-    #' values;\cr
+    #' values; if a parameter is both 'required' and 'linked' then exactly
+    #' one parameter in the 'linked' tag must be tagged;\cr
     #' ii) 'linked' - parameters with 'linked' tags are dependent on one another
     #' and only one can be set (non-NULL at a time);\cr
     #' iii) 'unique' - parameters with this tag must have no duplicated
-    #' elements, therefore this tag only makes sense for vector parameters.
+    #' elements, therefore this tag only makes sense for vector parameters;\cr
+    #' iv) 'immutable' - parameters with this tag cannot be updated after
+    #' construction.
     tag_properties = function(x) {
       .ParameterSet__tag_properties(self, private, x)
     },
@@ -256,29 +333,43 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' See examples at end.
     values = function(x) .ParameterSet__values(self, private, x),
 
-    #' @field trafo `function() -> self` / None -> `function()` \cr
+    #' @field trafo `function()|list() -> self` / None -> `function()|list()`
+    #' \cr
     #' If `x` is missing then returns a transformation function if previously
-    #' set, otherwise `NULL`. \cr
-    #' If `x` is not missing then it should be a function with arguments `x` and
-    #' `self`, which internally correspond to `self` being the `ParameterSet`
-    #' the transformation is being added to, and `x <- self$values`. The
-    #' transformation function is automatically called after a call to
+    #' set, a list of transformation functions, otherwise `NULL`. \cr
+    #' If `x` is not missing then it should either be:
+    #'
+    #' * a function with arguments `x` and `self`, which internally correspond
+    #' to `self` being the `ParameterSet` the transformation is being added to,
+    #' and `x <- self$values`.
+    #' * a list of functions like above
+    #'
+    #' The transformation function is automatically called after a call to
     #' `self$get_values()` and is used to transform set values, it should
     #' therefore result in a list. If using `self$get_values()` within the
     #' transformation function, make sure to set `transform = FALSE` to prevent
     #' infinite recursion, see examples at end.
+    #'
+    #' It is generally safer to call the transformation with
+    #' `$transform(self$values)` as this will first check to see if `$trafo`
+    #' is a function or list. If the latter then each function in the list is
+    #' applied, one after the other.
     trafo = function(x) .ParameterSet__trafo(self, private, x)
     ),
 
   private = list(
-    .id = list(),
-    .isupports = list(),
-    .supports = list(),
-    .value = list(),
-    .tags = list(),
+    .id = NULL,
+    .isupports = NULL,
+    .supports = NULL,
+    .value = NULL,
+    .tags = NULL,
     .tag_properties = NULL,
     .trafo = NULL,
     .deps = NULL,
+    .immutable = NULL,
+    .update_support = function(..., lst = list(...)) {
+      .ParameterSet__.update_support(self, private, lst)
+    },
     deep_clone = function(name, value) {
       switch(name,
              ".deps" = {
@@ -294,18 +385,49 @@ ParameterSet <- R6::R6Class("ParameterSet",
 
 #' @title Convenience Function for Constructing a ParameterSet
 #' @description See [ParameterSet] for full details.
+#' @param ... ([prm]) \cr [prm] objects.
 #' @param prms (`list()`) \cr List of [prm] objects.
 #' @template param_tag_properties
+#' @param deps (`list()`) \cr List of lists where each element is passed to
+#'  `$add_dep`. See examples.
+#' @param trafo (`function()`) \cr Passed to `$trafo`. See examples.
 #' @examples
 #' library(set6)
 #'
+#' # simple example
 #' prms <- list(
 #'  prm("a", Set$new(1), 1, tags = "t1"),
 #'  prm("b", "reals", 1.5, tags = "t1"),
 #'  prm("d", "reals", 2, tags = "t2")
 #' )
-#' p <- pset(prms)
+#' p <- pset(prms = prms)
+#'
+#' # with properties, deps, trafo
+#' p <- pset(
+#'  prm("a", Set$new(1), 1, tags = "t1"),
+#'  prm("b", "reals", 1.5, tags = "t1"),
+#'  prm("d", "reals", 2, tags = "t2"),
+#'  tag_properties = list(required = "t2"),
+#'  deps = list(
+#'    list(id = "a", on = "b", cond = cnd("eq", 1.5))
+#'  ),
+#'  trafo = function(x, self) return(x)
+#' )
 #' @export
-pset <- function(prms, tag_properties = NULL) {
-  ParameterSet$new(prms, tag_properties)
+pset <- function(..., prms = list(...), tag_properties = NULL, deps = NULL,
+                 trafo = NULL) {
+
+  ps <- ParameterSet$new(prms, tag_properties)
+
+  if (!is.null(deps)) {
+    checkmate::assert_list(deps)
+    lapply(deps, function(x) {
+      cnd <- if (checkmate::test_list(x$cond)) x$cond[[1]] else x$cond
+      ps$add_dep(x$id, x$on, cnd)
+    })
+  }
+
+  ps$trafo <- trafo
+
+  ps
 }

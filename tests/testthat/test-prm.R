@@ -37,7 +37,6 @@ test_that("prm - error", {
 
 test_that("required prm", {
   expect_silent(prm("a", Set$new(1), 1, "required"))
-  expect_error(prm("a", Set$new(1), NULL, "required"), "required")
 })
 
 test_that("as.prm.data.table", {
@@ -72,4 +71,12 @@ test_that("as.prm.ParameterSet", {
     prm("d", "reals")
   )
   expect_equal(as.prm(as.ParameterSet(prms)), prms)
+})
+test_that("deep clone", {
+  d1 <- Dictionary$new(a = Set$new(1), d = 1)
+  d2 <- d1$clone(deep = TRUE)
+  d3 <- d1
+  d2$add(list(b = 2))
+  expect_equal(length(d1), length(d3))
+  expect_false(length(d1) == length(d2))
 })

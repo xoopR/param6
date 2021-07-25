@@ -19,3 +19,4 @@ inst/trigger-mlr3book.sh
 ^\.ccache$
 ^\.github$
 ^CRAN-RELEASE$
+.vscode
