@@ -116,6 +116,8 @@
     stop(sprintf("'prefix' should either be length '1' or same as 'times' (%d)", times)) # nolint
   }
 
+  assert_alphanum(prefix)
+
   lng <- length(self)
 
   private$.id <- paste(rep(prefix, each = lng), rep(private$.id),
@@ -161,7 +163,7 @@
   }
 
   if (!is.null(prefix)) {
-    prefix <- sprintf("^%s__", prefix)
+    prefix <- sprintf("^%s__", assert_alphanum(prefix))
     ids <- names(.filter_field(self, private$.value, prefix))
     unfix_ids <- unprefix(ids)
   } else {

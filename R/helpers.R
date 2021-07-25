@@ -86,11 +86,11 @@ env_append <- function(env, var, values) {
 }
 
 unprefix <- function(x) {
-  gsub("([^_]+)__(\\S*)", "\\2", x)
+  gsub("([[:alnum:]]+)__(\\S*)", "\\2", x)
 }
 
 get_prefix <- function(x) {
-  gsub("([^_]+)__(\\S*)", "\\1", x)
+  gsub("([[:alnum:]]+)__(\\S*)", "\\1", x)
 }
 
 unique_nlist <- function(x) {
@@ -100,4 +100,12 @@ unique_nlist <- function(x) {
 
 drop_null <- function(x) {
   x[vapply(x, function(.x) length(.x) > 0, logical(1))]
+}
+
+
+assert_alphanum <- function(x) {
+  if (any(grepl("[^[:alnum:]]", x))) {
+    stop("'x' must be alphanumeric")
+  }
+  invisible(x)
 }
