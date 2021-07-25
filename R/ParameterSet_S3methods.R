@@ -130,6 +130,7 @@ cpset <- function(..., pss = list(...), clone = TRUE) {
 .combine_unique <- function(prms, pss) {
 
   trafo <- drop_null(lapply(pss, function(.x) get_private(.x)$.trafo))
+  trafo <- trafo[!duplicated(trafo)]
 
   props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
   if (length(props)) {

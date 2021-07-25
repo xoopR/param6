@@ -128,10 +128,10 @@
         transform = FALSE
       )
 
-      value <- lapply(
+      value <- unlist(lapply(
         value,
         function(.x) if (length(.x) > 1) as.Tuple(.x) else .x
-      )
+      ))
 
       set <- support_dictionary$get(names(supports)[[i]])
 

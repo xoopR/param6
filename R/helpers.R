@@ -1,7 +1,4 @@
 assert_contains <- function(set, value, name) {
-  if (!is.null(set$power) && set$power == "n") {
-    value <- as.Tuple(value)
-  }
   if (set$contains(value, all = TRUE)) {
     invisible(value)
   } else {
