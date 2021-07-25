@@ -19,7 +19,7 @@
     nid[mtc] <- sprintf("^%s", nid[mtc])
 
     ## match postfix otherwise
-    nid[!mtc] <- sprintf("(__%s)|(^%s)", nid[!mtc], nid[!mtc])
+    nid[!mtc] <- sprintf("(__%s$)|(^%s$)", nid[!mtc], nid[!mtc])
 
     nid <- paste0(sprintf("(%s)", nid), collapse = "|")
     mtc <- grepl(nid, names(x))
