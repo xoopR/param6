@@ -161,7 +161,8 @@
   }
 
   if (!is.null(prefix)) {
-    ids <- names(.filter_field(self, private$.value, sprintf("%s__", prefix)))
+    prefix <- sprintf("^%s__", prefix)
+    ids <- names(.filter_field(self, private$.value, prefix))
     unfix_ids <- unprefix(ids)
   } else {
     ids <- names(.filter_field(self, private$.value, id, tags))

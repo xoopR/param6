@@ -85,12 +85,12 @@ env_append <- function(env, var, values) {
   !(x %in% table)
 }
 
-unprefix <- function(x, split = "__") {
-  gsub(sprintf("[a-zA-Z]+[0-9]*%s", split), "", x)
+unprefix <- function(x) {
+  gsub("([^_]+)__(\\S*)", "\\2", x)
 }
 
-get_prefix <- function(x, split = "__") {
-  gsub(sprintf("%s[a-zA-Z]*", split), "", x)
+get_prefix <- function(x) {
+  gsub("([^_]+)__(\\S*)", "\\1", x)
 }
 
 unique_nlist <- function(x) {
