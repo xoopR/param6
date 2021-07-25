@@ -335,17 +335,30 @@
 
 
 .ParameterSet__transform <- function(self, private, x) { # nolint
+
   trafo <- self$trafo
   if (is.null(trafo)) {
-    x
-  } else if (checkmate::test_function(trafo)) {
-    trafo(x, self)
-  } else {
-    for (i in seq_along(trafo)) {
-      x <- trafo[[i]](x, self)
-    }
-    x
+    return(x)
   }
+
+  if (checkmate::test_function(trafo)) {
+    x <- trafo(x, self)
+  } else {
+    if (is.null(nms <- names(trafo))) {
+      for (i in seq_along(trafo)) {
+        x <- trafo[[i]](x, self)
+      }
+    } else {
+      newx <- list()
+      for (i in seq_along(trafo)) {
+        which <- grepl(sprintf("%s__", nms[[i]]), names(x))
+        newx <- append(newx, trafo[[i]](x[which], self))
+      }
+      x <- newx
+    }
+  }
+
+  x
 }
 
 
@@ -411,7 +424,9 @@
     if (length(x)) {
       if (checkmate::test_list(x)) {
         x <- unlist(x, recursive = FALSE)
-        names(x) <- gsub(".", "__", names(x), fixed = TRUE)
+        if (!is.null(names(x))) {
+          names(x) <- gsub(".", "__", names(x), fixed = TRUE)
+        }
         x <- x[!duplicated(x)]
         lapply(x, checkmate::assert_function, args = c("x", "self"),
                ordered = TRUE)
