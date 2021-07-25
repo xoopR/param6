@@ -312,7 +312,8 @@
   if (length(private$.value) == 0) {
     private$.value <- NULL
   }
-  private$.supports <- private$.supports[setdiff(names(private$.supports), pars)]
+  private$.supports <- private$.supports[setdiff(names(private$.supports),
+                                                 pars)]
   if (length(private$.supports) == 0) {
     private$.supports <- NULL
   }

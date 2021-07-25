@@ -234,8 +234,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' @param id Parameter id
     #' @param ... Unused
     getParameterValue = function(id, ...) {
+      # nocov start
       warning("Deprecated. In the future please use $values/$get_values(). Will be removed in 0.3.0.") # nolint
       self$get_values(id)
+      # nocov end
     },
 
     #' @description Deprecated method added for distr6 compatibility.
@@ -244,8 +246,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' @param ... Parameter ids
     #' @param lst List of parameter ids
     setParameterValue = function(..., lst = list(...)) {
+      # nocov start
       warning("Deprecated. In the future please use $values. Will be removed in 0.3.0.") # nolint
       self$values <- unique_nlist(c(lst, self$values))
+      # nocov end
     },
 
     #' @description Convenience function for setting multiple parameters
@@ -262,8 +266,10 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' Will be removed in 0.3.0.
     #' @param ... Unused
     parameters = function(...) {
+      # nocov start
       warning("Deprecated. In the future please use $print/as.data.table(). Will be removed in 0.3.0.") # nolint
       self
+      # nocov end
     },
 
     #' @description Applies the internal transformation function.

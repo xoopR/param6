@@ -347,7 +347,8 @@ test_that("trafo", {
 test_that("rep", {
   prms <- list(
     prm("par1", Set$new(1), 1, tags = "t1"),
-    prm("par2", "reals", 3, tags = "t2")
+    prm("par2", "reals", 3, tags = "t2"),
+    prm("par3", "reals", 4, tags = "immutable")
   )
   p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1",
                                                      linked = "t2"))
@@ -355,8 +356,10 @@ test_that("rep", {
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2"),
+    prm("Pre1__par3", "reals", 4, tags = "immutable"),
     prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
-    prm("Pre2__par2", "reals", 3, tags = "t2")
+    prm("Pre2__par2", "reals", 3, tags = "t2"),
+    prm("Pre2__par3", "reals", 4, tags = "immutable")
   )
   p2 <- ParameterSet$new(
     prms,
@@ -368,12 +371,13 @@ test_that("rep", {
 
   prms <- list(
     prm("par1", Set$new(1), 1, tags = "t1"),
-    prm("par2", "reals", 3, tags = "t2")
+    prm("par2", "reals", 3, tags = "t2"),
+    prm("par3", "reals", 4, tags = "immutable")
   )
   p1 <- ParameterSet$new(prms, tag_properties = list(required = "t1",
                                                      linked = "t2"))
   expect_equal_ps(rep(p1, 2, "Pre"), p2)
-  expect_equal(length(p1), 2)
+  expect_equal(length(p1), 3)
 })
 
 test_that("add_dep", {
@@ -752,4 +756,14 @@ test_that("can remove a parameter", {
 
   expect_equal_ps(p3$remove(prefix = "c"), p4)
   expect_equal_ps(p1$remove("b"), p2)
+})
+
+
+test_that("set_values", {
+  p <- pset(
+    prm("a", "reals", 1),
+    prm("b", "reals", 1)
+  )
+  p$set_values(b = 2)
+  expect_equal(p$values, list(a = 1, b = 2))
 })
