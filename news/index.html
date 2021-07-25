@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -122,6 +122,24 @@
       <small>Source: <a href='https://github.com/xoopR/param6/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="param6-020" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.0">
+<a href="#param6-020" class="anchor"></a>param6 0.2.0<small> Unreleased </small>
+</h1>
+<ul>
+<li>Bugfix in <code>expand_list</code> which was causing parameter names to be swapped</li>
+<li>Bugfix in testing linked parameters</li>
+<li>Added sets containing zero (e.g. PosReals$new(zero = TRUE)) to the support dictionary</li>
+<li>Add parameters to <code>pset</code> to simplify construction with deps and trafo</li>
+<li>Now support parameters being required and linked simultaneously. Exactly one parameter in a required/linked group must be set.</li>
+<li>Added ‘immutable’ property for parameters that can be set on construction then cannot be changed</li>
+<li>Renamed ‘ExtendedReals’ to ‘ExtReals’</li>
+<li>Minor internal bug fixes</li>
+<li>Transformations now support in replication and extraction</li>
+<li>Added method to update parameter supports</li>
+<li>Added method to remove parmameters from constructed sets</li>
+</ul>
+</div>
     <div id="param6-011" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.1">
 <a href="#param6-011" class="anchor"></a>param6 0.1.1<small> Unreleased </small>

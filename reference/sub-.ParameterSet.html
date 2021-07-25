@@ -81,7 +81,7 @@ parameters. S3 method for the $extract public method." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -131,7 +131,7 @@ parameters. S3 method for the <code>$extract</code> public method.</p>
     </div>
 
     <pre class="usage"># S3 method for ParameterSet
-[(object, i = NULL, tags = NULL, prefix = NULL, ...)</pre>
+[(object, ...)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,27 +141,8 @@ parameters. S3 method for the <code>$extract</code> public method.</p>
       <td><p>(<a href='ParameterSet.html'>ParameterSet</a>)</p></td>
     </tr>
     <tr>
-      <th>i</th>
-      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
-If not <code>NULL</code> then specifies the parameters by id to extract. Should be
-<code>NULL</code> if <code>prefix</code> is not <code>NULL</code>.</p></td>
-    </tr>
-    <tr>
-      <th>tags</th>
-      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
-If not <code>NULL</code> then specifies the parameters by tag to extract. Should be
-<code>NULL</code> if <code>prefix</code> is not <code>NULL</code>.</p></td>
-    </tr>
-    <tr>
-      <th>prefix</th>
-      <td><p>(<code><a href='https://rdrr.io/r/base/character.html'>character()</a></code>) <br />
-If not <code>NULL</code> then extracts parameters according to their prefix and
-additionally removes the prefix from the id. A prefix is determined as
-the string before <code>"__"</code> in an id.</p></td>
-    </tr>
-    <tr>
       <th>...</th>
-      <td><p>(<code>ANY</code>) <br /> Other arguments, currently unused.</p></td>
+      <td><p>(<code>ANY</code>) <br /> Passed to <a href='ParameterSet.html'>ParameterSet</a>$extract</p></td>
     </tr>
     </table>
 

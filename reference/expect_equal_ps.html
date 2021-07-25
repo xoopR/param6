@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Concatenate Unique ParameterSet Objects — c.ParameterSet • param6</title>
+<title>Check if two parameters are equal — expect_equal_ps • param6</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Concatenate Unique ParameterSet Objects — c.ParameterSet" />
-<meta property="og:description" content="Concatenate multiple ParameterSet objects with unique ids and
-tags into a single ParameterSet." />
+<meta property="og:title" content="Check if two parameters are equal — expect_equal_ps" />
+<meta property="og:description" content="Primarily for internal use" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -120,37 +119,26 @@ tags into a single ParameterSet." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Concatenate Unique ParameterSet Objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/ParameterSet_S3methods.R'><code>R/ParameterSet_S3methods.R</code></a></small>
-    <div class="hidden name"><code>c.ParameterSet.Rd</code></div>
+    <h1>Check if two parameters are equal</h1>
+    <small class="dont-index">Source: <a href='https://github.com/xoopR/param6/blob/master/R/tools.R'><code>R/tools.R</code></a></small>
+    <div class="hidden name"><code>expect_equal_ps.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Concatenate multiple <a href='ParameterSet.html'>ParameterSet</a> objects with unique ids and
-tags into a single <a href='ParameterSet.html'>ParameterSet</a>.</p>
+    <p>Primarily for internal use</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for ParameterSet</span>
-<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>...</span>, pss <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>expect_equal_ps</span><span class='op'>(</span><span class='va'>obj</span>, <span class='va'>expected</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>(<a href='ParameterSet.html'>ParameterSet</a>s) <br /> <a href='ParameterSet.html'>ParameterSet</a> objects to concatenate.</p></td>
-    </tr>
-    <tr>
-      <th>pss</th>
-      <td><p>(<code><a href='https://rdrr.io/r/base/list.html'>list()</a></code>) <br /> Alternatively pass a list of <a href='ParameterSet.html'>ParameterSet</a>
-objects.</p></td>
+      <th>obj, expected</th>
+      <td><p><a href='ParameterSet.html'>ParameterSet</a></p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Concatenates ids, tags, tag properties and dependencies. Assumes
-ids and tags are unique; trafos are combined into a list.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

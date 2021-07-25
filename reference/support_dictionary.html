@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="Support Dictionary — support_dictionary" />
-<meta property="og:description" content="Dictionary for parameter supports" />
+<meta property="og:description" content="dictionar6::Dictionary for parameter supports" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -125,27 +125,30 @@
     </div>
 
     <div class="ref-description">
-    <p><a href='Dictionary.html'>Dictionary</a> for parameter supports</p>
+    <p><a href='https://xoopR.github.io/dictionar6/reference/Dictionary.html'>dictionar6::Dictionary</a> for parameter supports</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See <a href='Dictionary.html'>Dictionary</a> for full details of how to add other <a href='https://xoopR.github.io/set6/reference/Set.html'>set6::Set</a>
-objects as supports to this dictionary.</p>
+    <p>See <a href='https://xoopR.github.io/dictionar6/reference/Dictionary.html'>dictionar6::Dictionary</a> for full details of how to add other
+<a href='https://xoopR.github.io/set6/reference/Set.html'>set6::Set</a> objects as supports to this dictionary.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>support_dictionary</span><span class='op'>$</span><span class='va'>keys</span>
 </div><div class='output co'>#&gt;  [1] "universal"      "logicals"       "naturals"       "posnaturals"   
-#&gt;  [5] "integers"       "posintegers"    "negintegers"    "rationals"     
-#&gt;  [9] "posrationals"   "negrationals"   "reals"          "posreals"      
-#&gt; [13] "negreals"       "extendedreals"  "complex"        "proportion"    
-#&gt; [17] "nlogicals"      "nnaturals"      "nposnaturals"   "nintegers"     
-#&gt; [21] "nposintegers"   "nnegintegers"   "nrationals"     "nposrationals" 
-#&gt; [25] "nnegrationals"  "nreals"         "nposreals"      "nnegreals"     
-#&gt; [29] "nextendedreals" "ncomplex"       "nproportion"    "ℝ"             
-#&gt; [33] "{1}"           </div><div class='input'><span class='va'>support_dictionary</span><span class='op'>$</span><span class='va'>items</span>
+#&gt;  [5] "integers"       "posintegers"    "negintegers"    "posintegers0"  
+#&gt;  [9] "negintegers0"   "rationals"      "posrationals"   "negrationals"  
+#&gt; [13] "posrationals0"  "negrationals0"  "reals"          "posreals"      
+#&gt; [17] "negreals"       "posreals0"      "negreals0"      "extreals"      
+#&gt; [21] "complex"        "proportion"     "nlogicals"      "nnaturals"     
+#&gt; [25] "nposnaturals"   "nintegers"      "nposintegers"   "nnegintegers"  
+#&gt; [29] "nposintegers0"  "nnegintegers0"  "nrationals"     "nposrationals" 
+#&gt; [33] "nnegrationals"  "nposrationals0" "nnegrationals0" "nreals"        
+#&gt; [37] "nposreals"      "nnegreals"      "nposreals0"     "nnegreals0"    
+#&gt; [41] "nextreals"      "ncomplex"       "nproportion"    "ℝ"             
+#&gt; [45] "{1}"           </div><div class='input'><span class='va'>support_dictionary</span><span class='op'>$</span><span class='va'>items</span>
 </div><div class='output co'>#&gt; $universal
 #&gt; 𝕍 
 #&gt; 
@@ -167,6 +170,12 @@ objects as supports to this dictionary.</p>
 #&gt; $negintegers
 #&gt; ℤ- 
 #&gt; 
+#&gt; $posintegers0
+#&gt; ℤ0+ 
+#&gt; 
+#&gt; $negintegers0
+#&gt; ℤ0- 
+#&gt; 
 #&gt; $rationals
 #&gt; ℚ 
 #&gt; 
@@ -175,6 +184,12 @@ objects as supports to this dictionary.</p>
 #&gt; 
 #&gt; $negrationals
 #&gt; ℚ- 
+#&gt; 
+#&gt; $posrationals0
+#&gt; ℚ0+ 
+#&gt; 
+#&gt; $negrationals0
+#&gt; ℚ0- 
 #&gt; 
 #&gt; $reals
 #&gt; ℝ 
@@ -185,7 +200,13 @@ objects as supports to this dictionary.</p>
 #&gt; $negreals
 #&gt; ℝ- 
 #&gt; 
-#&gt; $extendedreals
+#&gt; $posreals0
+#&gt; ℝ0+ 
+#&gt; 
+#&gt; $negreals0
+#&gt; ℝ0- 
+#&gt; 
+#&gt; $extreals
 #&gt; ℝ ∪ {-∞, +∞} 
 #&gt; 
 #&gt; $complex
@@ -212,6 +233,12 @@ objects as supports to this dictionary.</p>
 #&gt; $nnegintegers
 #&gt; ℤ-^n 
 #&gt; 
+#&gt; $nposintegers0
+#&gt; ℤ0+^n 
+#&gt; 
+#&gt; $nnegintegers0
+#&gt; ℤ0-^n 
+#&gt; 
 #&gt; $nrationals
 #&gt; ℚ^n 
 #&gt; 
@@ -220,6 +247,12 @@ objects as supports to this dictionary.</p>
 #&gt; 
 #&gt; $nnegrationals
 #&gt; ℚ-^n 
+#&gt; 
+#&gt; $nposrationals0
+#&gt; ℚ0+^n 
+#&gt; 
+#&gt; $nnegrationals0
+#&gt; ℚ0-^n 
 #&gt; 
 #&gt; $nreals
 #&gt; ℝ^n 
@@ -230,7 +263,13 @@ objects as supports to this dictionary.</p>
 #&gt; $nnegreals
 #&gt; ℝ-^n 
 #&gt; 
-#&gt; $nextendedreals
+#&gt; $nposreals0
+#&gt; ℝ0+^n 
+#&gt; 
+#&gt; $nnegreals0
+#&gt; ℝ0-^n 
+#&gt; 
+#&gt; $nextreals
 #&gt; ℝ ∪ {-∞, +∞}^n 
 #&gt; 
 #&gt; $ncomplex
