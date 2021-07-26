@@ -5,13 +5,13 @@
 expect_equal_ps <- function(obj, expected) {
   pobj <- get_private(obj)
   pexp <- get_private(expected)
-  expect_equal(sort(names(pobj)), sort(names(pexp)))
+  testthat::expect_equal(sort(names(pobj)), sort(names(pexp)))
   lapply(names(pexp), function(x) {
     if (is.list(pexp[[x]]) && length(names(pexp[[x]])) > 0) {
-      expect_equal(deparse(sort_named_list(pobj[[x]])),
+      testthat::expect_equal(deparse(sort_named_list(pobj[[x]])),
                    deparse(sort_named_list(pexp[[x]])), info = x)
     } else {
-      expect_equal(deparse(pobj[[x]]), deparse(pexp[[x]]), info = x)
+      testthat::expect_equal(deparse(pobj[[x]]), deparse(pexp[[x]]), info = x)
     }
   })
 }
