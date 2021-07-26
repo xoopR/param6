@@ -19,11 +19,8 @@ RoxygenNote: 7.1.1
 Imports:
   checkmate,
   data.table,
-  dictionar6,
-  set6 (>= 0.2.2),
+  dictionar6 (>= 0.1.2),
+  set6 (>= 0.2.3),
   R6
 Suggests:
   testthat
-Remotes:
-  xoopR/dictionar6,
-  xoopR/set6
