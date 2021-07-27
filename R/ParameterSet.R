@@ -367,8 +367,13 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .trafo = NULL,
     .deps = NULL,
     .immutable = NULL,
+    ## update support of given prm
     .update_support = function(..., lst = list(...)) {
       .ParameterSet__.update_support(self, private, lst)
+    },
+    ## fills ids in all private fields
+    .add_prefix = function(prefix) {
+      .ParameterSet__.add_prefix(self, private, prefix)
     },
     deep_clone = function(name, value) {
       switch(name,

@@ -186,18 +186,26 @@ test_that("ParamSet actives - tag properties", {
 })
 
 test_that("as.data.table.ParameterSet and print", {
+  expect_equal(
+    as.data.table(pset()),
+    data.table::data.table(Id = character(), Support = list(),
+                           Value = list(), Tags = character())
+  )
+
   prms <- list(
     prm("a", Set$new(1), 1, c("t1", "t2")),
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
   p <- ParameterSet$new(prms)
-  expect_equal_ps(as.data.table(p),
-               data.table::data.table(Id = letters[c(1, 2, 4)],
-                                      Support = list(Set$new(1), Reals$new(),
-                                                     Reals$new()),
-                                      Value = list(1, NULL, 2),
-                                      Tags = list(c("t1", "t2"), NULL, NULL)))
+  dtp <- as.data.table(p)
+  expect_equal(dtp$Id, p$ids)
+  expect_equal(drop_null(dtp$Value), unname(p$values))
+  expect_equal(drop_null(dtp$Tags), unname(p$tags))
+  Map(
+    function(.x, .y) expect_equal(deparse(.x), deparse(.y)),
+    dtp$Support, p$supports
+  )
 
   expect_output(print(p))
 
@@ -695,17 +703,21 @@ test_that("can extract with trafo, properties, deps", {
 
 test_that("concatenate named list", {
   p <- pset(
-    prm("a", "reals", 1),
-    prm("b", "reals", 1)
+    prm("a", "reals", 1, tags = "unique"),
+    prm("b", "reals", 1, tags = "immutable"),
+    prm("d", "reals", 1, tags = "linked")
   )
   lst <- list(a = p, b = p$clone(deep = TRUE))
   cp <- cpset(pss = lst)
 
   pexp <- pset(
-    prm("a__a", "reals", 1),
-    prm("a__b", "reals", 1),
-    prm("b__a", "reals", 1),
-    prm("b__b", "reals", 1)
+    prm("a__a", "reals", 1, tags = "unique"),
+    prm("a__b", "reals", 1, tags = "immutable"),
+    prm("b__a", "reals", 1, tags = "unique"),
+    prm("b__b", "reals", 1, tags = "immutable"),
+    prm("a__d", "reals", 1, tags = "a__linked"),
+    prm("b__d", "reals", 1, tags = "b__linked"),
+    tag_properties = list(linked = c("a__linked", "b__linked"))
   )
 
   expect_equal_ps(cp, pexp)
@@ -766,4 +778,25 @@ test_that("set_values", {
   )
   p$set_values(b = 2)
   expect_equal(p$values, list(a = 1, b = 2))
+})
+
+
+test_that("update_ids", {
+  p1 <- pset(
+    prm("a", "reals", 1, tags = "unique"),
+    prm("b", "reals", 1, tags = "immutable"),
+    prm("d", "reals", 1, tags = "linked"),
+    trafo = list(a = function(x, self) x),
+    deps = list(list(id = "a", on = "b", cond = cnd("eq", id = "b")))
+  )
+  get_private(p1)$.add_prefix("a")
+  p2 <- pset(
+    prm("a__a", "reals", 1, tags = "unique"),
+    prm("a__b", "reals", 1, tags = "immutable"),
+    prm("a__d", "reals", 1, tags = "a__linked"),
+    tag_properties = list(linked = "a__linked"),
+    trafo = list(a__a = function(x, self) x),
+    deps = list(list(id = "a__a", on = "a__b", cond = cnd("eq", id = "a__b")))
+  )
+  expect_equal_ps(p1, p2)
 })

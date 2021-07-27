@@ -1,3 +1,9 @@
+# param6 0.2.1
+
+* expect_equal_ps is now more precise
+* cpset now much faster
+* empty tags now stored as list() not NULL
+
 # param6 0.2.0
 
 * Bugfix in `expand_list` which was causing parameter names to be swapped

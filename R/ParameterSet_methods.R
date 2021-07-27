@@ -21,9 +21,9 @@
 
     private$.value <- un_null_list(lapply(prms, "[[", "value"))
 
-    tag_list <- lapply(prms, "[[", "tags")
+    tag_list <- un_null_list(lapply(prms, "[[", "tags"))
     if (length(tag_list)) {
-      private$.tags <- un_null_list(tag_list)
+      private$.tags <- tag_list
       private$.tag_properties <-
         .assert_tag_properties(tag_properties, unique(unlist(tag_list)), self)
 
@@ -36,10 +36,13 @@
       if (any(duplicated(c(private$.id, unique(unlist(private$.tags)))))) {
         stop("ids and tags must have different names.")
       }
+    } else {
+      private$.tags <- list()
     }
   } else {
     private$.value <- list()
     private$.id <- list()
+    private$.tags <- list()
   }
 
   invisible(self)
@@ -479,6 +482,51 @@
   ## update supports
   private$.supports[names(x)] <- strs
   private$.isupports <- invert_names(private$.supports)
+
+  invisible(self)
+}
+
+
+.ParameterSet__.add_prefix <- function(self, private, prefix) { # nolint
+
+  private$.id <- give_prefix(self$ids, prefix)
+  private$.immutable <- prefix_list(private$.immutable, prefix)
+  private$.tags <- prefix_list(private$.tags, prefix)
+  private$.value <- prefix_list(private$.value, prefix)
+  private$.supports <- prefix_list(private$.supports, prefix)
+  private$.isupports <- invert_names(private$.supports)
+
+  if (is.list(private$.trafo)) {
+    private$.trafo <- prefix_list(private$.trafo, prefix)
+  }
+
+  if (length(private$.deps)) {
+    private$.deps[, id := give_prefix(id, prefix)]
+    private$.deps[, on := give_prefix(on, prefix)]
+    private$.deps$cond <- lapply(private$.deps$cond, function(.x) {
+      at <- attr(.x, "id")
+      if (!is.null(at)) {
+        attr(.x, "id") <- give_prefix(at, prefix)
+      }
+      .x
+    })
+  }
+
+
+  if (length(private$.tag_properties) &&
+        "linked" %in% names(private$.tag_properties)) {
+    tags <- private$.tag_properties$linked
+    private$.tag_properties$linked <-
+      give_prefix(private$.tag_properties$linked, prefix)
+    which <- private$.tags %in% tags
+    if (any(which)) {
+      for (i in seq_along(private$.tags[which])) {
+        iwhich <- private$.tags[which][[i]] %in% tags
+        private$.tags[which][[i]][[iwhich]] <-
+          give_prefix(private$.tags[which][[i]][[iwhich]], prefix)
+      }
+    }
+  }
 
   invisible(self)
 }
