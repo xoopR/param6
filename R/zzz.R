@@ -1,12 +1,12 @@
 #' @import set6
 #' @import R6
 #' @import dictionar6
-#' @importFrom data.table as.data.table data.table
+#' @importFrom data.table as.data.table data.table :=
 #' @importFrom stats setNames
 "_PACKAGE"
 
 # nocov start
-utils::globalVariables(c("support_dictionary", "on"))
+utils::globalVariables(c("support_dictionary", "on", "id"))
 
 
 .onLoad = function(libname, pkgname) { # nolint
