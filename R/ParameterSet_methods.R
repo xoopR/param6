@@ -270,7 +270,7 @@
       newx <- x[!grepl(paste0(sprintf("%s__", nms), collapse = "|"), names(x))]
       for (i in seq_along(trafo)) {
         ## if unnamed then apply to all
-        if (nms[[i]] == "") {
+        if (is.na(nms[[i]]) || nms[[i]] == "") {
           newx <- append(newx, trafo[[i]](x, self))
         } else {
           which <- grepl(sprintf("%s__", nms[[i]]), names(x))
