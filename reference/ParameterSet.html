@@ -88,7 +88,7 @@ Storing subsets of parameters under prefixes
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
       </span>
     </div>
 
@@ -404,7 +404,7 @@ should be equal to <code>times</code>.</p></dd>
 <a id="method-extract"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>extract()</code></h3>
 <p>Creates a new <code>ParameterSet</code> by extracting the given
 parameters.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>id <span class='op'>=</span> <span class='cn'>NULL</span>, tags <span class='op'>=</span> <span class='cn'>NULL</span>, prefix <span class='op'>=</span> <span class='cn'>NULL</span>, keep_trafo <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>ParameterSet</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span>id <span class='op'>=</span> <span class='cn'>NULL</span>, tags <span class='op'>=</span> <span class='cn'>NULL</span>, prefix <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
@@ -420,10 +420,6 @@ If not <code>NULL</code> then specifies the parameters by tag to extract. Should
 If not <code>NULL</code> then extracts parameters according to their prefix and
 additionally removes the prefix from the id. A prefix is determined as
 the string before <code>"__"</code> in an id.</p></dd>
-
-<dt><code>keep_trafo</code></dt><dd><p>(<code><a href='https://rdrr.io/r/base/logical.html'>logical(1)</a></code>) <br />
-If <code>TRUE</code> (default) then transformations are kept in extraction,
-otherwise removed with warning.</p></dd>
 
 </dl><p></div></p>
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Examples</h4>
