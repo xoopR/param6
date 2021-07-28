@@ -848,3 +848,15 @@ test_that("can auto add tags to manual", {
   )
   expect_equal(p$tag_properties, list(unique = c("bunique", "unique")))
 })
+
+test_that("unprefix(prefix(ps)) is ps", {
+  p <- pset(
+    prm("a", "reals", 1, tags = "linked"),
+    prm("b", "reals", 1),
+    trafo = list(a = function(x, self) x)
+  )
+  p2 <- p$clone(deep = TRUE)
+  get_private(p)$.prefix("pre")
+  get_private(p)$.unprefix()
+  expect_equal_ps(p, p2)
+})

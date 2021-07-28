@@ -406,6 +406,14 @@
   private$.id <- give_prefix(self$ids, prefix)
   private$.immutable <- prefix_list(private$.immutable, prefix)
   private$.tags <- prefix_list(private$.tags, prefix)
+  private$.tags <- lapply(
+    private$.tags,
+    function(.x) {
+      .x[grepl("linked", .x)] <- give_prefix(.x[grepl("linked", .x)], prefix)
+      .x
+    }
+  )
+
   private$.value <- prefix_list(private$.value, prefix)
   private$.supports <- prefix_list(private$.supports, prefix)
   private$.isupports <- invert_names(private$.supports)
