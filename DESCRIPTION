@@ -1,7 +1,7 @@
 Package: param6
 Title: A Fast and Lightweight R6 Parameter Interface
 Description: By making use of 'set6', alongside the S3 and R6 paradigms, this package provides a fast and lightweight R6 interface for parameters and parameter sets.
-Version: 0.2.0.9000
+Version: 0.2.1
 Authors@R:
   person(given = "Raphael",
              family = "Sonabend",

@@ -1,3 +1,7 @@
+## Reason for early submission
+
+* Patched bugs previously not covered
+
 ## Test Results
 
 No NOTEs, WARNINGs, or ERRORs.

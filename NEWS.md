@@ -1,4 +1,4 @@
-# param6 0.2.0.9000
+# param6 0.2.1
 
 * expect_equal_ps is now more precise
 * cpset now much faster
