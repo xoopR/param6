@@ -270,7 +270,7 @@
       newx <- x[!grepl(paste0(sprintf("%s__", nms), collapse = "|"), names(x))]
       for (i in seq_along(trafo)) {
         ## if unnamed then apply to all
-        if (nms[[i]] == "") {
+        if (is.na(nms[[i]]) || nms[[i]] == "") {
           newx <- append(newx, trafo[[i]](x, self))
         } else {
           which <- grepl(sprintf("%s__", nms[[i]]), names(x))
@@ -432,12 +432,12 @@
     tags <- private$.tag_properties$linked
     private$.tag_properties$linked <-
       give_prefix(private$.tag_properties$linked, prefix)
-    which <- private$.tags %in% tags
+    which <- grepl(paste0(tags, collapse = "|"), private$.tags)
     if (any(which)) {
       for (i in seq_along(private$.tags[which])) {
         iwhich <- private$.tags[which][[i]] %in% tags
-        private$.tags[which][[i]][[iwhich]] <-
-          give_prefix(private$.tags[which][[i]][[iwhich]], prefix)
+        private$.tags[which][[i]][iwhich] <-
+          give_prefix(private$.tags[which][[i]][iwhich], prefix)
       }
     }
   }
