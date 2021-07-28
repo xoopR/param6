@@ -85,8 +85,8 @@ env_append <- function(env, var, values) {
   !(x %in% table)
 }
 
-unprefix <- function(x) {
-  gsub("([[:alnum:]]+)__(\\S*)", "\\2", x)
+unprefix <- function(x, split = "__") {
+  gsub(sprintf("([[:alnum:]]+)%s(\\S*)", split), "\\2", x)
 }
 
 get_prefix <- function(x) {
@@ -108,4 +108,40 @@ assert_alphanum <- function(x) {
     stop("'x' must be alphanumeric")
   }
   invisible(x)
+}
+
+list_element <- function(x, name) {
+  x[grepl(name, names(x))]
+}
+
+
+give_prefix <- function(x, prefix) {
+  sprintf("%s__%s", prefix, x)
+}
+
+
+prefix_list <- function(x, prefix) {
+  if (length(x)) {
+    setNames(x, give_prefix(names(x), prefix))
+  } else {
+    x
+  }
+}
+
+
+unprefix_list <- function(x) {
+  if (length(x)) {
+    setNames(x, unprefix(names(x)))
+  } else {
+    x
+  }
+}
+
+
+rlapply <- function(x, fun) {
+  if (startsWith(fun, ".")) {
+    lapply(x, function(.x) get_private(.x)[[fun]])
+  } else {
+    lapply(x, "[[", fun)
+  }
 }

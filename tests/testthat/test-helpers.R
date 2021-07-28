@@ -64,6 +64,7 @@ test_that("expand_list", {
     expand_list(letters[1:3], list(a = 1, c = 2)),
     list(a = 1, b = NULL, c = 2)
   )
+  expect_error(expand_list("a", list(b = 1, c = 2)), "ids in 'names'")
 })
 
 test_that("named_list", {
@@ -100,4 +101,15 @@ test_that("sort_named_list", {
 test_that("%nin%", {
   expect_false("a" %nin% letters)
   expect_true(1 %nin% letters)
+})
+
+
+test_that("prefix_list", {
+  expect_null(prefix_list(NULL))
+})
+
+
+test_that("assert_alphanum", {
+  expect_equal(assert_alphanum("3439fdf"), "3439fdf")
+  expect_error(assert_alphanum("323wdssf.df2"), "must be alphanumeric")
 })

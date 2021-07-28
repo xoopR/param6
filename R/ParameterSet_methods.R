@@ -21,9 +21,9 @@
 
     private$.value <- un_null_list(lapply(prms, "[[", "value"))
 
-    tag_list <- lapply(prms, "[[", "tags")
+    tag_list <- un_null_list(lapply(prms, "[[", "tags"))
     if (length(tag_list)) {
-      private$.tags <- un_null_list(tag_list)
+      private$.tags <- tag_list
       private$.tag_properties <-
         .assert_tag_properties(tag_properties, unique(unlist(tag_list)), self)
 
@@ -36,10 +36,13 @@
       if (any(duplicated(c(private$.id, unique(unlist(private$.tags)))))) {
         stop("ids and tags must have different names.")
       }
+    } else {
+      private$.tags <- list()
     }
   } else {
     private$.value <- list()
     private$.id <- list()
+    private$.tags <- list()
   }
 
   invisible(self)
@@ -152,120 +155,37 @@
   invisible(self)
 }
 
-.ParameterSet__extract <- function(self, private, id, tags, prefix, # nolint
-                                   keep_trafo) {
+.ParameterSet__extract <- function(self, private, id, tags, prefix) { # nolint
 
   if (is.null(id) && is.null(prefix) && is.null(tags)) {
     stop("One argument must be non-NULL.")
-  } else if (!is.null(id) && !is.null(prefix)) {
-    warning("'prefix' argument ignored.")
-    prefix <- NULL
+  } else if ((!is.null(id) || !is.null(tags)) && !is.null(prefix)) {
+    stop("'prefix' must be NULL if 'id' or 'tags' is non-NULL")
   }
 
   if (!is.null(prefix)) {
-    prefix <- sprintf("^%s__", assert_alphanum(prefix))
-    ids <- names(.filter_field(self, private$.value, prefix))
-    unfix_ids <- unprefix(ids)
+    ids <- names(.filter_field(self, private$.value,
+                               sprintf("^%s__", assert_alphanum(prefix))))
   } else {
     ids <- names(.filter_field(self, private$.value, id, tags))
-    unfix_ids <- NULL
   }
 
-  supports <- unname(.filter_field(self, private$.supports, id = ids,
-                                inc_null = FALSE))
-  values <- unname(.filter_field(self, private$.value, id = ids))
+  rm_ids <- setdiff(self$ids, ids)
 
-  if (length(private$.tags)) {
-    tag <- unname(.filter_field(self, private$.tags, id = ids))
-    if (!is.null(prefix)) {
-      unfix_tags <- lapply(tag, unprefix)
-    }
-  } else {
-    tag <- unfix_tags <- rep(list(NULL), length(values))
+  ## create new parameterset
+  pnew <- self$clone(deep = TRUE)
+  ## remove non-extracted ids
+  pnew$remove(rm_ids)
+
+  ## remove prefix if required
+  if (!is.null(prefix)) {
+    get_private(pnew)$.unprefix(prefix)
   }
 
-  trafo <- NULL
-  if (!is.null(private$.trafo)) {
-    if (keep_trafo) {
-      trafo <- self$trafo
-      if (length(prefix) && checkmate::test_list(trafo) &&
-          grepl("__", names(trafo), fixed = TRUE)) {
-        trafo <- trafo[grepl(paste0(prefix, collapse = "|"), names(trafo))]
-        names(trafo) <- unprefix(names(trafo))
-      }
-    } else {
-      warning("Transformations removed in extraction.")
-    }
-  }
-
-  deps <- NULL
-  if (!is.null(private$.deps)) {
-    ## first check for prefixes
-    which_ids <- paste0(ids, collapse = "|")
-    deps <- subset(private$.deps,
-                   grepl(which_ids, id) & grepl(which_ids, on))
-    if (nrow(deps)) {
-      ## remove prefix if extracting by prefix
-      if (!is.null(unfix_ids)) {
-        deps$id <- unfix_ids[match(deps$id, ids)]
-        deps$on <- unfix_ids[match(deps$on, ids)]
-        at <- attr(deps$cond[[1]], "id")
-        if (!is.null(at)) {
-          attr(deps$cond[[1]], "id") <- unprefix(at)
-        }
-      }
-    ## check if no prefix but extracting
-    } else if (length(unfix_ids)) {
-      which_ids <- paste0(unfix_ids, collapse = "|")
-      deps <- subset(private$.deps,
-                    grepl(which_ids, id) & grepl(which_ids, on))
-    }
-
-    if (nrow(deps) == 0) {
-      deps <- NULL
-    }
-  }
-
-  props <- NULL
-  if (length(private$.tag_properties)) {
-    props <- list()
-    for (i in c("linked", "required", "unique", "immutable")) {
-      if (length(private$.tag_properties[[i]])) {
-        tp <- private$.tag_properties[[i]][private$.tag_properties[[i]] %in%
-          unlist(tag)]
-        if (!is.null(prefix)) {
-          tp <- unprefix(tp)
-        }
-        props[[i]] <- tp
-      }
-    }
-  }
-
-  if (length(unfix_ids)) {
-    ids <- unfix_ids
-    tags <- unfix_tags
-  }
-
-  ps <- as.ParameterSet(
-    Map(prm,
-      id = ids,
-      support = supports,
-      value = values,
-      tags = tag,
-      .check = FALSE
-    ),
-    trafo = trafo,
-    tag_properties = props
-  )
-  pri <- get_private(ps)
-  pri$.deps <- deps
-
-  ps
+  pnew
 }
 
 
-# This is incomplete and needs better support for deps, trafo, checks.
-#  However as above I am unsure if these methods are ever needed.
 .ParameterSet__remove <- function(self, private, id, prefix) { # nolint
 
   if (sum(is.null(id) + is.null(prefix)) != 1) {
@@ -279,27 +199,33 @@
     pars <- id
   }
 
-  names(private)
+  if (setequal(pars, self$ids)) {
+    stop("Can't remove all parameters")
+  }
+
+  mtc_pars <- paste0(pars, collapse = "|")
 
   private$.immutable[pars] <- NULL
   if (length(private$.immutable) == 0) {
     private$.immutable <- NULL
   }
   if (!is.null(private$.deps)) {
-    private$.deps <- subset(
-      private$.deps,
-      !(grepl(id, pars) | grepl(on, pars))
-    )
+    private$.deps <- private$.deps[!(id %in% pars | on %in% pars), ]
     if (nrow(private$.deps) == 0) {
       private$.deps <- NULL
     }
   }
-  private$.trafo[c(prefix, pars)] <- NULL
-  if (length(private$.trafo) == 0) {
-    private$.trafo <- NULL
-  } else if (is.list(private$.trafo) && length(private$.trafo) == 1) {
-    private$.trafo <- private$.trafo[[1]]
+
+  if (is.list(private$.trafo)) {
+    private$.trafo[c(prefix, pars)] <- NULL
+    if (length(private$.trafo) == 0) {
+      private$.trafo <- NULL
+    } else if (checkmate::test_list(private$.trafo, len = 1) &&
+            (is.null(names(private$.trafo)) || names(private$.trafo) == "")) {
+      private$.trafo <- private$.trafo[[1]]
+    }
   }
+
   private$.tags[pars] <- NULL
   if (length(private$.tags) == 0) {
     private$.tags <- list()
@@ -310,26 +236,17 @@
 
   private$.value[pars] <- NULL
   if (length(private$.value) == 0) {
-    private$.value <- NULL
+    private$.value <- list()
   }
   private$.supports <- private$.supports[setdiff(names(private$.supports),
                                                  pars)]
-  if (length(private$.supports) == 0) {
-    private$.supports <- NULL
-  }
 
-  which <- grepl(pars, private$.isupports)
+  which <- grepl(mtc_pars, private$.isupports)
   private$.isupports[which] <- lapply(private$.isupports[which],
                                       function(.x) setdiff(.x, pars))
   private$.isupports <- drop_null(private$.isupports)
-  if (length(private$.isupports) == 0) {
-    private$.isupports <- NULL
-  }
 
   private$.id <- setdiff(private$.id, pars)
-  if (length(private$.id) == 0) {
-    private$.id <- NULL
-  }
 
   invisible(self)
 }
@@ -479,6 +396,96 @@
   ## update supports
   private$.supports[names(x)] <- strs
   private$.isupports <- invert_names(private$.supports)
+
+  invisible(self)
+}
+
+
+.ParameterSet__.prefix <- function(self, private, prefix) { # nolint
+
+  private$.id <- give_prefix(self$ids, prefix)
+  private$.immutable <- prefix_list(private$.immutable, prefix)
+  private$.tags <- prefix_list(private$.tags, prefix)
+  private$.value <- prefix_list(private$.value, prefix)
+  private$.supports <- prefix_list(private$.supports, prefix)
+  private$.isupports <- invert_names(private$.supports)
+
+  if (is.list(private$.trafo)) {
+    private$.trafo <- prefix_list(private$.trafo, prefix)
+  }
+
+  if (length(private$.deps)) {
+    private$.deps[, id := give_prefix(id, prefix)]
+    private$.deps[, on := give_prefix(on, prefix)]
+    private$.deps$cond <- lapply(private$.deps$cond, function(.x) {
+      at <- attr(.x, "id")
+      if (!is.null(at)) {
+        attr(.x, "id") <- give_prefix(at, prefix)
+      }
+      .x
+    })
+  }
+
+
+  if (length(private$.tag_properties) &&
+        "linked" %in% names(private$.tag_properties)) {
+    tags <- private$.tag_properties$linked
+    private$.tag_properties$linked <-
+      give_prefix(private$.tag_properties$linked, prefix)
+    which <- private$.tags %in% tags
+    if (any(which)) {
+      for (i in seq_along(private$.tags[which])) {
+        iwhich <- private$.tags[which][[i]] %in% tags
+        private$.tags[which][[i]][[iwhich]] <-
+          give_prefix(private$.tags[which][[i]][[iwhich]], prefix)
+      }
+    }
+  }
+
+  invisible(self)
+}
+
+
+.ParameterSet__.unprefix <- function(self, private, prefix) { # nolint
+
+  private$.id <- unprefix(self$ids)
+  private$.immutable <- unprefix_list(private$.immutable)
+  private$.tags <- unprefix_list(private$.tags)
+  private$.value <- unprefix_list(private$.value)
+  private$.supports <- unprefix_list(private$.supports)
+  private$.isupports <- invert_names(private$.supports)
+
+  if (is.list(private$.trafo)) {
+    private$.trafo <- unprefix_list(private$.trafo)
+  }
+
+  if (length(private$.deps)) {
+    private$.deps[, id := unprefix(id)]
+    private$.deps[, on := unprefix(on)]
+    private$.deps$cond <- lapply(private$.deps$cond, function(.x) {
+      at <- attr(.x, "id")
+      if (!is.null(at)) {
+        attr(.x, "id") <- unprefix(at)
+      }
+      .x
+    })
+  }
+
+
+  if (length(private$.tag_properties) &&
+        "linked" %in% names(private$.tag_properties)) {
+    tags <- private$.tag_properties$linked
+    private$.tag_properties$linked <-
+      unprefix(private$.tag_properties$linked)
+    which <- private$.tags %in% tags
+    if (any(which)) {
+      for (i in seq_along(private$.tags[which])) {
+        iwhich <- private$.tags[which][[i]] %in% tags
+        private$.tags[which][[i]][[iwhich]] <-
+          unprefix(private$.tags[which][[i]][[iwhich]])
+      }
+    }
+  }
 
   invisible(self)
 }

@@ -183,9 +183,6 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' If not `NULL` then extracts parameters according to their prefix and
     #' additionally removes the prefix from the id. A prefix is determined as
     #' the string before `"__"` in an id.
-    #' @param keep_trafo (`logical(1)`) \cr
-    #' If `TRUE` (default) then transformations are kept in extraction,
-    #' otherwise removed with warning.
     #'
     #' @examples
     #' # extract by id
@@ -210,9 +207,8 @@ ParameterSet <- R6::R6Class("ParameterSet",
     #' p$extract(prefix = "Pre1")
     #' # equivalently
     #' p[prefix = "Pre1"]
-    extract = function(id = NULL, tags = NULL, prefix = NULL,
-                       keep_trafo = TRUE) {
-      .ParameterSet__extract(self, private, id, tags, prefix, keep_trafo)
+    extract = function(id = NULL, tags = NULL, prefix = NULL) {
+      .ParameterSet__extract(self, private, id, tags, prefix)
     },
 
 
@@ -367,8 +363,17 @@ ParameterSet <- R6::R6Class("ParameterSet",
     .trafo = NULL,
     .deps = NULL,
     .immutable = NULL,
+    ## update support of given prm
     .update_support = function(..., lst = list(...)) {
       .ParameterSet__.update_support(self, private, lst)
+    },
+    ## adds given prefix to ids in all private fields
+    .prefix = function(prefix) {
+      .ParameterSet__.prefix(self, private, prefix)
+    },
+    ## removes given prefix to ids in all private fields
+    .unprefix = function(prefix) {
+      .ParameterSet__.unprefix(self, private, prefix)
     },
     deep_clone = function(name, value) {
       switch(name,

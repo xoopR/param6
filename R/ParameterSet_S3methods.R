@@ -70,7 +70,7 @@ rep.ParameterSet <- function(x, times, prefix, ...) {
 #' objects.
 #' @export
 c.ParameterSet <- function(..., pss = list(...)) {
-  .combine_unique(lapply(pss, as.prm), pss)
+  .combine_unique(pss)
 }
 
 
@@ -87,93 +87,66 @@ c.ParameterSet <- function(..., pss = list(...)) {
 #' @export
 cpset <- function(..., pss = list(...), clone = TRUE) {
 
-  if (clone) {
-    pss <- lapply(pss, function(.x) .x$clone(deep = TRUE))
-  }
+  checkmate::assert_list(pss, names = "unique")
 
-  prms <- lapply(pss, as.prm)
-  checkmate::assert_list(prms, names = "unique")
-
-  ## add prefix to ids and tags
-  for (i in seq_along(prms)) {
-    prms[[i]] <- lapply(prms[[i]], function(.x) {
-      .x$id <- sprintf("%s__%s", names(prms)[[i]], .x$id)
-      if (length(.x$tags)) {
-        .x$tags <- sprintf("%s__%s", names(prms)[[i]], .x$tags)
-      }
-      .x
-    })
-  }
-
-  ## add prefix to deps
-  for (i in seq_along(pss)) {
-    pri <- get_private(pss[[i]])
-    deps <- pri$.deps
-    if (!is.null(deps)) {
-      deps$id <- sprintf("%s__%s", names(pss)[[i]], deps$id)
-      deps$on <- sprintf("%s__%s", names(pss)[[i]], deps$on)
-      deps$cond <- lapply(deps$cond, function(.x) {
-        at <- attr(.x, "id")
-        if (!is.null(at)) {
-          attr(.x, "id") <- sprintf("%s__%s", names(pss)[[i]], at)
-        }
-        .x
-      })
-
-      pri$.deps <- deps
+  pss <- lapply(seq_along(pss), function(i) {
+    .x <- pss[[i]]
+    if (clone) {
+      .x <- .x$clone(deep = TRUE)
     }
-  }
+    get_private(.x)$.prefix(names(pss)[[i]])
+  })
 
-  .combine_unique(prms, pss)
+  .combine_unique(pss)
 }
 
-.combine_unique <- function(prms, pss) {
+.combine_unique <- function(pss) {
 
-  trafo <- drop_null(lapply(pss, function(.x) get_private(.x)$.trafo))
-  trafo <- trafo[!duplicated(trafo)]
+  pnew <- pset()
+  pri <- get_private(pnew)
+  pri$.id <- unlist(rlapply(pss, "ids"), TRUE, FALSE)
+  pri$.supports <- unlist(rlapply(pss, ".supports"))
+  pri$.isupports <- invert_names(pri$.supports)
+  pri$.value <- unlist(rlapply(pss, "values"), FALSE)
+  pri$.tags <- unlist(rlapply(pss, ".tags"), FALSE)
 
-  props <- unlist(lapply(pss, "[[", "tag_properties"), recursive = FALSE)
+  trafo <- drop_null(rlapply(pss, "trafo"))
+  if (length(trafo)) {
+    trafo <- trafo[!duplicated(trafo)]
+    if (length(trafo) == 1 && is.null(names(trafo))) {
+      trafo <- trafo[[1]]
+    }
+    pri$.trafo <- trafo
+  }
+
+  deps <- drop_null(rlapply(pss, ".deps"))
+  if (length(deps) == 1) {
+    pri$.deps <- deps[[1]]
+  } else if (length(deps) > 1) {
+    pri$.deps <- do.call(rbind, deps)
+  }
+
+  imm <- unlist(rlapply(pss, ".immutable"), FALSE)
+  if (length(imm)) {
+    pri$.immutable <- imm
+  }
+
+  props <- unlist(rlapply(pss, ".tag_properties"), FALSE)
   if (length(props)) {
     tprop <- list()
-    req_props <- props[names(props) %in% "required"]
-    if (length(req_props)) {
-      tprop$required <- unique(unlist(req_props))
-    }
-    lin_props <- props[names(props) %in% "linked"]
-    if (length(lin_props)) {
-      tprop$linked <- unique(unlist(lin_props))
-    }
-    un_props <- props[names(props) %in% "unique"]
-    if (length(un_props)) {
-      tprop$unique <- unique(unlist(un_props))
-    }
-    im_props <- props[names(props) %in% "immutable"]
-    if (length(im_props)) {
-      tprop$immutable <- unique(unlist(im_props))
-    }
+    tprop$required <- unique(unlist(list_element(props, "required")))
+    tprop$linked <- unique(unlist(list_element(props, "linked")))
+    tprop$unique <- unique(unlist(list_element(props, "unique")))
+    tprop$immutable <- unique(unlist(list_element(props, "immutable")))
+
     if (any(duplicated(unlist(tprop)))) {
       stop("Cannot merge inconsistent tag properties.")
     }
-  } else {
-    tprop <- NULL
+
+    pri$.tag_properties <- tprop
   }
 
-  deps <- unlist(lapply(pss, function(.x) {
-    if (!is.null(.x$deps)) {
-      apply(.x$deps, 1, as.list)
-    }
-  }), FALSE)
-  deps <- un_null_list(deps)
-  if (!length(deps)) {
-    deps <- NULL
-  }
-
-  pset(
-    prms = unlist(prms, FALSE),
-    tag_properties = tprop,
-    deps = deps,
-    trafo = trafo
-  )
+  pnew
 }
 
 #' @title Coerce a ParameterSet to a data.table

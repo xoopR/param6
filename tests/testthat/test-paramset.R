@@ -66,6 +66,8 @@ test_that("immutable parameters are immutable", {
   expect_equal(prms$values, list(a = 1, b = 2))
   prms$values$b <- 2
   expect_equal(prms$values, list(a = 1, b = 2))
+
+  expect_error(prms$values <- NULL, "after construction")
 })
 
 test_that("don't check immutable parameters", {
@@ -186,18 +188,26 @@ test_that("ParamSet actives - tag properties", {
 })
 
 test_that("as.data.table.ParameterSet and print", {
+  expect_equal(
+    as.data.table(pset()),
+    data.table::data.table(Id = character(), Support = list(),
+                           Value = list(), Tags = character())
+  )
+
   prms <- list(
     prm("a", Set$new(1), 1, c("t1", "t2")),
     prm("b", "reals", NULL),
     prm("d", "reals", 2)
   )
   p <- ParameterSet$new(prms)
-  expect_equal_ps(as.data.table(p),
-               data.table::data.table(Id = letters[c(1, 2, 4)],
-                                      Support = list(Set$new(1), Reals$new(),
-                                                     Reals$new()),
-                                      Value = list(1, NULL, 2),
-                                      Tags = list(c("t1", "t2"), NULL, NULL)))
+  dtp <- as.data.table(p)
+  expect_equal(dtp$Id, p$ids)
+  expect_equal(drop_null(dtp$Value), unname(p$values))
+  expect_equal(drop_null(dtp$Tags), unname(p$tags))
+  Map(
+    function(.x, .y) expect_equal(deparse(.x), deparse(.y)),
+    dtp$Support, p$supports
+  )
 
   expect_output(print(p))
 
@@ -473,13 +483,12 @@ test_that("c", {
 })
 
 test_that("extract - no deps", {
-  prms <- list(
+  p <- pset(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre1__par2", "reals", 3, tags = "t2"),
     prm("Pre2__par1", Set$new(1), 1, tags = "t1"),
     prm("Pre2__par2", "reals", 3, tags = "t2")
   )
-  p <- ParameterSet$new(prms)
 
   prms <- list(
     prm("par1", Set$new(1), 1, tags = "t1"),
@@ -509,7 +518,7 @@ test_that("extract - no deps", {
   )
   p2 <- ParameterSet$new(prms)
   expect_equal_ps(p$extract("par1"), p2)
-  expect_warning(p$extract("par1", prefix = "A"), "argument ignored")
+  expect_error(p$extract("par1", prefix = "A"), "must be NULL")
 
   prms <- list(
     prm("Pre1__par1", Set$new(1), 1, tags = "t1")
@@ -533,12 +542,28 @@ test_that("extract - no deps", {
   expect_equal_ps(p$extract(prefix = "Pre1"), p2)
 
   prms <- list(
-    prm("par1", Set$new(1)),
-    prm("par2", "reals")
+    prm("a__par1", Set$new(1)),
+    prm("b__par2", "reals")
   )
   p <- ParameterSet$new(prms)
-  p$trafo <- function(x, self) list(par1 = 1)
-  expect_warning(p["par1", keep_trafo = FALSE], "Transformations")
+  p$trafo <- list(a = function(x, self) x)
+  expect_equal(p[prefix = "a"]$trafo, list(a = function(x, self) x))
+
+  prms <- list(
+    prm("a__par1", Set$new(1)),
+    prm("b__par2", "reals")
+  )
+  p <- ParameterSet$new(prms)
+  p$trafo <- list(function(x, self) x)
+  expect_equal(p[prefix = "a"]$trafo, function(x, self) x)
+
+  prms <- list(
+    prm("a__par1", Set$new(1)),
+    prm("b__par2", "reals")
+  )
+  p <- ParameterSet$new(prms)
+  p$trafo <- function(x, self) x
+  expect_equal(p[prefix = "a"]$trafo, function(x, self) x)
 })
 
 test_that("extract - deps", {
@@ -646,6 +671,11 @@ test_that("transform types", {
 
   p$trafo <- NULL
   expect_equal(p$transform(), list(a = 2, b = 1))
+
+  p <- pset(prm("a", "reals", 1), trafo = list(function(x, self) x))
+  expect_true(is.function(p$trafo))
+  p <- pset(prm("a", "reals", 1), trafo = list(a = function(x, self) x))
+  expect_equal(p$trafo, list(a = function(x, self) x))
 })
 
 
@@ -695,17 +725,26 @@ test_that("can extract with trafo, properties, deps", {
 
 test_that("concatenate named list", {
   p <- pset(
-    prm("a", "reals", 1),
-    prm("b", "reals", 1)
+    prm("a", "reals", 1, tags = "unique"),
+    prm("b", "reals", 1, tags = "immutable"),
+    prm("d", "reals", 1, tags = "linked"),
+    deps = list(list(id = "a", on = "b", cond = cnd("eq", id = "b")))
   )
   lst <- list(a = p, b = p$clone(deep = TRUE))
   cp <- cpset(pss = lst)
 
   pexp <- pset(
-    prm("a__a", "reals", 1),
-    prm("a__b", "reals", 1),
-    prm("b__a", "reals", 1),
-    prm("b__b", "reals", 1)
+    prm("a__a", "reals", 1, tags = "unique"),
+    prm("a__b", "reals", 1, tags = "immutable"),
+    prm("b__a", "reals", 1, tags = "unique"),
+    prm("b__b", "reals", 1, tags = "immutable"),
+    prm("a__d", "reals", 1, tags = "a__linked"),
+    prm("b__d", "reals", 1, tags = "b__linked"),
+    tag_properties = list(linked = c("a__linked", "b__linked")),
+    deps = list(
+      list(id = "a__a", on = "a__b", cond = cnd("eq", id = "a__b")),
+      list(id = "b__a", on = "b__b", cond = cnd("eq", id = "b__b"))
+    )
   )
 
   expect_equal_ps(cp, pexp)
@@ -741,6 +780,7 @@ test_that("can remove a parameter", {
     prm("a", "reals", 1),
     prm("b", "reals", 1)
   )
+  expect_error(p1$remove(c("a", "b")))
   p2 <- pset(
     prm("a", "reals", 1)
   )
@@ -756,6 +796,16 @@ test_that("can remove a parameter", {
 
   expect_equal_ps(p3$remove(prefix = "c"), p4)
   expect_equal_ps(p1$remove("b"), p2)
+
+  expect_error(p2$remove(), "Exactly one")
+
+  p1 <- pset(
+    prm("a__a", "reals", 1),
+    prm("b__b", "reals", 1),
+    trafo = list(b = function(x, self) x, function(x, self) 1)
+  )
+  p1$remove("b")
+  expect_equal(p1$trafo, function(x, self) 1)
 })
 
 
@@ -766,4 +816,35 @@ test_that("set_values", {
   )
   p$set_values(b = 2)
   expect_equal(p$values, list(a = 1, b = 2))
+})
+
+
+test_that("update_ids", {
+  p1 <- pset(
+    prm("a", "reals", 1, tags = "unique"),
+    prm("b", "reals", 1, tags = "immutable"),
+    prm("d", "reals", 1, tags = "linked"),
+    trafo = list(a = function(x, self) x),
+    deps = list(list(id = "a", on = "b", cond = cnd("eq", id = "b")))
+  )
+  get_private(p1)$.prefix("a")
+  p2 <- pset(
+    prm("a__a", "reals", 1, tags = "unique"),
+    prm("a__b", "reals", 1, tags = "immutable"),
+    prm("a__d", "reals", 1, tags = "a__linked"),
+    tag_properties = list(linked = "a__linked"),
+    trafo = list(a__a = function(x, self) x),
+    deps = list(list(id = "a__a", on = "a__b", cond = cnd("eq", id = "a__b")))
+  )
+  expect_equal_ps(p1, p2)
+})
+
+
+test_that("can auto add tags to manual", {
+  p <- pset(
+    prm("a", "reals", 1, tags = "unique"),
+    prm("b", "reals", 1, tags = "bunique"),
+    tag_properties = list(unique = "bunique")
+  )
+  expect_equal(p$tag_properties, list(unique = c("bunique", "unique")))
 })
