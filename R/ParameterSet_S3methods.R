@@ -94,7 +94,7 @@ cpset <- function(..., pss = list(...), clone = TRUE) {
     if (clone) {
       .x <- .x$clone(deep = TRUE)
     }
-    get_private(.x)$.add_prefix(names(pss)[[i]])
+    get_private(.x)$.prefix(names(pss)[[i]])
   })
 
   .combine_unique(pss)
@@ -113,7 +113,7 @@ cpset <- function(..., pss = list(...), clone = TRUE) {
   trafo <- drop_null(rlapply(pss, "trafo"))
   if (length(trafo)) {
     trafo <- trafo[!duplicated(trafo)]
-    if (length(trafo) == 1) {
+    if (length(trafo) == 1 && is.null(names(trafo))) {
       trafo <- trafo[[1]]
     }
     pri$.trafo <- trafo

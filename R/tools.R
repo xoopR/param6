@@ -31,8 +31,6 @@ expect_equal_ps <- function(obj, expected) {
     expect_null(pobj$.trafo)
   } else if (is.function(pexp$.trafo)) {
     expect_equal(deparse(pobj$.trafo), deparse(pexp$.trafo))
-  } else if (is.null(names(pexp$.trafo))) {
-    expect_equal(deparse(pobj$.trafo), deparse(pexp$.trafo))
   } else {
     expect_equal(deparse(sort_named_list(pobj$.trafo)),
                  deparse(sort_named_list(pexp$.trafo)))
@@ -46,4 +44,6 @@ expect_equal_ps <- function(obj, expected) {
 
   expect_setequal(names(pobj$.isupports), names(pexp$.isupports))
   Map(expect_setequal, pobj$.isupports, pexp$.isupports)
+
+  invisible(NULL)
 }

@@ -467,7 +467,7 @@ should be equal to \code{times}.}
 Creates a new \code{ParameterSet} by extracting the given
 parameters.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$extract(id = NULL, tags = NULL, prefix = NULL, keep_trafo = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSet$extract(id = NULL, tags = NULL, prefix = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -485,10 +485,6 @@ If not \code{NULL} then specifies the parameters by tag to extract. Should be
 If not \code{NULL} then extracts parameters according to their prefix and
 additionally removes the prefix from the id. A prefix is determined as
 the string before \code{"__"} in an id.}
-
-\item{\code{keep_trafo}}{(\code{logical(1)}) \cr
-If \code{TRUE} (default) then transformations are kept in extraction,
-otherwise removed with warning.}
 }
 \if{html}{\out{</div>}}
 }

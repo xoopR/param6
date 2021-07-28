@@ -1,8 +1,10 @@
-# param6 0.2.1
+# param6 0.2.0.9000
 
 * expect_equal_ps is now more precise
 * cpset now much faster
 * empty tags now stored as list() not NULL
+* extract method is now more efficient, removed 'keep_trafo' argument
+* can now remove multiple ids with $remove
 
 # param6 0.2.0
 

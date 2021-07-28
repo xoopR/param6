@@ -129,6 +129,15 @@ prefix_list <- function(x, prefix) {
 }
 
 
+unprefix_list <- function(x) {
+  if (length(x)) {
+    setNames(x, unprefix(names(x)))
+  } else {
+    x
+  }
+}
+
+
 rlapply <- function(x, fun) {
   if (startsWith(fun, ".")) {
     lapply(x, function(.x) get_private(.x)[[fun]])
