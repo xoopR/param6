@@ -1,0 +1,73 @@
+---
+title: "param6"
+output: rmarkdown::html_vignette
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteIndexEntry{param6}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(param6)
+pref <- function(val) sprintf("[%s](https://xoopr.github.io/param6/reference/%s.html)", val, val)
+cranpkg <- function(val) sprintf("[%s](https://CRAN.R-project.org/package=%s)", val, val)
+ghpkg <- function(org, repo) sprintf("[%s](https://github.com/%s/%s)", repo, org, repo)
+```
+
+# Get Started with param6
+
+This vignette provides some longer examples for the features in `param6`.
+For more details about functions or classes, please refer to the package documentation.
+
+## Construction
+
+### Basics
+
+`param6` offers three methods of construction: i) initializing the R6 object directly; ii) using the sugar function `r pref("pset")` to construct the object; iii) using a coercion method from either `list`, `r pref("prm")`, or `data.table`.
+
+```{r}
+prms <- list(
+  prm("a", "reals"),
+  prm("b", "reals")
+)
+
+# Method 1:
+ParameterSet$new(prms)
+
+# Method 2:
+pset(prms)
+
+# Method 3:
+as.ParameterSet(prms)
+```
+
+### Support Dictionary
+
+One of the reasons `r pref("ParameterSet")` objects are relatively small and are fast to use, is because of the `r pref("support_dictionary")`. This dictionary is constructed when the package is loaded and comes pre-loaded with common object supports, such as the Reals and Naturals, as well as the n-dimensional variants of these. Usually this dictionary does not need to be interacted with directly but it may be useful to inspect which sets are currently contained within it.
+
+```{r support}
+support_dictionary$keys
+```
+The values for these keys can be obtained with `$get`, or use `$items` to see the full list. When a set already exists within this dictionary, then a `r pref('prm')` can be constructed with the string representation, this is seen above with the Reals. However if the set does not already exist then it will be automatically added when required:
+```{r create support}
+library(set6)
+
+prm(id = "a", support = Set$new(1, 2))
+support_dictionary$get("{1, 2}")
+```
+And our set exists! Which means the next time we want to use this set, we can just use the string representation:
+```{r test new support}
+prm(id = "a", support = "{1, 2}")
+```
+As parameters are constructed sequentially this can be handled automatically when setting up the parameter list:
+```{r new support list}
+prms <- list(
+  prm("a", Set$new(1)),
+  prm("b", "{1}")
+)
+ParameterSet$new(prms)
+```
+
+### Values and tags

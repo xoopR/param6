@@ -16,6 +16,8 @@ Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder:
+    knitr
 Imports:
   checkmate,
   data.table,
@@ -23,4 +25,5 @@ Imports:
   set6 (>= 0.2.3),
   R6
 Suggests:
+  knitr,
   testthat
