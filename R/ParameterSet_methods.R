@@ -390,7 +390,8 @@
   ## add to dictionary as required
   miss <- !support_dictionary$has(strs)
   if (any(miss)) {
-    support_dictionary$add(setNames(x[miss], strs[miss]))
+    uni <- !duplicated(strs[miss])
+    support_dictionary$add(setNames(x[miss][uni], strs[miss][uni]))
   }
 
   ## update supports
