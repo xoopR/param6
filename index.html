@@ -182,7 +182,7 @@
 <div id="why-param6" class="section level2">
 <h2 class="hasAnchor">
 <a href="#why-param6" class="anchor"></a>Why param6?</h2>
-<p><strong>param6</strong> began as the <a href="https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R">ParameterSet</a> object in <strong><a href="https://CRAN.R-project.org/package=distr6">distr6</a></strong>. However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. <strong>param6</strong> is an abstracted parameter set interface that draws influence from this initial design. <strong>param6</strong> achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:</p>
+<p><strong>param6</strong> began as the <code>ParameterSet</code> object in <strong><a href="https://CRAN.R-project.org/package=distr6">distr6</a></strong>. However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. <strong>param6</strong> is an abstracted parameter set interface that draws influence from this initial design. <strong>param6</strong> achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:</p>
 <ul>
 <li>
 <code>data.table</code> objects are minimised and only used when absolutely necessary, instead <code>list</code> objects are utilised.</li>
