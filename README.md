@@ -139,15 +139,14 @@ p$get_values()
 
 ## Why param6?
 
-**param6** began as the
-[ParameterSet](https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R)
-object in **[distr6](https://CRAN.R-project.org/package=distr6)**.
-However this initial attempt at an R6 parameter set interface, had
-massive bottlenecks that were causing substantial problems in
-dependencies. **param6** is an abstracted parameter set interface that
-draws influence from this initial design. **param6** achieves faster
-run-times and smaller object-sizes than other parameter set packages by
-making the following design decisions:
+**param6** began as the `ParameterSet` object in
+**[distr6](https://CRAN.R-project.org/package=distr6)**. However this
+initial attempt at an R6 parameter set interface, had massive
+bottlenecks that were causing substantial problems in dependencies.
+**param6** is an abstracted parameter set interface that draws influence
+from this initial design. **param6** achieves faster run-times and
+smaller object-sizes than other parameter set packages by making the
+following design decisions:
 
 -   `data.table` objects are minimised and only used when absolutely
     necessary, instead `list` objects are utilised.

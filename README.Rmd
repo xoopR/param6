@@ -6,6 +6,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(param6)
+set6::useUnicode(TRUE)
 ref <- function(val) sprintf("[%s](https://xoopr.github.io/param6/reference/%s.html)",
                              as.character(substitute(val)),
                              as.character(substitute(val)))
@@ -106,7 +107,7 @@ p$get_values()
 
 ## Why param6?
 
-`r p6` began as the [ParameterSet](https://github.com/alan-turing-institute/distr6/blob/main/R/ParameterSet.R) object in `r cran(distr6)`. However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. `r p6` is an abstracted parameter set interface that draws influence from this initial design. `r p6` achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:
+`r p6` began as the `ParameterSet` object in `r cran(distr6)`. However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. `r p6` is an abstracted parameter set interface that draws influence from this initial design. `r p6` achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:
 
 * `data.table` objects are minimised and only used when absolutely necessary, instead `list` objects are utilised.
 * Symbolic representation of sets is utilised via the `r cran(set6)` package in order to store sets as characters, thereby reducing object sizes. Additionally, `r p6` includes a `r ref(support_dictionary)` which stores constructed sets that can then be accessed via a string representation, thereby preventing the same set needing to be constructed multiple times.
