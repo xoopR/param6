@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -137,77 +137,110 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>support_dictionary</span><span class='op'>$</span><span class='va'>keys</span>
-</div><div class='output co'>#&gt;  [1] "universal"      "logicals"       "naturals"       "posnaturals"   
-#&gt;  [5] "integers"       "posintegers"    "negintegers"    "posintegers0"  
-#&gt;  [9] "negintegers0"   "rationals"      "posrationals"   "negrationals"  
-#&gt; [13] "posrationals0"  "negrationals0"  "reals"          "posreals"      
-#&gt; [17] "negreals"       "posreals0"      "negreals0"      "extreals"      
-#&gt; [21] "complex"        "proportion"     "nlogicals"      "nnaturals"     
-#&gt; [25] "nposnaturals"   "nintegers"      "nposintegers"   "nnegintegers"  
-#&gt; [29] "nposintegers0"  "nnegintegers0"  "nrationals"     "nposrationals" 
-#&gt; [33] "nnegrationals"  "nposrationals0" "nnegrationals0" "nreals"        
-#&gt; [37] "nposreals"      "nnegreals"      "nposreals0"     "nnegreals0"    
-#&gt; [41] "nextreals"      "ncomplex"       "nproportion"    "ℝ"             
-#&gt; [45] "{1}"           </div><div class='input'><span class='va'>support_dictionary</span><span class='op'>$</span><span class='va'>items</span>
-</div><div class='output co'>#&gt; $universal
-#&gt; 𝕍 
+</div><div class='output co'>#&gt;  [1] "{1}"            "ℝ"              "posnaturals"    "rationals"     
+#&gt;  [5] "nproportion"    "ncomplex"       "extreals"       "nnegreals0"    
+#&gt;  [9] "nnegintegers0"  "posreals"       "nnegrationals0" "posintegers0"  
+#&gt; [13] "negrationals"   "negintegers"    "posreals0"      "universal"     
+#&gt; [17] "posrationals"   "logicals"       "posrationals0"  "nrationals"    
+#&gt; [21] "nposintegers"   "nreals"         "negreals"       "nextreals"     
+#&gt; [25] "negreals0"      "nposreals"      "nposintegers0"  "nnegrationals" 
+#&gt; [29] "naturals"       "integers"       "nintegers"      "complex"       
+#&gt; [33] "proportion"     "nposrationals"  "nposrationals0" "negrationals0" 
+#&gt; [37] "negintegers0"   "nposnaturals"   "nnegreals"      "nnegintegers"  
+#&gt; [41] "posintegers"    "nnaturals"      "nposreals0"     "reals"         
+#&gt; [45] "nlogicals"     </div><div class='input'><span class='va'>support_dictionary</span><span class='op'>$</span><span class='va'>items</span>
+</div><div class='output co'>#&gt; $`{1}`
+#&gt; {1} 
 #&gt; 
-#&gt; $logicals
-#&gt; {TRUE, FALSE} 
-#&gt; 
-#&gt; $naturals
-#&gt; ℕ0 
+#&gt; $ℝ
+#&gt; ℝ 
 #&gt; 
 #&gt; $posnaturals
 #&gt; ℕ+ 
 #&gt; 
-#&gt; $integers
-#&gt; ℤ 
-#&gt; 
-#&gt; $posintegers
-#&gt; ℤ+ 
-#&gt; 
-#&gt; $negintegers
-#&gt; ℤ- 
-#&gt; 
-#&gt; $posintegers0
-#&gt; ℤ0+ 
-#&gt; 
-#&gt; $negintegers0
-#&gt; ℤ0- 
-#&gt; 
 #&gt; $rationals
 #&gt; ℚ 
 #&gt; 
-#&gt; $posrationals
-#&gt; ℚ+ 
+#&gt; $nproportion
+#&gt; [0,1]^n 
 #&gt; 
-#&gt; $negrationals
-#&gt; ℚ- 
+#&gt; $ncomplex
+#&gt; ℂ^n 
 #&gt; 
-#&gt; $posrationals0
-#&gt; ℚ0+ 
+#&gt; $extreals
+#&gt; ℝ ∪ {-∞, +∞} 
 #&gt; 
-#&gt; $negrationals0
-#&gt; ℚ0- 
+#&gt; $nnegreals0
+#&gt; ℝ0-^n 
 #&gt; 
-#&gt; $reals
-#&gt; ℝ 
+#&gt; $nnegintegers0
+#&gt; ℤ0-^n 
 #&gt; 
 #&gt; $posreals
 #&gt; ℝ+ 
 #&gt; 
-#&gt; $negreals
-#&gt; ℝ- 
+#&gt; $nnegrationals0
+#&gt; ℚ0-^n 
+#&gt; 
+#&gt; $posintegers0
+#&gt; ℤ0+ 
+#&gt; 
+#&gt; $negrationals
+#&gt; ℚ- 
+#&gt; 
+#&gt; $negintegers
+#&gt; ℤ- 
 #&gt; 
 #&gt; $posreals0
 #&gt; ℝ0+ 
 #&gt; 
+#&gt; $universal
+#&gt; 𝕍 
+#&gt; 
+#&gt; $posrationals
+#&gt; ℚ+ 
+#&gt; 
+#&gt; $logicals
+#&gt; {TRUE, FALSE} 
+#&gt; 
+#&gt; $posrationals0
+#&gt; ℚ0+ 
+#&gt; 
+#&gt; $nrationals
+#&gt; ℚ^n 
+#&gt; 
+#&gt; $nposintegers
+#&gt; ℤ+^n 
+#&gt; 
+#&gt; $nreals
+#&gt; ℝ^n 
+#&gt; 
+#&gt; $negreals
+#&gt; ℝ- 
+#&gt; 
+#&gt; $nextreals
+#&gt; ℝ ∪ {-∞, +∞}^n 
+#&gt; 
 #&gt; $negreals0
 #&gt; ℝ0- 
 #&gt; 
-#&gt; $extreals
-#&gt; ℝ ∪ {-∞, +∞} 
+#&gt; $nposreals
+#&gt; ℝ+^n 
+#&gt; 
+#&gt; $nposintegers0
+#&gt; ℤ0+^n 
+#&gt; 
+#&gt; $nnegrationals
+#&gt; ℚ-^n 
+#&gt; 
+#&gt; $naturals
+#&gt; ℕ0 
+#&gt; 
+#&gt; $integers
+#&gt; ℤ 
+#&gt; 
+#&gt; $nintegers
+#&gt; ℤ^n 
 #&gt; 
 #&gt; $complex
 #&gt; ℂ 
@@ -215,74 +248,41 @@
 #&gt; $proportion
 #&gt; [0,1] 
 #&gt; 
-#&gt; $nlogicals
-#&gt; {TRUE, FALSE}^n 
-#&gt; 
-#&gt; $nnaturals
-#&gt; ℕ0^n 
-#&gt; 
-#&gt; $nposnaturals
-#&gt; ℕ+^n 
-#&gt; 
-#&gt; $nintegers
-#&gt; ℤ^n 
-#&gt; 
-#&gt; $nposintegers
-#&gt; ℤ+^n 
-#&gt; 
-#&gt; $nnegintegers
-#&gt; ℤ-^n 
-#&gt; 
-#&gt; $nposintegers0
-#&gt; ℤ0+^n 
-#&gt; 
-#&gt; $nnegintegers0
-#&gt; ℤ0-^n 
-#&gt; 
-#&gt; $nrationals
-#&gt; ℚ^n 
-#&gt; 
 #&gt; $nposrationals
 #&gt; ℚ+^n 
-#&gt; 
-#&gt; $nnegrationals
-#&gt; ℚ-^n 
 #&gt; 
 #&gt; $nposrationals0
 #&gt; ℚ0+^n 
 #&gt; 
-#&gt; $nnegrationals0
-#&gt; ℚ0-^n 
+#&gt; $negrationals0
+#&gt; ℚ0- 
 #&gt; 
-#&gt; $nreals
-#&gt; ℝ^n 
+#&gt; $negintegers0
+#&gt; ℤ0- 
 #&gt; 
-#&gt; $nposreals
-#&gt; ℝ+^n 
+#&gt; $nposnaturals
+#&gt; ℕ+^n 
 #&gt; 
 #&gt; $nnegreals
 #&gt; ℝ-^n 
 #&gt; 
+#&gt; $nnegintegers
+#&gt; ℤ-^n 
+#&gt; 
+#&gt; $posintegers
+#&gt; ℤ+ 
+#&gt; 
+#&gt; $nnaturals
+#&gt; ℕ0^n 
+#&gt; 
 #&gt; $nposreals0
 #&gt; ℝ0+^n 
 #&gt; 
-#&gt; $nnegreals0
-#&gt; ℝ0-^n 
-#&gt; 
-#&gt; $nextreals
-#&gt; ℝ ∪ {-∞, +∞}^n 
-#&gt; 
-#&gt; $ncomplex
-#&gt; ℂ^n 
-#&gt; 
-#&gt; $nproportion
-#&gt; [0,1]^n 
-#&gt; 
-#&gt; $ℝ
+#&gt; $reals
 #&gt; ℝ 
 #&gt; 
-#&gt; $`{1}`
-#&gt; {1} 
+#&gt; $nlogicals
+#&gt; {TRUE, FALSE}^n 
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
