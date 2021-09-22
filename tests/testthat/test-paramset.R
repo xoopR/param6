@@ -110,18 +110,18 @@ test_that("ParamSet actives - values", {
   p$values$a <- 1
   pri <- get_private(p)
 
-  expect_false(expect_warning(
+  expect_warning(expect_false(
     .check(p, pri, supports = TRUE, deps = FALSE, tags = FALSE,
            error_on_fail = FALSE, value_check = list(a = 3),
            support_check = get_private(p)$.isupports)))
 
   p$add_dep("b", "a", cnd("eq", 1))
-  expect_false(expect_warning(
+  expect_warning(expect_false(
     .check(p, pri, supports = FALSE, deps = TRUE, tags = FALSE,
            error_on_fail = FALSE, value_check = list(b = 1, a = 3),
            dep_check = p$deps)))
 
-  expect_false(expect_warning(
+  expect_warning(expect_false(
     .check(p, pri, supports = FALSE, deps = FALSE, tags = TRUE,
            id = c("b", "d"),
            error_on_fail = FALSE, value_check = list(b = 1, d = 1),
