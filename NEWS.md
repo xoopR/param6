@@ -1,3 +1,7 @@
+# param6 0.2.3
+
+* Patch for testthat
+
 # param6 0.2.2
 
 * Fixes bug in `.update_support` where duplicated items were being added to the support dictionary
