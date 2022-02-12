@@ -83,8 +83,13 @@ cnd <- function(type, value = NULL, id = NULL, error = NULL) {
       !any(is.null(on)) && all(sfun(unlist(idx), unlist(on)))
     })
   } else {
-    fun <- substitute(function(x, ...)
-      !any(is.null(x)) && all(sfun(unlist(x), value)))
+    fun <- substitute(function(x, ...) {
+      if (is.list(x) && is.null(value)) {
+        !any(is.null(x)) && all(vapply(x, sfun, logical(1)))
+      } else {
+        !any(is.null(x)) && all(sfun(unlist(x), value))
+      }
+    })
   }
 
   char <- switch(type,
