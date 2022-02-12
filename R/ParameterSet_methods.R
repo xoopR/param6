@@ -72,37 +72,46 @@
     checkmate::assert_choice(attr(cnd, "id"), on)
   }
 
-  if (id == on) {
-    stop("Parameters cannot depend on themselves.")
-  }
-
-  # hacky fix
-  aid <- id
-  aon <- on
-
-  nok <- !is.null(private$.deps) &&
-    nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))
-  if (nok) {
-    stop(sprintf("%s already depends on %s.", id, on))
-  }
-
-  support <- unique(
-    unlist(private$.supports[grepl(on, names(private$.supports))]))
-
-  support <- support_dictionary$get(support)
-
   if (is.null(self$deps)) {
     deps <- data.table(id = character(0L), on = character(0L),
-                       cond = list())
+                      cond = list())
   } else {
     deps <- self$deps
   }
 
-  new_dt <- rbind(deps,
-                  data.table(id = id, on = on,
-                             cond = list(assert_condition(on, support, cnd))))
+  if (!is.null(on)) {
+    if (id == on) {
+      stop("Parameters cannot depend on themselves.")
+    }
 
-  assert_no_cycles(new_dt)
+    # hacky fix
+    aid <- id
+    aon <- on
+
+    nok <- !is.null(private$.deps) &&
+      nrow(subset(private$.deps, grepl(aid, id) & grepl(aon, on)))
+    if (nok) {
+      stop(sprintf("%s already depends on %s.", id, on))
+    }
+
+    support <- unique(
+      unlist(private$.supports[grepl(on, names(private$.supports))]))
+
+    support <- support_dictionary$get(support)
+
+    new_dt <- rbind(
+      deps,
+      data.table(id = id, on = on,
+                  cond = list(assert_condition(on, support, cnd))))
+
+    assert_no_cycles(new_dt)
+  } else {
+    new_dt <- rbind(
+      deps,
+      data.table(id = id, on = "", cond = list(cnd)),
+      fill = TRUE
+    )
+  }
 
   .check_deps(self, self$values, new_dt, id, TRUE)
 

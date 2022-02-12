@@ -12,6 +12,8 @@
 #' If `value` is `NULL` then `id` should be the same as the id that the
 #' condition is testing, and the condition then takes the currently set value
 #' of the id in its argument.
+#' @param error (`character(1)`) \cr
+#' Optional error message to be displayed on fail.
 #' @details
 #' This function should never be used outside of creating a condition for
 #' a dependency in a [ParameterSet]. Currently the following conditions are
@@ -40,9 +42,14 @@
 #' * `"len"` - If `value` is not `NULL` then checks if the length of the
 #' independent parameter equals `value`, otherwise checks if the independent
 #' and dependent parameter are the same length.
+#' * `"inc"` - Checks if the parameter is increasing.
+#' * `"sinc"` - Checks if the parameter is strictly increasing.
+#' * `"dec"` - Checks if the parameter is decreasing.
+#' * `"sdec"` - Checks if the parameter is strictly decreasing.
 #' @export
-cnd <- function(type, value = NULL, id = NULL) {
-  choice <- c("eq", "neq", "geq", "leq", "gt", "lt", "any", "nany", "len")
+cnd <- function(type, value = NULL, id = NULL, error = NULL) {
+  choice <- c("eq", "neq", "geq", "leq", "gt", "lt", "any", "nany", "len",
+              "inc", "sinc", "dec", "sdec")
   sfun <- switch(type,
     "eq" = `==`,
     "neq" = `!=`,
@@ -58,7 +65,11 @@ cnd <- function(type, value = NULL, id = NULL) {
       } else {
         function(x, y) length(x) == y
       }
-      },
+    },
+    "inc" = function(x, ...) all(diff(x) >= 0),
+    "sinc" = function(x, ...) all(diff(x) > 0),
+    "dec" = function(x, ...) all(diff(x) <= 0),
+    "sdec" = function(x, ...) all(diff(x) < 0),
     stop(sprintf("'type' must be one of %s.", string_as_set(choice)))
   )
 
@@ -83,12 +94,17 @@ cnd <- function(type, value = NULL, id = NULL) {
     "lt" = "<",
     "any" = "%in%",
     "nany" = "%nin%",
-    "len" = "len"
+    "len" = "len",
+    "inc" = "increasing",
+    "sinc" = "strictly increasing",
+    "dec" = "decreasing",
+    "sdec" = "strictly decreasing"
   )
 
   class(fun) <- "cnd"
   attr(fun, "value") <- value
   attr(fun, "id") <- id
   attr(fun, "type") <- char
+  attr(fun, "error") <- error
   fun
 }

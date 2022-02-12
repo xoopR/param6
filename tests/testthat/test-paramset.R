@@ -860,3 +860,50 @@ test_that("unprefix(prefix(ps)) is ps", {
   get_private(p)$.unprefix()
   expect_equal_ps(p, p2)
 })
+
+
+test_that("checks work for cond(eq = TRUE)", {
+  p <- pset(
+    prm("a", "logicals", FALSE),
+    prm("b", "reals"),
+    deps = list(list(id = "b", on = "a", cond = cnd("eq", TRUE)))
+  )
+
+  expect_error(p$values$b <- 2)
+  p$values$a <- TRUE
+  p$values$b <- 2
+  expect_error(p$values$a <- FALSE)
+})
+
+
+test_that("checks work for cond inc/dec", {
+  p <- pset(
+    prm("a", "nreals"),
+    deps = list(list(id = "a", cond = cnd("inc")))
+  )
+  p$values$a <- 1:3
+  p$values$a <- c(3,3,3)
+  expect_error(p$values$a <- c(3, 3, 2), "not increasing")
+
+  p <- pset(
+    prm("a", "nreals"),
+    deps = list(list(id = "a", cond = cnd("sinc")))
+  )
+  p$values$a <- 1:3
+  expect_error(p$values$a <- c(3, 3, 4), "not strictly increasing")
+
+  p <- pset(
+    prm("a", "nreals"),
+    deps = list(list(id = "a", cond = cnd("dec")))
+  )
+  p$values$a <- 3:1
+  p$values$a <- c(3,3,3)
+  expect_error(p$values$a <- c(3, 3, 4), "not decreasing")
+
+  p <- pset(
+    prm("a", "nreals"),
+    deps = list(list(id = "a", cond = cnd("sdec")))
+  )
+  p$values$a <- 3:1
+  expect_error(p$values$a <- c(3, 3, 2), "not strictly decreasing")
+})

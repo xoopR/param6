@@ -1,3 +1,7 @@
+# param6 0.2.4
+
+* Added conditions for increasing and decreasing parameters
+
 # param6 0.2.3
 
 * Patch for testthat
