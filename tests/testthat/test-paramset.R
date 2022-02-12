@@ -886,9 +886,9 @@ test_that("checks work for cond inc/dec", {
   expect_error(p$values$a <- c(3, 3, 2), "not increasing")
 
   p <- pset(
-    prm("a", "nreals"),
-    deps = list(list(id = "a", cond = cnd("sinc")))
+    prm("a", "nreals")
   )
+  p$add_dep("a", NULL, cnd("sinc"))
   p$values$a <- 1:3
   expect_error(p$values$a <- c(3, 3, 4), "not strictly increasing")
 
