@@ -148,7 +148,7 @@
 .check_deps <- function(self, values, deps, id, error_on_fail) {
 
   if (!is.null(deps) && nrow(deps)) {
-    for (i in nrow(deps)) {
+    for (i in seq(nrow(deps))) {
       id <- deps[i, 1][[1]]
       on <- deps[i, 2][[1]]
       cnd <- deps[i, 3][[1]][[1]]
