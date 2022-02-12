@@ -7,11 +7,11 @@
 #' @param value (`ANY`) \cr
 #' If `id` is `NULL` then `value` should be a value in the support of the
 #' parameter that the condition is testing, that will be passed to the condition
-#' determined by `type`.
+#' determined by `type`. Can be left NULL if testing if increasing/decreasing.
 #' @param id (`character(1)`) \cr
 #' If `value` is `NULL` then `id` should be the same as the id that the
 #' condition is testing, and the condition then takes the currently set value
-#' of the id in its argument.
+#' of the id in its argument. Can be left NULL if testing if increasing/decreasing.
 #' @param error (`character(1)`) \cr
 #' Optional error message to be displayed on fail.
 #' @details

@@ -14,12 +14,12 @@ are given in details.}
 \item{value}{(\code{ANY}) \cr
 If \code{id} is \code{NULL} then \code{value} should be a value in the support of the
 parameter that the condition is testing, that will be passed to the condition
-determined by \code{type}.}
+determined by \code{type}. Can be left NULL if testing if increasing/decreasing.}
 
 \item{id}{(\code{character(1)}) \cr
 If \code{value} is \code{NULL} then \code{id} should be the same as the id that the
 condition is testing, and the condition then takes the currently set value
-of the id in its argument.}
+of the id in its argument. Can be left NULL if testing if increasing/decreasing.}
 
 \item{error}{(\code{character(1)}) \cr
 Optional error message to be displayed on fail.}
