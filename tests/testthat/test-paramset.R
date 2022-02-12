@@ -882,7 +882,7 @@ test_that("checks work for cond inc/dec", {
     deps = list(list(id = "a", cond = cnd("inc")))
   )
   p$values$a <- 1:3
-  p$values$a <- c(3,3,3)
+  p$values$a <- c(3, 3, 3)
   expect_error(p$values$a <- c(3, 3, 2), "not increasing")
 
   p <- pset(
@@ -897,7 +897,7 @@ test_that("checks work for cond inc/dec", {
     deps = list(list(id = "a", cond = cnd("dec")))
   )
   p$values$a <- 3:1
-  p$values$a <- c(3,3,3)
+  p$values$a <- c(3, 3, 3)
   expect_error(p$values$a <- c(3, 3, 4), "not decreasing")
 
   p <- pset(
