@@ -919,7 +919,7 @@ test_that("checks multiple conditions can work/fail", {
   )
   expect_error(p$values$a <- 3:1, "custom error")
   expect_error(p$values <- list(a = 1, b = 1:2), "len")
-  expect_error(p$values <- list(a = 3:1, b = 1:3), "increasing")
+  expect_error(p$values <- list(a = 3:1, b = 1:3), "custom error")
   p$values <- list(a = 1:3, b = 1:3)
   expect_error(p$values <- list(a = 1:2, b = 1:3), "len")
 })
