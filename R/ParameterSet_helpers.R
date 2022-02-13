@@ -148,24 +148,44 @@
 .check_deps <- function(self, values, deps, id, error_on_fail) {
 
   if (!is.null(deps) && nrow(deps)) {
-    for (i in nrow(deps)) {
+    for (i in seq(nrow(deps))) {
       id <- deps[i, 1][[1]]
       on <- deps[i, 2][[1]]
       cnd <- deps[i, 3][[1]][[1]]
       fun <- eval(cnd)
       id_value <- .get_values(self, get_private(self), values, id,
-                              transform = FALSE, inc_null = FALSE)
-      on_value <- .get_values(self, get_private(self), values, on,
-                              transform = FALSE, inc_null = FALSE)
+        transform = FALSE, inc_null = FALSE
+      )
+
       if (length(id_value)) {
-        ok <- fun(on_value, id_value)
+        if (on != "") {
+          on_value <- .get_values(self, get_private(self), values, on,
+            transform = FALSE, inc_null = FALSE
+          )
+          ok <- fun(on_value, id_value)
+        } else {
+          ok <- fun(id_value)
+        }
+
         if (!ok) {
-          if (!is.null(attr(cnd, "id"))) {
-            msg <- sprintf("Dependency of '%s %s %s' failed.",
-                           id, attr(cnd, "type"), on)
+          if (!is.null(attr(cnd, "error"))) {
+            msg <- attr(cnd, "error")
           } else {
-            msg <- sprintf("Dependency of %s on '%s %s %s' failed.", id, on,
-                           attr(cnd, "type"), string_as_set(attr(cnd, "value")))
+            if (on == "") {
+              msg <- sprintf("'%s' is not %s.", id, attr(cnd, "type"))
+            } else {
+              if (!is.null(attr(cnd, "id"))) {
+                msg <- sprintf(
+                  "Dependency of '%s %s %s' failed.",
+                  id, attr(cnd, "type"), on
+                )
+              } else {
+                msg <- sprintf(
+                  "Dependency of %s on '%s %s %s' failed.", id, on,
+                  attr(cnd, "type"), string_as_set(attr(cnd, "value"))
+                )
+              }
+            }
           }
           return(.return_fail(
             msg = msg,

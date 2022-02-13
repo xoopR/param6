@@ -1,13 +1,13 @@
 Package: param6
 Title: A Fast and Lightweight R6 Parameter Interface
 Description: By making use of 'set6', alongside the S3 and R6 paradigms, this package provides a fast and lightweight R6 interface for parameters and parameter sets.
-Version: 0.2.3
+Version: 0.2.4
 Authors@R:
   person(given = "Raphael",
-             family = "Sonabend",
-             role = c("aut","cre"),
-             email = "raphaelsonabend@gmail.com",
-             comment = c(ORCID = "0000-0001-9225-4654"))
+        family = "Sonabend",
+        role = c("aut","cre"),
+        email = "raphaelsonabend@gmail.com",
+        comment = c(ORCID = "0000-0001-9225-4654"))
 License: MIT + file LICENSE
 URL: https://xoopR.github.io/param6/, https://github.com/xoopR/param6/
 BugReports: https://github.com/xoopR/param6/issues

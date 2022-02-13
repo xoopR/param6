@@ -1,3 +1,8 @@
+# param6 0.2.4
+
+* Added conditions for increasing and decreasing parameters
+* Fixed bug that meant multiple conditions weren't being checked
+
 # param6 0.2.3
 
 * Patch for testthat
