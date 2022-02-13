@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">param6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -59,7 +55,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/xoopR/param6/">
+  <a href="https://github.com/xoopR/param6/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -76,33 +72,33 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="param6" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#param6" class="anchor"></a>param6</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="param6">param6<a class="anchor" aria-label="anchor" href="#param6"></a>
+</h1></div>
 <p><img src="reference/figures/logo.png" align="right" alt="" width="120"></p>
-<p><a href="https://cran.r-project.org/package=param6"><img src="https://www.r-pkg.org/badges/version-ago/param6" alt="CRAN Status Badge"></a> <a href="https://cran.r-project.org/web/checks/check_results_param6.html"><img src="https://cranchecks.info/badges/worst/param6" alt="CRAN Checks"></a> <a href="https://github.com/xoopR/param6/actions/workflows/check-covr.yml"><img src="https://github.com/xoopR/param6/actions/workflows/check-covr.yml/badge.svg?branch=main" alt="R-CMD-check / codecov"></a></p>
-<p><a href="https://github.com/xoopR/param6"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Repo Status"></a> <a href="https://github.com/xoopR/param6"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg" alt="Lifecycle"></a></p>
-<p><a href="https://cran.r-project.org/package=param6"><img src="https://cranlogs.r-pkg.org/badges/grand-total/param6" alt="CRAN Downloads"></a> <a href="https://codecov.io/gh/xoopR/param6"><img src="https://codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg" alt="codecov"></a> <a href="https://CRAN.R-project.org/package=param6"><img src="https://tinyverse.netlify.com/badge/param6" alt="dependencies"></a> <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<div id="what-is-param6" class="section level2">
-<h2 class="hasAnchor">
-<a href="#what-is-param6" class="anchor"></a>What is param6?</h2>
+<p><a href="https://cran.r-project.org/package=param6" class="external-link"><img src="https://www.r-pkg.org/badges/version-ago/param6" alt="CRAN Status Badge"></a> <a href="https://cran.r-project.org/web/checks/check_results_param6.html" class="external-link"><img src="https://cranchecks.info/badges/worst/param6" alt="CRAN Checks"></a> <a href="https://github.com/xoopR/param6/actions/workflows/check-covr.yml" class="external-link"><img src="https://github.com/xoopR/param6/actions/workflows/check-covr.yml/badge.svg?branch=main" alt="R-CMD-check / codecov"></a></p>
+<p><a href="https://github.com/xoopR/param6" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Repo Status"></a> <a href="https://github.com/xoopR/param6" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg" alt="Lifecycle"></a></p>
+<p><a href="https://cran.r-project.org/package=param6" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/param6" alt="CRAN Downloads"></a> <a href="https://codecov.io/gh/xoopR/param6" class="external-link"><img src="https://codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg" alt="codecov"></a> <a href="https://CRAN.R-project.org/package=param6" class="external-link"><img src="https://tinyverse.netlify.com/badge/param6" alt="dependencies"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
+<div class="section level2">
+<h2 id="what-is-param6">What is param6?<a class="anchor" aria-label="anchor" href="#what-is-param6"></a>
+</h2>
 <p><strong>param6</strong> is an R6 parameter set interface for storing multiple parameters that may be used in other R6 (or other paradigm) objects. Key use-cases for R6 parameter sets have been seen in packages such as:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>
-<strong><a href="https://CRAN.R-project.org/package=distr6">distr6</a></strong> - In which R6 distribution objects require parameter sets in order to parametrise a given probability distribution. Parameters as objects allows efficient getting and setting of parameters, as well as composition of distributions.</li>
+<strong><a href="https://CRAN.R-project.org/package=distr6" class="external-link">distr6</a></strong> - In which R6 distribution objects require parameter sets in order to parametrise a given probability distribution. Parameters as objects allows efficient getting and setting of parameters, as well as composition of distributions.</li>
 <li>
-<strong><a href="https://CRAN.R-project.org/package=mlr3">mlr3</a></strong> - In which R6 learners require parameter sets for passing parameters to machine learning models. Storing parameter set objects allows efficient tuning over these parameters.</li>
+<strong><a href="https://CRAN.R-project.org/package=mlr3" class="external-link">mlr3</a></strong> - In which R6 learners require parameter sets for passing parameters to machine learning models. Storing parameter set objects allows efficient tuning over these parameters.</li>
 </ol>
 </div>
-<div id="main-features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#main-features" class="anchor"></a>Main Features</h2>
+<div class="section level2">
+<h2 id="main-features">Main Features<a class="anchor" aria-label="anchor" href="#main-features"></a>
+</h2>
 <p>Some main features/key use-cases of <strong>param6</strong> includes:</p>
 <ul>
 <li>Construction of parameter sets</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>
 <span class="op">)</span>
@@ -114,12 +110,12 @@
 <li>Tagging parameters with properties</li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"nnaturals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span>,
-                 <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>required <span class="op">=</span> <span class="st">"t1"</span>, unique <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+                 <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>required <span class="op">=</span> <span class="st">"t1"</span>, unique <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">##    Id Support Value Tags</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="co">## 1:  a       ℝ     1   t1</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="co">## 2:  b    ℕ0^n         t2</span></span></code></pre></div>
@@ -127,7 +123,7 @@
 <li>Getting and setting parameter values</li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
 <span class="op">)</span>
@@ -148,7 +144,7 @@
 </ul>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, value <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, value <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">^</span><span class="va">x</span><span class="op">$</span><span class="va">a</span>
@@ -161,7 +157,7 @@
 <li>Parameter dependencies</li>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>,
   <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>
 <span class="op">)</span><span class="op">)</span>
@@ -179,85 +175,96 @@
 <span id="cb14-4"><a href="#cb14-4"></a><span class="co">## $b</span></span>
 <span id="cb14-5"><a href="#cb14-5"></a><span class="co">## [1] 4</span></span></code></pre></div>
 </div>
-<div id="why-param6" class="section level2">
-<h2 class="hasAnchor">
-<a href="#why-param6" class="anchor"></a>Why param6?</h2>
-<p><strong>param6</strong> began as the <code>ParameterSet</code> object in <strong><a href="https://CRAN.R-project.org/package=distr6">distr6</a></strong>. However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. <strong>param6</strong> is an abstracted parameter set interface that draws influence from this initial design. <strong>param6</strong> achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:</p>
+<div class="section level2">
+<h2 id="why-param6">Why param6?<a class="anchor" aria-label="anchor" href="#why-param6"></a>
+</h2>
+<p><strong>param6</strong> began as the <code>ParameterSet</code> object in <strong><a href="https://CRAN.R-project.org/package=distr6" class="external-link">distr6</a></strong>. However this initial attempt at an R6 parameter set interface, had massive bottlenecks that were causing substantial problems in dependencies. <strong>param6</strong> is an abstracted parameter set interface that draws influence from this initial design. <strong>param6</strong> achieves faster run-times and smaller object-sizes than other parameter set packages by making the following design decisions:</p>
 <ul>
 <li>
 <code>data.table</code> objects are minimised and only used when absolutely necessary, instead <code>list</code> objects are utilised.</li>
-<li>Symbolic representation of sets is utilised via the <strong><a href="https://CRAN.R-project.org/package=set6">set6</a></strong> package in order to store sets as characters, thereby reducing object sizes. Additionally, <strong>param6</strong> includes a <a href="https://xoopr.github.io/param6/reference/support_dictionary.html">support_dictionary</a> which stores constructed sets that can then be accessed via a string representation, thereby preventing the same set needing to be constructed multiple times.</li>
+<li>Symbolic representation of sets is utilised via the <strong><a href="https://CRAN.R-project.org/package=set6" class="external-link">set6</a></strong> package in order to store sets as characters, thereby reducing object sizes. Additionally, <strong>param6</strong> includes a <a href="https://xoopr.github.io/param6/reference/support_dictionary.html" class="external-link">support_dictionary</a> which stores constructed sets that can then be accessed via a string representation, thereby preventing the same set needing to be constructed multiple times.</li>
 <li>
-<strong><a href="https://CRAN.R-project.org/package=Rcpp">Rcpp</a></strong> is utilised via <strong><a href="https://CRAN.R-project.org/package=set6">set6</a></strong> in order to allow very fast containedness checks when checking values lie within a parameter support.</li>
-<li>S3 is embraced for simple objects, such as the <a href="https://xoopr.github.io/param6/reference/prm.html">prm</a> object in order to increase speed in construction times.</li>
+<strong><a href="https://CRAN.R-project.org/package=Rcpp" class="external-link">Rcpp</a></strong> is utilised via <strong><a href="https://CRAN.R-project.org/package=set6" class="external-link">set6</a></strong> in order to allow very fast containedness checks when checking values lie within a parameter support.</li>
+<li>S3 is embraced for simple objects, such as the <a href="https://xoopr.github.io/param6/reference/prm.html" class="external-link">prm</a> object in order to increase speed in construction times.</li>
 <li>Parameters are grouped internally by their supports, and not individually, allowing for a further increase in efficiency of both storage and runtimes in containedness checks</li>
 <li>The notion of ‘parameter set collections’ is removed in favour of automated methods for setting and getting prefixes in parameter IDs</li>
 </ul>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>For the latest release on <a href="https://CRAN.R-project.org/package=param6">CRAN</a>, install with</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>For the latest release on <a href="https://CRAN.R-project.org/package=param6" class="external-link">CRAN</a>, install with</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"param6"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"param6"</span><span class="op">)</span></code></pre></div>
 <p>Otherwise for the latest stable build</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"xoopR/param6"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"xoopR/param6"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="future-plans" class="section level2">
-<h2 class="hasAnchor">
-<a href="#future-plans" class="anchor"></a>Future Plans</h2>
-<p>The <strong>param6</strong> API is still experimental and may be subject to major changes. To understand if <strong>param6</strong> fulfills it’s initial use-case correctly, the next step will be to incorporate the package in <strong><a href="https://CRAN.R-project.org/package=distr6">distr6</a></strong>, which may involve minor or major changes to the current API. From there, Rcpp will be embraced more fully in <strong><a href="https://CRAN.R-project.org/package=set6">set6</a></strong> and then in <strong>param6</strong> to improve package speed.</p>
+<div class="section level2">
+<h2 id="future-plans">Future Plans<a class="anchor" aria-label="anchor" href="#future-plans"></a>
+</h2>
+<p>The <strong>param6</strong> API is still experimental and may be subject to major changes. To understand if <strong>param6</strong> fulfills it’s initial use-case correctly, the next step will be to incorporate the package in <strong><a href="https://CRAN.R-project.org/package=distr6" class="external-link">distr6</a></strong>, which may involve minor or major changes to the current API. From there, Rcpp will be embraced more fully in <strong><a href="https://CRAN.R-project.org/package=set6" class="external-link">set6</a></strong> and then in <strong>param6</strong> to improve package speed.</p>
 </div>
-<div id="package-development-and-contributing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#package-development-and-contributing" class="anchor"></a>Package Development and Contributing</h2>
-<p><strong>param6</strong> is released under the <a href="https://opensource.org/licenses/MIT">MIT licence</a>. We welcome and appreciate all <a href="https://github.com/xoopR/param6/issues">new issues</a> relating to bug reports, questions and suggestions. You can also <a href="https://github.com/xoopR/param6/discussions">start a discussion</a> for more extensive feedback or feature suggestion.</p>
+<div class="section level2">
+<h2 id="package-development-and-contributing">Package Development and Contributing<a class="anchor" aria-label="anchor" href="#package-development-and-contributing"></a>
+</h2>
+<p><strong>param6</strong> is released under the <a href="https://opensource.org/licenses/MIT" class="external-link">MIT licence</a>. We welcome and appreciate all <a href="https://github.com/xoopR/param6/issues" class="external-link">new issues</a> relating to bug reports, questions and suggestions. You can also <a href="https://github.com/xoopR/param6/discussions" class="external-link">start a discussion</a> for more extensive feedback or feature suggestion.</p>
 </div>
-<div id="acknowledgements" class="section level2">
-<h2 class="hasAnchor">
-<a href="#acknowledgements" class="anchor"></a>Acknowledgements</h2>
-<p>As well as building on the work of <strong><a href="https://CRAN.R-project.org/package=distr6">distr6</a></strong>, the designs and some method names of <strong>param6</strong> are based on the work of <strong><a href="https://CRAN.R-project.org/package=paradox">paradox</a></strong>. Additionally, some decisions were based on designs in <strong><a href="https://github.com/mrc-ide/mcstate">mcstate</a></strong>.</p>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>As well as building on the work of <strong><a href="https://CRAN.R-project.org/package=distr6" class="external-link">distr6</a></strong>, the designs and some method names of <strong>param6</strong> are based on the work of <strong><a href="https://CRAN.R-project.org/package=paradox" class="external-link">paradox</a></strong>. Additionally, some decisions were based on designs in <strong><a href="https://github.com/mrc-ide/mcstate" class="external-link">mcstate</a></strong>.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=param6">https://​cloud.r-project.org/​package=param6</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/xoopR/param6/">https://​github.com/​xoopR/​param6/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/xoopR/param6/issues">https://​github.com/​xoopR/​param6/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=param6" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/xoopR/param6/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/xoopR/param6/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Raphael Sonabend <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-9225-4654" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html#citation">Citing param6</a></li>
 </ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Raphael Sonabend <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-9225-4654" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
+</div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Raphael Sonabend.</p>
+  <p></p>
+<p>Developed by Raphael Sonabend.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -265,6 +272,8 @@
 
   
 
+
+  
 
   </body>
 </html>
