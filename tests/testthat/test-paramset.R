@@ -913,11 +913,11 @@ test_that("checks multiple conditions can work/fail", {
     prm("a", "nreals"),
     prm("b", "nreals"),
     deps = list(
-      list(id = "a", cond = cnd("inc")),
+      list(id = "a", cond = cnd("inc", error = "custom error")),
       list(id = "a", on = "b", cond = cnd("len", id = "b"))
     )
   )
-  expect_error(p$values$a <- 3:1, "not increasing")
+  expect_error(p$values$a <- 3:1, "custom error")
   expect_error(p$values <- list(a = 1, b = 1:2), "len")
   expect_error(p$values <- list(a = 3:1, b = 1:3), "increasing")
   p$values <- list(a = 1:3, b = 1:3)

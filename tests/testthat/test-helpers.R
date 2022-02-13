@@ -19,6 +19,8 @@ test_that("assert_no_cycles", {
 
 test_that("cnd", {
   expect_warning(cnd("eq", 1, "a"))
+  expect_false(eval(cnd("inc"))(list(1:2, 2:1)))
+  expect_true(eval(cnd("inc"))(list(1:2, 1:2)))
 })
 
 test_that("assert_condition", {
