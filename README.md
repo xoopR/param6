@@ -16,7 +16,7 @@ Status](https://www.repostatus.org/badges/latest/active.svg)](https://github.com
 
 [![CRAN
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/param6)](https://cran.r-project.org/package=param6)
-[![codecov](https://codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg)](https://codecov.io/gh/xoopR/param6)
+[![codecov](https://app.codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg)](https://app.codecov.io/gh/xoopR/param6)
 [![dependencies](https://tinyverse.netlify.com/badge/param6)](https://CRAN.R-project.org/package=param6)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -52,7 +52,7 @@ ParameterSet$new(prms)
 ```
 
     ##    Id Support Value Tags
-    ## 1:  a       ℝ     1     
+    ## 1:  a       ℝ     1
     ## 2:  b      ℕ0
 
 -   Tagging parameters with properties
@@ -84,7 +84,7 @@ p$values
 
     ## $a
     ## [1] 1
-    ## 
+    ##
     ## $b
     ## [1] 2
 
@@ -133,7 +133,7 @@ p$get_values()
 
     ## $a
     ## [1] 1
-    ## 
+    ##
     ## $b
     ## [1] 4
 
