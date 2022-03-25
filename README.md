@@ -3,10 +3,7 @@ param6
 
 <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
-[![CRAN Status
-Badge](https://www.r-pkg.org/badges/version-ago/param6)](https://cran.r-project.org/package=param6)
-[![CRAN
-Checks](https://cranchecks.info/badges/worst/param6)](https://cran.r-project.org/web/checks/check_results_param6.html)
+[![param6 status badge](https://raphaels1.r-universe.dev/badges/param6)](https://raphaels1.r-universe.dev)
 [![R-CMD-check /
 codecov](https://github.com/xoopR/param6/actions/workflows/check-covr.yml/badge.svg?branch=main)](https://github.com/xoopR/param6/actions/workflows/check-covr.yml)
 
