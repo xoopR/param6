@@ -168,20 +168,30 @@ following design decisions:
 -   The notion of ‘parameter set collections’ is removed in favour of
     automated methods for setting and getting prefixes in parameter IDs
 
+
 ## Installation
 
-For the latest release on
-[CRAN](https://CRAN.R-project.org/package=param6), install with
+param6 can be installed from
+[R-Universe](https://raphaels1.r-universe.dev/ui#package:param6)
 
 ``` r
-install.packages("param6")
+# Enable repository from raphaels1
+options(repos = c(
+  raphaels1 = 'https://raphaels1.r-universe.dev',
+  CRAN = 'https://cloud.r-project.org'))
+# Download and install param6 in R
+install.packages('param6')
 ```
 
-Otherwise for the latest stable build
+And GitHub
 
 ``` r
 remotes::install_github("xoopR/param6")
 ```
+
+distr6 [will not be on
+CRAN](https://twitter.com/RaphaelS101/status/1506321623250571265) for
+the forseeable future.
 
 ## Future Plans
 
