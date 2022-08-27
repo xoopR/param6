@@ -11,8 +11,6 @@ codecov](https://github.com/xoopR/param6/actions/workflows/check-covr.yml/badge.
 Status](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/xoopR/param6)
 [![Lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://github.com/xoopR/param6)
 
-[![CRAN
-Downloads](https://cranlogs.r-pkg.org/badges/grand-total/param6)](https://cran.r-project.org/package=param6)
 [![codecov](https://app.codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg)](https://app.codecov.io/gh/xoopR/param6)
 [![dependencies](https://tinyverse.netlify.com/badge/param6)](https://CRAN.R-project.org/package=param6)
 [![License:
