@@ -187,7 +187,7 @@ And GitHub
 remotes::install_github("xoopR/param6")
 ```
 
-distr6 [will not be on
+param6 [will not be on
 CRAN](https://twitter.com/RaphaelS101/status/1506321623250571265) for
 the forseeable future.
 
