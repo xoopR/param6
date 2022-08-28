@@ -78,7 +78,7 @@
 <p><img src="reference/figures/logo.png" align="right" alt="" width="120"></p>
 <p><a href="https://raphaels1.r-universe.dev" class="external-link"><img src="https://raphaels1.r-universe.dev/badges/param6" alt="param6 status badge"></a> <a href="https://github.com/xoopR/param6/actions/workflows/check-covr.yml" class="external-link"><img src="https://github.com/xoopR/param6/actions/workflows/check-covr.yml/badge.svg?branch=main" alt="R-CMD-check / codecov"></a></p>
 <p><a href="https://github.com/xoopR/param6" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Repo Status"></a> <a href="https://github.com/xoopR/param6" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg" alt="Lifecycle"></a></p>
-<p><a href="https://cran.r-project.org/package=param6" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/param6" alt="CRAN Downloads"></a> <a href="https://app.codecov.io/gh/xoopR/param6" class="external-link"><img src="https://app.codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg" alt="codecov"></a> <a href="https://CRAN.R-project.org/package=param6" class="external-link"><img src="https://tinyverse.netlify.com/badge/param6" alt="dependencies"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
+<p><a href="https://app.codecov.io/gh/xoopR/param6" class="external-link"><img src="https://app.codecov.io/gh/xoopR/param6/branch/master/graph/badge.svg" alt="codecov"></a> <a href="https://CRAN.R-project.org/package=param6" class="external-link"><img src="https://tinyverse.netlify.com/badge/param6" alt="dependencies"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
 <div class="section level2">
 <h2 id="what-is-param6">What is param6?<a class="anchor" aria-label="anchor" href="#what-is-param6"></a>
 </h2>
@@ -94,81 +94,71 @@
 <h2 id="main-features">Main Features<a class="anchor" aria-label="anchor" href="#main-features"></a>
 </h2>
 <p>Some main features/key use-cases of <strong>param6</strong> includes:</p>
-<ul>
-<li>Construction of parameter sets</li>
-</ul>
+<ul><li>Construction of parameter sets</li></ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">##    Id Support Value Tags</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="co">## 1:  a       ℝ     1</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="co">## 2:  b      ℕ0</span></span></code></pre></div>
-<ul>
-<li>Tagging parameters with properties</li>
-</ul>
+<ul><li>Tagging parameters with properties</li></ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"nnaturals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span>,
-                 <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>required <span class="op">=</span> <span class="st">"t1"</span>, unique <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"nnaturals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>required <span class="op">=</span> <span class="st">"t1"</span>, unique <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">##    Id Support Value Tags</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="co">## 1:  a       ℝ     1   t1</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="co">## 2:  b    ℕ0^n         t2</span></span></code></pre></div>
-<ul>
-<li>Getting and setting parameter values</li>
-</ul>
+<ul><li>Getting and setting parameter values</li></ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="va">p</span><span class="op">$</span><span class="va">values</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"reals"</span>, value <span class="op">=</span> <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">values</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">## $a</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="co">## [1] 1</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="co">##</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a><span class="co">## $b</span></span>
 <span id="cb6-5"><a href="#cb6-5"></a><span class="co">## [1] 2</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## $a</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="co">## [1] 1</span></span></code></pre></div>
-<ul>
-<li>Transform parameters</li>
-</ul>
+<ul><li>Transform parameters</li></ul>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, value <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">^</span><span class="va">x</span><span class="op">$</span><span class="va">a</span>
-  <span class="va">x</span>
-<span class="op">}</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="st">"a"</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span>, value <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">^</span><span class="va">x</span><span class="op">$</span><span class="va">a</span></span>
+<span>  <span class="va">x</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="st">"a"</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">## $a</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="co">## [1] 16</span></span></code></pre></div>
-<ul>
-<li>Parameter dependencies</li>
-</ul>
+<ul><li>Parameter dependencies</li></ul>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>,
-  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>
-<span class="op">)</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu"><a href="reference/cnd.html">cnd</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">5</span>
-<span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># fails as b != 4</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="reference/prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, support <span class="op">=</span> <span class="st">"naturals"</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu"><a href="reference/cnd.html">cnd</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># fails as b != 4</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">## Error in .return_fail(msg = msg, error_on_fail): Dependency of a on 'b == {4}' failed.</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">4</span>
-<span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># now works</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">4</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># now works</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## $a</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="co">## [1] 1</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a><span class="co">##</span></span>
@@ -193,12 +183,18 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>For the latest release on <a href="https://CRAN.R-project.org/package=param6" class="external-link">CRAN</a>, install with</p>
+<p>param6 can be installed from <a href="https://raphaels1.r-universe.dev/ui#package:param6" class="external-link">R-Universe</a></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"param6"</span><span class="op">)</span></code></pre></div>
-<p>Otherwise for the latest stable build</p>
+<code class="sourceCode R"><span><span class="co"># Enable repository from raphaels1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  raphaels1 <span class="op">=</span> <span class="st">'https://raphaels1.r-universe.dev'</span>,</span>
+<span>  CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Download and install param6 in R</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'param6'</span><span class="op">)</span></span></code></pre></div>
+<p>And GitHub</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"xoopR/param6"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"xoopR/param6"</span><span class="op">)</span></span></code></pre></div>
+<p>param6 <a href="https://twitter.com/RaphaelS101/status/1506321623250571265" class="external-link">will not be on CRAN</a> for the forseeable future.</p>
 </div>
 <div class="section level2">
 <h2 id="future-plans">Future Plans<a class="anchor" aria-label="anchor" href="#future-plans"></a>
@@ -264,7 +260,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

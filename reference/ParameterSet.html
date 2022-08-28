@@ -165,7 +165,7 @@ applied, one after the other.</p></dd>
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Constructs a <code>ParameterSet</code> object.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>prms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, tag_properties <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>prms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, tag_properties <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -189,12 +189,12 @@ updated after construction.</p></dd>
 </div>
 <div class="section">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -203,7 +203,7 @@ updated after construction.</p></dd>
 <p>Prints the <code>ParameterSet</code> after coercion with
 <a href="as.data.table.ParameterSet.html">as.data.table.ParameterSet</a>.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span>sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span>sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -217,15 +217,15 @@ alphabetically by id.</p></dd>
 </div>
 <div class="section">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
-<span class="va">p</span></code></pre></div><p></p></div>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
+<span><span class="va">p</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -234,13 +234,13 @@ alphabetically by id.</p></dd>
 <p>Gets values from the <code>ParameterSet</code> with options to filter
 by specific IDs and tags, and also to transform the values.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>
-  id <span class="op">=</span> <span class="cn">NULL</span>,
-  tags <span class="op">=</span> <span class="cn">NULL</span>,
-  transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  inc_null <span class="op">=</span> <span class="cn">TRUE</span>,
-  simplify <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span></span>
+<span>  id <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tags <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  inc_null <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  simplify <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -276,20 +276,20 @@ returns a list.</p></dd>
 </div>
 <div class="section">
 <h4 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span>
- <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span>
- <span class="va">x</span>
-<span class="op">}</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>inc_null <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span>
+<span> <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></span>
+<span> <span class="va">x</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>inc_null <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -298,7 +298,7 @@ returns a list.</p></dd>
 <p>Gets values from the <code>ParameterSet</code> with options to filter
 by specific IDs and tags, and also to transform the values.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="va">id</span>, <span class="va">on</span>, <span class="va">cnd</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="va">id</span>, <span class="va">on</span>, <span class="va">cnd</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -365,7 +365,7 @@ collection of identical <code>ParameterSet</code> objects.</p>
 a new object then use <a href="rep.ParameterSet.html">rep.ParameterSet</a> instead (or copy and deep clone)
 first.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">rep</span><span class="op">(</span><span class="va">times</span>, <span class="va">prefix</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">rep</span><span class="op">(</span><span class="va">times</span>, <span class="va">prefix</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -390,7 +390,7 @@ should be equal to <code>times</code>.</p></dd>
 <p>Creates a new <code>ParameterSet</code> by extracting the given
 parameters.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>id <span class="op">=</span> <span class="cn">NULL</span>, tags <span class="op">=</span> <span class="cn">NULL</span>, prefix <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>id <span class="op">=</span> <span class="cn">NULL</span>, tags <span class="op">=</span> <span class="cn">NULL</span>, prefix <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -418,28 +418,28 @@ the string before <code>"__"</code> in an id.</p></dd>
 </div>
 <div class="section">
 <h4 id="examples-4">Examples<a class="anchor" aria-label="anchor" href="#examples-4"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span class="co"># extract by id</span>
-<span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,
- <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span>
-<span class="co"># equivalently</span>
-<span class="va">p</span><span class="op">[</span><span class="st">"a"</span><span class="op">]</span>
-
-<span class="co"># extract by prefix</span>
-<span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">)</span>
-<span class="co"># equivalently</span>
-<span class="va">p</span><span class="op">[</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">]</span></code></pre></div><p></p></div>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="co"># extract by id</span></span>
+<span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span>
+<span> <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span></span>
+<span><span class="co"># equivalently</span></span>
+<span><span class="va">p</span><span class="op">[</span><span class="st">"a"</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># extract by prefix</span></span>
+<span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/ParameterSet.html">ParameterSet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">)</span></span>
+<span><span class="co"># equivalently</span></span>
+<span><span class="va">p</span><span class="op">[</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">]</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -447,7 +447,7 @@ the string before <code>"__"</code> in an id.</p></dd>
 <h3 id="method-remove-">Method <code><a href="https://rdrr.io/r/base/rm.html" class="external-link">remove()</a></code><a class="anchor" aria-label="anchor" href="#method-remove-"></a></h3>
 <p>Removes the given parameters from the set.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">remove</span><span class="op">(</span>id <span class="op">=</span> <span class="cn">NULL</span>, prefix <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">remove</span><span class="op">(</span>id <span class="op">=</span> <span class="cn">NULL</span>, prefix <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -474,7 +474,7 @@ the string before <code>"__"</code> in an id.</p></dd>
 Use $values/$get_values() in the future.
 Will be removed in 0.3.0.</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">getParameterValue</span><span class="op">(</span><span class="va">id</span>, <span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">getParameterValue</span><span class="op">(</span><span class="va">id</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -496,7 +496,7 @@ Will be removed in 0.3.0.</p><div class="section">
 Use $set_values in the future.
 Will be removed in 0.3.0.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">setParameterValue</span><span class="op">(</span><span class="va">...</span>, lst <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">setParameterValue</span><span class="op">(</span><span class="va">...</span>, lst <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -517,7 +517,7 @@ Will be removed in 0.3.0.</p><div class="section">
 <p>Convenience function for setting multiple parameters
 without changing or accidentally removing others.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">set_values</span><span class="op">(</span><span class="va">...</span>, lst <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">set_values</span><span class="op">(</span><span class="va">...</span>, lst <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -539,7 +539,7 @@ without changing or accidentally removing others.</p><div class="section">
 Use $print/as.data.table() in the future.
 Will be removed in 0.3.0.</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">parameters</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">parameters</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -559,7 +559,7 @@ unchanged. If <code>$trafo</code> is a function then <code>x</code> is passed di
 this. If <code>$trafo</code> is a list then <code>x</code> is evaluated and passed down the
 list iteratively.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">transform</span><span class="op">(</span>x <span class="op">=</span> <span class="va">self</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">transform</span><span class="op">(</span>x <span class="op">=</span> <span class="va">self</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -580,7 +580,7 @@ List of values to transform.</p></dd>
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -598,45 +598,45 @@ List of values to transform.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://xoopR.github.io/set6/" class="external-link">set6</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## $value examples</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">values</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://xoopR.github.io/set6/" class="external-link">set6</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## $value examples</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## $trafo examples</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, <span class="fl">2</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">trafo</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## $trafo examples</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, <span class="fl">2</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">trafo</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># simple transformation</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># simple transformation</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"> <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">x</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">x</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7.389056</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># more complex transformation on tags</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, <span class="fl">2</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in">       <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, <span class="fl">3</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in">       <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"d"</span>, <span class="fl">4</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="co"># make sure `transform = FALSE` to prevent infinite recursion</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span>, transform <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span class="r-in">               <span class="kw">function</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="fl">2</span><span class="op">^</span><span class="va">.x</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">out</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">d</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">out</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># more complex transformation on tags</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span>, <span class="fl">2</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"b"</span>, <span class="fl">3</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"d"</span>, <span class="fl">4</span>, support <span class="op">=</span> <span class="va"><a href="https://xoopR.github.io/set6/reference/Reals.html" class="external-link">Reals</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># make sure `transform = FALSE` to prevent infinite recursion</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span>, transform <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               <span class="kw">function</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="fl">2</span><span class="op">^</span><span class="va">.x</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">out</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">d</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">out</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -646,64 +646,64 @@ List of values to transform.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $d</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"><span class="co">## Method `ParameterSet$new`</span></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ParameterSet$new`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  a     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:  b       ℝ   1.5   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:  d       ℝ     2   t2</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"><span class="co">## Method `ParameterSet$print`</span></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ParameterSet$print`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, <span class="fl">2</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  a     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:  b       ℝ   1.5   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:  d       ℝ     2   t2</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  a     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:  b       ℝ   1.5   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:  d       ℝ     2   t2</span>
-<span class="r-in"><span class="va">p</span></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  a     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:  b       ℝ   1.5   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:  d       ℝ     2   t2</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"><span class="co">## Method `ParameterSet$get_values`</span></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"> <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">x</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ParameterSet$get_values`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1.5</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"reals"</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">trafo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">self</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="va">x</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">x</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.718282</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -713,88 +713,88 @@ List of values to transform.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $d</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>inc_null <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>inc_null <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.718282</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $b</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>id <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.718282</span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">get_values</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.718282</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $b</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"><span class="co">## Method `ParameterSet$add_dep`</span></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># not run as errors</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Dependency on specific value</span></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu"><a href="cnd.html">cnd</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># 'a' can only be set if 'b' equals 2</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Dependency on variable value</span></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu"><a href="cnd.html">cnd</a></span><span class="op">(</span><span class="st">"eq"</span>, id <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># 'a' can only be set if it equals 'b'</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"><span class="co">## Method `ParameterSet$extract`</span></span>
-<span class="r-in"><span class="co">## ------------------------------------------------</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># extract by id</span></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span>
-<span class="r-in"> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ParameterSet$add_dep`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># not run as errors</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Dependency on specific value</span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu"><a href="cnd.html">cnd</a></span><span class="op">(</span><span class="st">"eq"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># 'a' can only be set if 'b' equals 2</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Dependency on variable value</span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">add_dep</span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="fu"><a href="cnd.html">cnd</a></span><span class="op">(</span><span class="st">"eq"</span>, id <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># 'a' can only be set if it equals 'b'</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ParameterSet$extract`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># extract by id</span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"reals"</span>, <span class="cn">NULL</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"reals"</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="st">"a"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  a       ℝ           </span>
-<span class="r-in"><span class="co"># equivalently</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">[</span><span class="st">"a"</span><span class="op">]</span></span>
+<span class="r-in"><span><span class="co"># equivalently</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">[</span><span class="st">"a"</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  a       ℝ           </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># extract by prefix</span></span>
-<span class="r-in"><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span>
-<span class="r-in">  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># extract by prefix</span></span></span>
+<span class="r-in"><span><span class="va">prms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre1__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par1"</span>, <span class="va"><a href="https://xoopR.github.io/set6/reference/Set.html" class="external-link">Set</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span>, tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="prm.html">prm</a></span><span class="op">(</span><span class="st">"Pre2__par2"</span>, <span class="st">"reals"</span>, <span class="fl">3</span>, tags <span class="op">=</span> <span class="st">"t2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ParameterSet</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">prms</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>tags <span class="op">=</span> <span class="st">"t1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: Pre1__par1     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Pre2__par1     {1}     1   t1</span>
-<span class="r-in"><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: par1     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: par2       ℝ     3   t2</span>
-<span class="r-in"><span class="co"># equivalently</span></span>
-<span class="r-in"><span class="va">p</span><span class="op">[</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">]</span></span>
+<span class="r-in"><span><span class="co"># equivalently</span></span></span>
+<span class="r-in"><span><span class="va">p</span><span class="op">[</span>prefix <span class="op">=</span> <span class="st">"Pre1"</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Id Support Value Tags</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: par1     {1}     1   t1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: par2       ℝ     3   t2</span>
@@ -812,7 +812,7 @@ List of values to transform.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -55,7 +55,7 @@ for use in the <code>$deps</code> public method.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">cnd</span><span class="op">(</span><span class="va">type</span>, value <span class="op">=</span> <span class="cn">NULL</span>, id <span class="op">=</span> <span class="cn">NULL</span>, error <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cnd</span><span class="op">(</span><span class="va">type</span>, value <span class="op">=</span> <span class="cn">NULL</span>, id <span class="op">=</span> <span class="cn">NULL</span>, error <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -64,19 +64,26 @@ for use in the <code>$deps</code> public method.</p>
 <dd><p>(<code>character(1)</code>) <br>
 The condition <code>type</code> determines the type of dependency to create, options
 are given in details.</p></dd>
+
+
 <dt>value</dt>
 <dd><p>(<code>ANY</code>) <br>
 If <code>id</code> is <code>NULL</code> then <code>value</code> should be a value in the support of the
 parameter that the condition is testing, that will be passed to the condition
 determined by <code>type</code>. Can be left NULL if testing if increasing/decreasing.</p></dd>
+
+
 <dt>id</dt>
 <dd><p>(<code>character(1)</code>) <br>
 If <code>value</code> is <code>NULL</code> then <code>id</code> should be the same as the id that the
 condition is testing, and the condition then takes the currently set value
 of the id in its argument. Can be left NULL if testing if increasing/decreasing.</p></dd>
+
+
 <dt>error</dt>
 <dd><p>(<code>character(1)</code>) <br>
 Optional error message to be displayed on fail.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -123,7 +130,7 @@ and dependent parameter are the same length.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
