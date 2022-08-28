@@ -22,5 +22,7 @@ Imports:
   dictionar6 (>= 0.1.2),
   set6 (>= 0.2.3),
   R6
+Remotes:
+  xoopR/set6
 Suggests:
   testthat
